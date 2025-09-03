@@ -1,0 +1,253 @@
+//
+//  CognitoService.swift
+//  AWStest
+//
+//  Created by nao omiya on 2025/07/24.
+//
+
+import Foundation
+import AWSCognitoIdentityProvider
+import ClientRuntime
+
+/// AWS Cognitoとの認証処理を管理するクラス
+class CognitoService: ObservableObject {
+    // MARK: - Singleton
+    static let shared = CognitoService()
+    
+    // MARK: - Configuration
+    private var config: ConfigurationManager.CognitoConfig {
+        ConfigurationManager.shared.cognitoConfig
+    }
+    
+    private var apiGatewayUrl: String {
+        ConfigurationManager.shared.apiEndpoints.createUser
+    }
+    
+    // MARK: - Published プロパティ（UIに自動反映）
+    /// ログイン状態を管理するフラグ
+    @Published var isSignedIn = false
+    
+    /// ユーザーへのメッセージ（エラーや成功メッセージ）
+    @Published var message = ""
+    
+    /// 認証トークン情報を保持する構造体
+    private struct AuthTokens {
+        let accessToken: String
+        let idToken: String
+        let refreshToken: String?
+    }
+    
+    /// 現在の認証トークン
+    private var authTokens: AuthTokens?
+    
+    /// 現在のユーザーのメールアドレス
+    @Published var currentUserEmail: String?
+    
+    // MARK: - プライベートプロパティ
+    /// Cognito APIクライアント
+    private let client: CognitoIdentityProviderClient
+    
+    // MARK: - 初期化
+    /// CognitoServiceの初期化処理
+    private init() {
+        do {
+            // Cognitoクライアントの設定を作成
+            let config = try CognitoIdentityProviderClient.CognitoIdentityProviderClientConfiguration(
+                region: self.config.region
+            )
+            // クライアントを初期化
+            self.client = CognitoIdentityProviderClient(config: config)
+        } catch {
+            // 初期化に失敗した場合はアプリを停止
+            fatalError("Failed to initialize Cognito client: \(error)")
+        }
+    }
+    
+    // MARK: - トークン取得メソッド（新規追加）
+    /// 現在のIDトークンを取得
+    /// - Returns: IDトークン（ログインしていない場合はnil）
+    func getIdToken() async -> String? {
+        // トークンの有効期限チェックなどを実装する場合はここに追加
+        return authTokens?.idToken
+    }
+    
+    /// 現在のアクセストークンを取得
+    /// - Returns: アクセストークン（ログインしていない場合はnil）
+    func getAccessToken() async -> String? {
+        return authTokens?.accessToken
+    }
+    
+    // MARK: - サインアップ処理（既存のまま）
+    /// 新規ユーザー登録
+    /// CreateUserFunction経由でCognitoユーザー作成とS3フォルダ作成を行う
+    /// - Parameters:
+    ///   - email: ユーザーのメールアドレス
+    ///   - password: パスワード（8文字以上、大文字・小文字・数字・記号を含む）
+    func signUp(email: String, password: String) async {
+        do {
+            let requestConfig = NetworkManager.RequestConfig(
+                url: apiGatewayUrl,
+                method: .POST,
+                body: ["email": email, "password": password]
+            )
+            
+            try await NetworkManager.shared.sendRequestWithoutResponse(config: requestConfig)
+            
+            await MainActor.run {
+                self.message = "アカウントが作成されました。ログインしてください。"
+            }
+            
+        } catch {
+            let appError = ErrorManager.shared.convertToAppError(error)
+            ErrorManager.shared.logError(appError, context: "CognitoService.signUp")
+            
+            await MainActor.run {
+                self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
+            }
+        }
+    }
+    
+    // MARK: - サインイン処理（修正版：IDトークンも取得）
+    /// ユーザーログイン
+    /// - Parameters:
+    ///   - email: 登録済みのメールアドレス
+    ///   - password: パスワード
+    func signIn(email: String, password: String) async {
+        do {
+            // 認証パラメータを設定
+            let authParams = [
+                "USERNAME": email,
+                "PASSWORD": password
+            ]
+            
+            // 認証リクエストの入力データを作成
+            let input = InitiateAuthInput(
+                authFlow: .userPasswordAuth,
+                authParameters: authParams,
+                clientId: config.clientId
+            )
+            
+            // Cognitoに認証リクエストを送信
+            let response = try await client.initiateAuth(input: input)
+            
+            // 認証結果を確認
+            if let authResult = response.authenticationResult,
+               let accessToken = authResult.accessToken,
+               let idToken = authResult.idToken {
+                
+                // トークンを保存
+                self.authTokens = AuthTokens(
+                    accessToken: accessToken,
+                    idToken: idToken,
+                    refreshToken: authResult.refreshToken
+                )
+                
+                await MainActor.run {
+                    self.currentUserEmail = email
+                    self.isSignedIn = true
+                    self.message = "ログイン成功！"
+                }
+            } else {
+                await MainActor.run {
+                    self.message = "認証に失敗しました"
+                }
+            }
+        } catch {
+            let appError = ErrorManager.shared.convertToAppError(error)
+            ErrorManager.shared.logError(appError, context: "CognitoService.signIn")
+            
+            await MainActor.run {
+                self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
+            }
+        }
+    }
+    
+    // MARK: - メール確認処理（既存のまま）
+    func confirmSignUp(email: String, confirmationCode: String) async {
+        do {
+            let input = ConfirmSignUpInput(
+                clientId: config.clientId,
+                confirmationCode: confirmationCode,
+                username: email
+            )
+            
+            _ = try await client.confirmSignUp(input: input)
+            
+            await MainActor.run {
+                self.message = "確認完了！ログインしてください"
+            }
+        } catch {
+            let appError = ErrorManager.shared.convertToAppError(error)
+            ErrorManager.shared.logError(appError, context: "CognitoService.confirmSignUp")
+            
+            await MainActor.run {
+                self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
+            }
+        }
+    }
+    
+    // MARK: - ログアウト処理（修正版）
+    /// ユーザーをログアウトする
+    func signOut() async {
+        // アクセストークンがある場合はグローバルサインアウトを試みる
+        if let accessToken = authTokens?.accessToken {
+            do {
+                let input = GlobalSignOutInput(
+                    accessToken: accessToken
+                )
+                _ = try await client.globalSignOut(input: input)
+            } catch {
+                let appError = ErrorManager.shared.convertToAppError(error)
+                ErrorManager.shared.logError(appError, context: "CognitoService.globalSignOut")
+            }
+        }
+        
+        // ローカルの状態を更新
+        await MainActor.run {
+            self.isSignedIn = false
+            self.authTokens = nil           // トークンをクリア
+            self.currentUserEmail = nil     // メールアドレスをクリア
+            self.message = ""
+        }
+    }
+    
+    // MARK: - トークンリフレッシュ（オプション）
+    /// リフレッシュトークンを使用してトークンを更新
+    func refreshTokens() async -> Bool {
+        guard let refreshToken = authTokens?.refreshToken else {
+            return false
+        }
+        
+        do {
+            let authParams = [
+                "REFRESH_TOKEN": refreshToken
+            ]
+            
+            let input = InitiateAuthInput(
+                authFlow: .refreshTokenAuth,
+                authParameters: authParams,
+                clientId: config.clientId
+            )
+            
+            let response = try await client.initiateAuth(input: input)
+            
+            if let authResult = response.authenticationResult,
+               let accessToken = authResult.accessToken,
+               let idToken = authResult.idToken {
+                
+                self.authTokens = AuthTokens(
+                    accessToken: accessToken,
+                    idToken: idToken,
+                    refreshToken: refreshToken  // リフレッシュトークンは再利用
+                )
+                
+                return true
+            }
+        } catch {
+            let appError = ErrorManager.shared.convertToAppError(error)
+            ErrorManager.shared.logError(appError, context: "CognitoService.refreshTokens")
+        }
+        
+        return false
+    }
+}
