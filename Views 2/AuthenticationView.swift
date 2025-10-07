@@ -168,11 +168,7 @@ struct AuthenticationView: View {
     }
 }
 
-#if DEBUG
-struct AuthenticationView_Previews: PreviewProvider {
-    static var previews: some View {
-        AuthenticationView()
-            .environmentObject(SimpleCognitoService.shared)
-    }
+#Preview {
+    AuthenticationView()
+        .environmentObject(SimpleCognitoService.shared)
 }
-#endif

@@ -31,10 +31,6 @@ class SimpleCognitoService: ObservableObject {
     private var tokenExpirationDate: Date?
     
     private init() {
-        // Previews環境ではKeychainアクセス等を行わず即戻る（Canvas安定化）
-        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil {
-            return
-        }
         // アプリ起動時に保存済みトークンを読み込み
         loadStoredTokens()
     }

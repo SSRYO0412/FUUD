@@ -43,11 +43,7 @@ struct MainTabView: View {
     }
 }
 
-#if DEBUG
-struct MainTabView_Previews: PreviewProvider {
-    static var previews: some View {
-        MainTabView()
-            .environmentObject(SimpleCognitoService.shared)
-    }
+#Preview {
+    MainTabView()
+        .environmentObject(SimpleCognitoService.shared)
 }
-#endif

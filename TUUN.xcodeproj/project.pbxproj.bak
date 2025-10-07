@@ -7,20 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		607C5CE42E68287800E33ED1 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CCF2E68287800E33ED1 /* OnboardingView.swift */; };
-		607C5CE62E68287800E33ED1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC62E68287800E33ED1 /* ContentView.swift */; };
-		607C5CE92E68287800E33ED1 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC32E68287800E33ED1 /* ChatService.swift */; };
-		607C5CEC2E68287800E33ED1 /* HealthProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC82E68287800E33ED1 /* HealthProfileService.swift */; };
-		607C5CEF2E68287800E33ED1 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC42E68287800E33ED1 /* ChatView.swift */; };
-		607C5CF22E68287800E33ED1 /* AWStestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC22E68287800E33ED1 /* AWStestApp.swift */; };
-		607C5CF72E68287800E33ED1 /* HealthProfileModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */; };
-		607C5CFB2E68287800E33ED1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC12E68287800E33ED1 /* Assets.xcassets */; };
-		607C5CFC2E68287800E33ED1 /* CognitoService.swift.backup in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC52E68287800E33ED1 /* CognitoService.swift.backup */; };
-		90A1B0012E6A000000000001 /* SimpleCognitoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0112E6A00000000001 /* SimpleCognitoService.swift */; };
-		90A1B0022E6A000000000002 /* ConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0212E6A00000000002 /* ConfigurationManager.swift */; };
-		90A1B0032E6A000000000003 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0312E6A00000000003 /* NetworkManager.swift */; };
-		90A1B0042E6A000000000004 /* ErrorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0412E6A00000000004 /* ErrorManager.swift */; };
-		90A1B0052E6A000000000005 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0512E6A00000000005 /* KeychainHelper.swift */; };
+		607C5CE42E68287800E33ED1 /* OnboardingView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CCF2E68287800E33ED1 /* OnboardingView 2.swift */; };
+		607C5CE62E68287800E33ED1 /* ContentView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC62E68287800E33ED1 /* ContentView 2.swift */; };
+		607C5CE92E68287800E33ED1 /* ChatService 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC32E68287800E33ED1 /* ChatService 2.swift */; };
+		607C5CEC2E68287800E33ED1 /* HealthProfileService 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC82E68287800E33ED1 /* HealthProfileService 2.swift */; };
+		607C5CEF2E68287800E33ED1 /* ChatView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC42E68287800E33ED1 /* ChatView 2.swift */; };
+		607C5CF22E68287800E33ED1 /* AWStestApp 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC22E68287800E33ED1 /* AWStestApp 2.swift */; };
+		607C5CF72E68287800E33ED1 /* HealthProfileModels 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC72E68287800E33ED1 /* HealthProfileModels 2.swift */; };
+		607C5CFB2E68287800E33ED1 /* Assets 2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC12E68287800E33ED1 /* Assets 2.xcassets */; };
+		607C5CFC2E68287800E33ED1 /* CognitoService.swift 2.backup in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC52E68287800E33ED1 /* CognitoService.swift 2.backup */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,20 +39,16 @@
 		35A15C2B2E31EA8100678A42 /* AWStest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWStest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35A15C382E31EA8200678A42 /* AWStestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AWStestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		35A15C422E31EA8200678A42 /* AWStestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AWStestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		607C5CC12E68287800E33ED1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		607C5CC22E68287800E33ED1 /* AWStestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWStestApp.swift; sourceTree = "<group>"; };
-		607C5CC32E68287800E33ED1 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
-		607C5CC42E68287800E33ED1 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
-		607C5CC52E68287800E33ED1 /* CognitoService.swift.backup */ = {isa = PBXFileReference; lastKnownFileType = text; path = CognitoService.swift.backup; sourceTree = "<group>"; };
-		607C5CC62E68287800E33ED1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileModels.swift; sourceTree = "<group>"; };
-		607C5CC82E68287800E33ED1 /* HealthProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileService.swift; sourceTree = "<group>"; };
-		607C5CCF2E68287800E33ED1 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
-		90A1AF0112E6A00000000001 /* SimpleCognitoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SimpleCognitoService.swift; sourceTree = "<group>"; };
-		90A1AF0212E6A00000000002 /* ConfigurationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ConfigurationManager.swift; sourceTree = "<group>"; };
-		90A1AF0312E6A00000000003 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/NetworkManager.swift; sourceTree = "<group>"; };
-		90A1AF0412E6A00000000004 /* ErrorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ErrorManager.swift; sourceTree = "<group>"; };
-		90A1AF0512E6A00000000005 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers/KeychainHelper.swift; sourceTree = "<group>"; };
+		607C5CC12E68287800E33ED1 /* Assets 2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets 2.xcassets"; sourceTree = "<group>"; };
+		607C5CC22E68287800E33ED1 /* AWStestApp 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AWStestApp 2.swift"; sourceTree = "<group>"; };
+		607C5CC32E68287800E33ED1 /* ChatService 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatService 2.swift"; sourceTree = "<group>"; };
+		607C5CC42E68287800E33ED1 /* ChatView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatView 2.swift"; sourceTree = "<group>"; };
+		607C5CC52E68287800E33ED1 /* CognitoService.swift 2.backup */ = {isa = PBXFileReference; lastKnownFileType = text; path = "CognitoService.swift 2.backup"; sourceTree = "<group>"; };
+		607C5CC62E68287800E33ED1 /* ContentView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentView 2.swift"; sourceTree = "<group>"; };
+		607C5CC72E68287800E33ED1 /* HealthProfileModels 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthProfileModels 2.swift"; sourceTree = "<group>"; };
+		607C5CC82E68287800E33ED1 /* HealthProfileService 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthProfileService 2.swift"; sourceTree = "<group>"; };
+		607C5CCF2E68287800E33ED1 /* OnboardingView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OnboardingView 2.swift"; sourceTree = "<group>"; };
+		607C5CD52E68287800E33ED1 /* TUUN 2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "TUUN 2.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -66,24 +57,24 @@
 			path = AWStest;
 			sourceTree = "<group>";
 		};
-		607C5CCA2E68287800E33ED1 /* Helpers */ = {
+		607C5CCA2E68287800E33ED1 /* Helpers 2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Helpers;
+			path = "Helpers 2";
 			sourceTree = "<group>";
 		};
-		607C5CCE2E68287800E33ED1 /* Managers */ = {
+		607C5CCE2E68287800E33ED1 /* Managers 2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Managers;
+			path = "Managers 2";
 			sourceTree = "<group>";
 		};
-		607C5CD42E68287800E33ED1 /* Services */ = {
+		607C5CD42E68287800E33ED1 /* Services 2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Services;
+			path = "Services 2";
 			sourceTree = "<group>";
 		};
-		607C5CE02E68287800E33ED1 /* Views */ = {
+		607C5CE02E68287800E33ED1 /* Views 2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Views;
+			path = "Views 2";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -119,19 +110,20 @@
 				35A15C2D2E31EA8100678A42 /* AWStest */,
 				35A15C5E2E31FD5D00678A42 /* Frameworks */,
 				35A15C2C2E31EA8100678A42 /* Products */,
-				607C5CC12E68287800E33ED1 /* Assets.xcassets */,
-				607C5CC22E68287800E33ED1 /* AWStestApp.swift */,
-				607C5CC32E68287800E33ED1 /* ChatService.swift */,
-				607C5CC42E68287800E33ED1 /* ChatView.swift */,
-				607C5CC52E68287800E33ED1 /* CognitoService.swift.backup */,
-				607C5CC62E68287800E33ED1 /* ContentView.swift */,
-				607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */,
-				607C5CC82E68287800E33ED1 /* HealthProfileService.swift */,
-				607C5CCA2E68287800E33ED1 /* Helpers */,
-				607C5CCE2E68287800E33ED1 /* Managers */,
-				607C5CCF2E68287800E33ED1 /* OnboardingView.swift */,
-				607C5CD42E68287800E33ED1 /* Services */,
-				607C5CE02E68287800E33ED1 /* Views */,
+				607C5CC12E68287800E33ED1 /* Assets 2.xcassets */,
+				607C5CC22E68287800E33ED1 /* AWStestApp 2.swift */,
+				607C5CC32E68287800E33ED1 /* ChatService 2.swift */,
+				607C5CC42E68287800E33ED1 /* ChatView 2.swift */,
+				607C5CC52E68287800E33ED1 /* CognitoService.swift 2.backup */,
+				607C5CC62E68287800E33ED1 /* ContentView 2.swift */,
+				607C5CC72E68287800E33ED1 /* HealthProfileModels 2.swift */,
+				607C5CC82E68287800E33ED1 /* HealthProfileService 2.swift */,
+				607C5CCA2E68287800E33ED1 /* Helpers 2 */,
+				607C5CCE2E68287800E33ED1 /* Managers 2 */,
+				607C5CCF2E68287800E33ED1 /* OnboardingView 2.swift */,
+				607C5CD42E68287800E33ED1 /* Services 2 */,
+				607C5CD52E68287800E33ED1 /* TUUN 2.xcodeproj */,
+				607C5CE02E68287800E33ED1 /* Views 2 */,
 			);
 			sourceTree = "<group>";
 		};
@@ -152,6 +144,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		607C5CE12E68287800E33ED1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -169,10 +168,10 @@
 			);
 			fileSystemSynchronizedGroups = (
 				35A15C2D2E31EA8100678A42 /* AWStest */,
-				607C5CCA2E68287800E33ED1 /* Helpers */,
-				607C5CCE2E68287800E33ED1 /* Managers */,
-				607C5CD42E68287800E33ED1 /* Services */,
-				607C5CE02E68287800E33ED1 /* Views */,
+				607C5CCA2E68287800E33ED1 /* Helpers 2 */,
+				607C5CCE2E68287800E33ED1 /* Managers 2 */,
+				607C5CD42E68287800E33ED1 /* Services 2 */,
+				607C5CE02E68287800E33ED1 /* Views 2 */,
 			);
 			name = AWStest;
 			packageProductDependencies = (
@@ -258,6 +257,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 35A15C2C2E31EA8100678A42 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 607C5CE12E68287800E33ED1 /* Products */;
+					ProjectRef = 607C5CD52E68287800E33ED1 /* TUUN 2.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				35A15C2A2E31EA8100678A42 /* AWStest */,
@@ -272,8 +277,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607C5CFB2E68287800E33ED1 /* Assets.xcassets in Resources */,
-				607C5CFC2E68287800E33ED1 /* CognitoService.swift.backup in Resources */,
+				607C5CFB2E68287800E33ED1 /* Assets 2.xcassets in Resources */,
+				607C5CFC2E68287800E33ED1 /* CognitoService.swift 2.backup in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,18 +303,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607C5CE42E68287800E33ED1 /* OnboardingView.swift in Sources */,
-				607C5CE62E68287800E33ED1 /* ContentView.swift in Sources */,
-				607C5CE92E68287800E33ED1 /* ChatService.swift in Sources */,
-				607C5CEC2E68287800E33ED1 /* HealthProfileService.swift in Sources */,
-				607C5CEF2E68287800E33ED1 /* ChatView.swift in Sources */,
-				607C5CF22E68287800E33ED1 /* AWStestApp.swift in Sources */,
-				607C5CF72E68287800E33ED1 /* HealthProfileModels.swift in Sources */,
-				90A1B0012E6A000000000001 /* SimpleCognitoService.swift in Sources */,
-				90A1B0022E6A000000000002 /* ConfigurationManager.swift in Sources */,
-				90A1B0032E6A000000000003 /* NetworkManager.swift in Sources */,
-				90A1B0042E6A000000000004 /* ErrorManager.swift in Sources */,
-				90A1B0052E6A000000000005 /* KeychainHelper.swift in Sources */,
+				607C5CE42E68287800E33ED1 /* OnboardingView 2.swift in Sources */,
+				607C5CE62E68287800E33ED1 /* ContentView 2.swift in Sources */,
+				607C5CE92E68287800E33ED1 /* ChatService 2.swift in Sources */,
+				607C5CEC2E68287800E33ED1 /* HealthProfileService 2.swift in Sources */,
+				607C5CEF2E68287800E33ED1 /* ChatView 2.swift in Sources */,
+				607C5CF22E68287800E33ED1 /* AWStestApp 2.swift in Sources */,
+				607C5CF72E68287800E33ED1 /* HealthProfileModels 2.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -470,7 +470,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 485ZGX387T;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = TUUN;
@@ -502,7 +502,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 485ZGX387T;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = TUUN;
