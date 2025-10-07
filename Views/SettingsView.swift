@@ -12,14 +12,14 @@ struct SettingsView: View {
     @State private var showingLogoutAlert = false
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             List {
                 // アカウント情報
                 Section("アカウント") {
                     HStack {
                         Image(systemName: "person.circle.fill")
                             .font(.title2)
-                            .foregroundStyle(.blue.gradient)
+                            .foregroundStyle(LinearGradient(colors: [.blue], startPoint: .leading, endPoint: .trailing))
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("ユーザーアカウント")

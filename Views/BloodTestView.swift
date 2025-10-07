@@ -13,7 +13,7 @@ struct BloodTestView: View {
     @State private var searchText = ""
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             Group {
                 if bloodTestService.isLoading {
                     loadingView
@@ -70,8 +70,18 @@ struct BloodTestView: View {
         List {
             // 基本情報セクション
             Section {
-                LabeledContent("検査日時", value: formatDate(bloodData.timestamp))
-                LabeledContent("検査項目", value: "\(bloodData.bloodItems.count)項目")
+                HStack {
+                    Text("検査日時")
+                    Spacer()
+                    Text(formatDate(bloodData.timestamp))
+                        .foregroundStyle(.secondary)
+                }
+                HStack {
+                    Text("検査項目")
+                    Spacer()
+                    Text("\(bloodData.bloodItems.count)項目")
+                        .foregroundStyle(.secondary)
+                }
                 
                 HStack {
                     Text("サマリー")
@@ -104,11 +114,11 @@ struct BloodTestView: View {
                 let filteredItems = filteredBloodItems(bloodData.bloodItems)
                 
                 if filteredItems.isEmpty {
-                    ContentUnavailableView {
-                        Label("該当する項目がありません", systemImage: "magnifyingglass")
-                    } description: {
-                        Text(showingAbnormalOnly ? "異常値の項目が見つかりません" : "検索条件に一致する項目がありません")
-                    }
+                    ContentUnavailableViewCompat(
+                        "該当する項目がありません",
+                        systemImage: "magnifyingglass",
+                        description: showingAbnormalOnly ? "異常値の項目が見つかりません" : "検索条件に一致する項目がありません"
+                    )
                 } else {
                     ForEach(filteredItems) { item in
                         NavigationLink(destination: BloodTestDetailView(bloodItem: item)) {
@@ -127,26 +137,24 @@ struct BloodTestView: View {
     
     @ViewBuilder
     private var loadingView: some View {
-        ContentUnavailableView {
+        VStack(spacing: 20) {
             ProgressView()
                 .controlSize(.large)
-        } description: {
             Text("血液検査データを取得中...")
                 .foregroundStyle(.secondary)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     // MARK: - Error View
     
     @ViewBuilder
     private var errorView: some View {
-        ContentUnavailableView {
-            Label("エラーが発生しました", systemImage: "exclamationmark.triangle.fill")
-                .foregroundStyle(.orange)
-        } description: {
-            Text(bloodTestService.errorMessage)
-                .multilineTextAlignment(.center)
-        } actions: {
+        ContentUnavailableViewCompat(
+            "エラーが発生しました",
+            systemImage: "exclamationmark.triangle.fill",
+            description: bloodTestService.errorMessage
+        ) {
             Button("再試行") {
                 Task {
                     await bloodTestService.refreshData()
@@ -161,12 +169,11 @@ struct BloodTestView: View {
     
     @ViewBuilder
     private var emptyStateView: some View {
-        ContentUnavailableView {
-            Label("血液検査データがありません", systemImage: "heart.text.square")
-        } description: {
-            Text("血液検査結果をアップロードしてください")
-                .multilineTextAlignment(.center)
-        } actions: {
+        ContentUnavailableViewCompat(
+            "血液検査データがありません",
+            systemImage: "heart.text.square",
+            description: "血液検査結果をアップロードしてください"
+        ) {
             Button("データを取得") {
                 Task {
                     await bloodTestService.fetchBloodTestData()

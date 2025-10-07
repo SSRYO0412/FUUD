@@ -168,7 +168,7 @@ struct PhysicalInfoView: View {
                 TextField("170", text: $height)
                     .keyboardType(.decimalPad)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .onChange(of: height) { _, newValue in
+                    .onChange(of: height) { _ in
                         updatePhysicalSection()
                     }
                 Text("cm")
@@ -181,7 +181,7 @@ struct PhysicalInfoView: View {
                 TextField("65", text: $weight)
                     .keyboardType(.decimalPad)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .onChange(of: weight) { _, newValue in
+                    .onChange(of: weight) { _ in
                         updatePhysicalSection()
                     }
                 Text("kg")

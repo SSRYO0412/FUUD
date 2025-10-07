@@ -15,7 +15,7 @@ struct AuthenticationView: View {
     @State private var showConfirmation = false
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             if showConfirmation {
                 confirmationView
             } else {
@@ -40,7 +40,7 @@ struct AuthenticationView: View {
             VStack(spacing: 16) {
                 Image(systemName: "heart.text.square.fill")
                     .font(.system(size: 80))
-                    .foregroundStyle(.blue.gradient)
+                    .foregroundStyle(.blue)
                     .symbolRenderingMode(.hierarchical)
                 
                 VStack(spacing: 8) {
@@ -114,7 +114,7 @@ struct AuthenticationView: View {
             VStack(spacing: 16) {
                 Image(systemName: "envelope.badge")
                     .font(.system(size: 60))
-                    .foregroundStyle(.blue.gradient)
+                    .foregroundStyle(.blue)
                     .symbolRenderingMode(.hierarchical)
                 
                 VStack(spacing: 8) {

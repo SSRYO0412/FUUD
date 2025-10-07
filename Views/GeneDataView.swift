@@ -11,7 +11,7 @@ struct GeneDataView: View {
     @StateObject private var geneDataService = GeneDataService.shared
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             Group {
                 if geneDataService.isLoading {
                     loadingView
@@ -53,10 +53,25 @@ struct GeneDataView: View {
         List {
             // 基本情報セクション
             Section {
-                LabeledContent("解析日時", value: formatDate(geneData.timestamp ?? "データなし"))
-                LabeledContent("解析版数", value: "v\(geneData.analysisVersion ?? "1.0")")
+                HStack {
+                    Text("解析日時")
+                    Spacer()
+                    Text(formatDate(geneData.timestamp ?? "データなし"))
+                        .foregroundStyle(.secondary)
+                }
+                HStack {
+                    Text("解析版数")
+                    Spacer()
+                    Text("v\(geneData.analysisVersion ?? "1.0")")
+                        .foregroundStyle(.secondary)
+                }
                 if let userId = geneData.userId {
-                    LabeledContent("ユーザーID", value: userId)
+                    HStack {
+                        Text("ユーザーID")
+                        Spacer()
+                        Text(userId)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             } header: {
                 Label("基本情報", systemImage: "info.circle")
@@ -143,7 +158,7 @@ struct GeneDataView: View {
                             .frame(width: 20, height: 20)
                             .background(
                                 Circle()
-                                    .fill(.blue.gradient)
+                                    .fill(.blue)
                             )
                         
                         Text(recommendation)
@@ -197,26 +212,24 @@ struct GeneDataView: View {
     
     @ViewBuilder
     private var loadingView: some View {
-        ContentUnavailableView {
+        VStack(spacing: 20) {
             ProgressView()
                 .controlSize(.large)
-        } description: {
             Text("遺伝子データを解析中...")
                 .foregroundStyle(.secondary)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     // MARK: - Error View
     
     @ViewBuilder
     private var errorView: some View {
-        ContentUnavailableView {
-            Label("エラーが発生しました", systemImage: "exclamationmark.triangle.fill")
-                .foregroundStyle(.orange)
-        } description: {
-            Text(geneDataService.errorMessage)
-                .multilineTextAlignment(.center)
-        } actions: {
+        ContentUnavailableViewCompat(
+            "エラーが発生しました",
+            systemImage: "exclamationmark.triangle.fill",
+            description: geneDataService.errorMessage
+        ) {
             Button("再試行") {
                 Task {
                     await geneDataService.refreshData()
@@ -231,12 +244,11 @@ struct GeneDataView: View {
     
     @ViewBuilder
     private var emptyStateView: some View {
-        ContentUnavailableView {
-            Label("遺伝子データがありません", systemImage: "dna")
-        } description: {
-            Text("遺伝子データをアップロードして解析を開始してください")
-                .multilineTextAlignment(.center)
-        } actions: {
+        ContentUnavailableViewCompat(
+            "遺伝子データがありません",
+            systemImage: "dna",
+            description: "遺伝子データをアップロードして解析を開始してください"
+        ) {
             Button("データを取得") {
                 Task {
                     await geneDataService.fetchGeneData()

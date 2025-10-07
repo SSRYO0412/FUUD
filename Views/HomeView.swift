@@ -11,14 +11,14 @@ struct HomeView: View {
     @EnvironmentObject var cognitoService: SimpleCognitoService
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             List {
                 // ユーザー情報セクション
                 Section {
                     HStack {
                         Image(systemName: "person.circle.fill")
                             .font(.largeTitle)
-                            .foregroundStyle(.blue.gradient)
+                            .foregroundStyle(.blue)
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text("ようこそ")
@@ -53,7 +53,7 @@ struct HomeView: View {
                             }
                         } icon: {
                             Image(systemName: "dna")
-                                .foregroundStyle(.purple.gradient)
+                                .foregroundStyle(.purple)
                         }
                     }
                     
@@ -68,7 +68,7 @@ struct HomeView: View {
                             }
                         } icon: {
                             Image(systemName: "heart.text.square.fill")
-                                .foregroundStyle(.red.gradient)
+                                .foregroundStyle(.red)
                         }
                     }
                 }
@@ -85,7 +85,7 @@ struct HomeView: View {
                             }
                         } icon: {
                             Image(systemName: "message.fill")
-                                .foregroundStyle(.green.gradient)
+                                .foregroundStyle(.green)
                         }
                     }
                     
@@ -100,7 +100,7 @@ struct HomeView: View {
                             }
                         } icon: {
                             Image(systemName: "person.text.rectangle.fill")
-                                .foregroundStyle(.orange.gradient)
+                                .foregroundStyle(.orange)
                         }
                     }
                 }
