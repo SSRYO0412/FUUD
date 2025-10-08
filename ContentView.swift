@@ -43,7 +43,7 @@ struct ContentView: View {
                         .padding(.top)
                 }
             } else if cognitoService.isSignedIn {
-                MainTabView()
+                RootContainerView()
                     .environmentObject(cognitoService)
             } else {
                 AuthenticationView()

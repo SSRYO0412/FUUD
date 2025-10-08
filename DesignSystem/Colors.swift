@@ -2,62 +2,84 @@
 //  Colors.swift
 //  AWStest
 //
-//  Virgilデザインシステム - カラーパレット定義
+//  Virgilデザインシステム - カラーパレット定義 (HTML版完全一致)
 //
 
 import SwiftUI
 
 extension Color {
-    // MARK: - Primary Colors
+    // MARK: - Primary Colors (HTML版完全一致)
 
-    /// Primary Color: #667EEA
-    static let virgilPrimary = Color(hex: "667EEA")
+    /// Accent Blue: #0088CC
+    static let virgilPrimary = Color(hex: "0088CC")
 
-    /// Primary Hover: #5568D3
-    static let virgilPrimaryHover = Color(hex: "5568D3")
+    /// Optimal Green: #00C853
+    static let virgilSuccess = Color(hex: "00C853")
 
-    // MARK: - Background Colors
+    /// Reference Yellow: #FFCB05
+    static let virgilWarning = Color(hex: "FFCB05")
 
-    /// Main Background: #0A0E27
-    static let virgilBackground = Color(hex: "0A0E27")
+    /// Risk Red: #ED1C24
+    static let virgilError = Color(hex: "ED1C24")
 
-    /// Card Background (with transparency): rgba(255, 255, 255, 0.05)
-    static let virgilCardBackground = Color.white.opacity(0.05)
+    /// Info Blue: #0088CC
+    static let virgilInfo = Color(hex: "0088CC")
 
-    // MARK: - Text Colors
+    // MARK: - Neutral Colors (HTML版完全一致)
 
-    /// Primary Text: #FFFFFF
-    static let virgilTextPrimary = Color.white
+    /// Off-White Background: #FAFAFA
+    static let virgilBackground = Color(hex: "FAFAFA")
 
-    /// Secondary Text: rgba(255, 255, 255, 0.6)
-    static let virgilTextSecondary = Color.white.opacity(0.6)
+    /// Pure White Surface: #FFFFFF
+    static let virgilSurface = Color(hex: "FFFFFF")
 
-    /// Tertiary Text: rgba(255, 255, 255, 0.4)
-    static let virgilTextTertiary = Color.white.opacity(0.4)
+    /// Black: #000000
+    static let virgilBlack = Color(hex: "000000")
 
-    // MARK: - Accent Colors
+    // MARK: - Gray Scale (HTML版完全一致)
 
-    /// Success/Positive: #10B981
-    static let virgilSuccess = Color(hex: "10B981")
+    /// Gray 100: #F8F8F8
+    static let virgilGray100 = Color(hex: "F8F8F8")
 
-    /// Warning/Alert: #F59E0B
-    static let virgilWarning = Color(hex: "F59E0B")
+    /// Gray 200: #E8E8E8
+    static let virgilGray200 = Color(hex: "E8E8E8")
 
-    /// Error/Danger: #EF4444
-    static let virgilError = Color(hex: "EF4444")
+    /// Gray 300: #D1D1D1
+    static let virgilGray300 = Color(hex: "D1D1D1")
 
-    /// Info/Neutral: #3B82F6
-    static let virgilInfo = Color(hex: "3B82F6")
+    /// Gray 400: #9CA3AF
+    static let virgilGray400 = Color(hex: "9CA3AF")
 
-    // MARK: - Border Colors
+    /// Gray 500: #6B7280
+    static let virgilGray500 = Color(hex: "6B7280")
 
-    /// Standard Border: rgba(255, 255, 255, 0.1)
-    static let virgilBorder = Color.white.opacity(0.1)
+    /// Gray 600: #4B5563
+    static let virgilGray600 = Color(hex: "4B5563")
 
-    /// Hover Border: rgba(102, 126, 234, 0.5)
-    static let virgilBorderHover = Color(hex: "667EEA").opacity(0.5)
+    /// Gray 700: #374151
+    static let virgilGray700 = Color(hex: "374151")
 
-    // MARK: - Glassmorphism Colors
+    /// Gray 800: #1F2937
+    static let virgilGray800 = Color(hex: "1F2937")
+
+    /// Gray 900: #111827
+    static let virgilGray900 = Color(hex: "111827")
+
+    // MARK: - Text Colors (HTML版完全一致)
+
+    /// Primary Text: #111827 (Gray 900)
+    static let virgilTextPrimary = Color(hex: "111827")
+
+    /// Secondary Text: #6B7280 (Gray 500)
+    static let virgilTextSecondary = Color(hex: "6B7280")
+
+    /// Tertiary Text: #9CA3AF (Gray 400)
+    static let virgilTextTertiary = Color(hex: "9CA3AF")
+
+    /// Disabled Text: #D1D1D1 (Gray 300)
+    static let virgilTextDisabled = Color(hex: "D1D1D1")
+
+    // MARK: - Glassmorphism Colors (HTML版完全一致)
 
     /// Glass Background: rgba(255, 255, 255, 0.1)
     static let virgilGlassBackground = Color.white.opacity(0.1)
@@ -70,7 +92,7 @@ extension Color {
 
 extension Color {
     /// SwiftUI Color from Hex String
-    /// - Parameter hex: 6桁のHEX文字列 (例: "667EEA")
+    /// - Parameter hex: 6桁のHEX文字列 (例: "0088CC" または "#0088CC")
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0

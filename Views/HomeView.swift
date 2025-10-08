@@ -449,85 +449,16 @@ struct DataSourceSection: View {
 // MARK: - Weekly Plan Section
 
 struct WeeklyPlanSection: View {
+    @State private var isExpanded = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
             Text("WEEKLY PLAN")
                 .font(.system(size: 9, weight: .semibold))
                 .foregroundColor(.virgilTextSecondary)
 
-            VStack(spacing: VirgilSpacing.md) {
-                WeeklyPlanCard(
-                    day: "月曜日",
-                    phase: "燃焼期①",
-                    phaseColor: Color(hex: "0088CC"),
-                    calories: "1,850 kcal",
-                    protein: "139g",
-                    fat: "62g",
-                    carbs: "185g",
-                    exercise: "筋トレ（上半身）＋有酸素5km",
-                    note: "通常燃焼日"
-                )
-
-                WeeklyPlanCard(
-                    day: "火曜日",
-                    phase: "ロングラン日①",
-                    phaseColor: Color(hex: "00C853"),
-                    calories: "2,200 kcal",
-                    protein: "150g",
-                    fat: "80g",
-                    carbs: "220g",
-                    exercise: "10kmラン",
-                    note: "炭水化物200〜230gで筋分解防止"
-                )
-
-                WeeklyPlanCard(
-                    day: "水曜日",
-                    phase: "燃焼期②",
-                    phaseColor: Color(hex: "0088CC"),
-                    calories: "1,850 kcal",
-                    protein: "139g",
-                    fat: "62g",
-                    carbs: "185g",
-                    exercise: "下半身トレ",
-                    note: "代謝刺激"
-                )
-
-                WeeklyPlanCard(
-                    day: "木曜日",
-                    phase: "リフィード",
-                    phaseColor: Color(hex: "FFCB05"),
-                    calories: "2,400 kcal",
-                    protein: "150g",
-                    fat: "67g",
-                    carbs: "300g",
-                    exercise: "休養 or 軽ウォーク",
-                    note: "グリコーゲン再補充"
-                )
-
-                WeeklyPlanCard(
-                    day: "金曜日",
-                    phase: "燃焼期③",
-                    phaseColor: Color(hex: "0088CC"),
-                    calories: "1,850 kcal",
-                    protein: "139g",
-                    fat: "62g",
-                    carbs: "185g",
-                    exercise: "筋トレ（全身 or 上半身）＋HIIT20分",
-                    note: "代謝維持日"
-                )
-
-                WeeklyPlanCard(
-                    day: "土曜日",
-                    phase: "ロングラン日②",
-                    phaseColor: Color(hex: "00C853"),
-                    calories: "2,250 kcal",
-                    protein: "150g",
-                    fat: "90g",
-                    carbs: "210g",
-                    exercise: "10kmラン or 散歩＋サウナ",
-                    note: "状況に応じて"
-                )
-
+            ZStack(alignment: .top) {
+                // 7. 日曜日（最背面）
                 WeeklyPlanCard(
                     day: "日曜日",
                     phase: "回復日",
@@ -539,6 +470,127 @@ struct WeeklyPlanSection: View {
                     exercise: "軽いウォーク or ストレッチ",
                     note: "自律神経リセット"
                 )
+                .scaleEffect(isExpanded ? 1.0 : 0.91)
+                .opacity(isExpanded ? 1.0 : 0.7)
+                .offset(y: isExpanded ? 1080 : 20)
+                .padding(.horizontal, isExpanded ? 0 : 12)
+                .zIndex(0)
+
+                // 6. 土曜日
+                WeeklyPlanCard(
+                    day: "土曜日",
+                    phase: "ロングラン日②",
+                    phaseColor: Color(hex: "00C853"),
+                    calories: "2,250 kcal",
+                    protein: "150g",
+                    fat: "90g",
+                    carbs: "210g",
+                    exercise: "10kmラン or 散歩＋サウナ",
+                    note: "状況に応じて"
+                )
+                .scaleEffect(isExpanded ? 1.0 : 0.91)
+                .opacity(isExpanded ? 1.0 : 0.7)
+                .offset(y: isExpanded ? 900 : 20)
+                .padding(.horizontal, isExpanded ? 0 : 12)
+                .zIndex(1)
+
+                // 5. 金曜日
+                WeeklyPlanCard(
+                    day: "金曜日",
+                    phase: "燃焼期③",
+                    phaseColor: Color(hex: "0088CC"),
+                    calories: "1,850 kcal",
+                    protein: "139g",
+                    fat: "62g",
+                    carbs: "185g",
+                    exercise: "筋トレ（全身 or 上半身）＋HIIT20分",
+                    note: "代謝維持日"
+                )
+                .scaleEffect(isExpanded ? 1.0 : 0.91)
+                .opacity(isExpanded ? 1.0 : 0.7)
+                .offset(y: isExpanded ? 720 : 20)
+                .padding(.horizontal, isExpanded ? 0 : 12)
+                .zIndex(2)
+
+                // 4. 木曜日
+                WeeklyPlanCard(
+                    day: "木曜日",
+                    phase: "リフィード",
+                    phaseColor: Color(hex: "FFCB05"),
+                    calories: "2,400 kcal",
+                    protein: "150g",
+                    fat: "67g",
+                    carbs: "300g",
+                    exercise: "休養 or 軽ウォーク",
+                    note: "グリコーゲン再補充"
+                )
+                .scaleEffect(isExpanded ? 1.0 : 0.91)
+                .opacity(isExpanded ? 1.0 : 0.7)
+                .offset(y: isExpanded ? 540 : 20)
+                .padding(.horizontal, isExpanded ? 0 : 12)
+                .zIndex(3)
+
+                // 3. 水曜日
+                WeeklyPlanCard(
+                    day: "水曜日",
+                    phase: "燃焼期②",
+                    phaseColor: Color(hex: "0088CC"),
+                    calories: "1,850 kcal",
+                    protein: "139g",
+                    fat: "62g",
+                    carbs: "185g",
+                    exercise: "下半身トレ",
+                    note: "代謝刺激"
+                )
+                .scaleEffect(isExpanded ? 1.0 : 0.94)
+                .opacity(isExpanded ? 1.0 : 0.8)
+                .offset(y: isExpanded ? 360 : 20)
+                .padding(.horizontal, isExpanded ? 0 : 8)
+                .zIndex(4)
+
+                // 2. 火曜日
+                WeeklyPlanCard(
+                    day: "火曜日",
+                    phase: "ロングラン日①",
+                    phaseColor: Color(hex: "00C853"),
+                    calories: "2,200 kcal",
+                    protein: "150g",
+                    fat: "80g",
+                    carbs: "220g",
+                    exercise: "10kmラン",
+                    note: "炭水化物200〜230gで筋分解防止"
+                )
+                .scaleEffect(isExpanded ? 1.0 : 0.97)
+                .opacity(isExpanded ? 1.0 : 0.9)
+                .offset(y: isExpanded ? 180 : 10)
+                .padding(.horizontal, isExpanded ? 0 : 4)
+                .zIndex(5)
+
+                // 1. 月曜日（最前面・固定）
+                WeeklyPlanCard(
+                    day: "月曜日",
+                    phase: "燃焼期①",
+                    phaseColor: Color(hex: "0088CC"),
+                    calories: "1,850 kcal",
+                    protein: "139g",
+                    fat: "62g",
+                    carbs: "185g",
+                    exercise: "筋トレ（上半身）＋有酸素5km",
+                    note: "通常燃焼日"
+                )
+                .offset(y: 0)
+                .zIndex(6)
+            }
+            .onTapGesture {
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.75)) {
+                    isExpanded.toggle()
+                }
+            }
+
+            // 展開時のスクロール用スペース確保
+            if isExpanded {
+                Spacer()
+                    .frame(height: 1080)
             }
         }
     }

@@ -1,0 +1,2945 @@
+<!--
+  <!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUUN - Health OS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
+        
+        :root {
+            --color-off-white: #FAFAFA;
+            --color-pure-white: #FFFFFF;
+            --color-black: #000000;
+            --color-gray-100: #F8F8F8;
+            --color-gray-200: #E8E8E8;
+            --color-gray-300: #D1D1D1;
+            --color-gray-400: #9CA3AF;
+            --color-gray-500: #6B7280;
+            --color-gray-600: #4B5563;
+            --color-gray-700: #374151;
+            --color-gray-800: #1F2937;
+            --color-gray-900: #111827;
+            
+            --color-optimal: #00C853;
+            --color-reference: #FFCB05;
+            --color-risk: #ED1C24;
+            
+            --color-accent-blue: #0088CC;
+            
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xl2: 40px;
+            
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-xl2: 20px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%);
+            color: var(--color-gray-900);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        .orb-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, #0088CC, #00DDFF);
+            top: -150px;
+            left: -150px;
+            animation-duration: 25s;
+        }
+        
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #00C853, #69F0AE);
+            bottom: -100px;
+            right: -100px;
+            animation-duration: 30s;
+            animation-delay: 5s;
+        }
+        
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #FFCB05, #FFEE00);
+            top: 50%;
+            left: 70%;
+            animation-duration: 35s;
+            animation-delay: 10s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.05); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(-30px, -20px) scale(1.02); }
+        }
+        
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.02;
+        }
+        
+        .grid-line {
+            position: absolute;
+            background: var(--color-black);
+        }
+        
+        .grid-line.vertical {
+            width: 1px;
+            height: 100%;
+            top: 0;
+        }
+        
+        .grid-line.horizontal {
+            width: 100%;
+            height: 1px;
+            left: 0;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 390px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .time {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+        
+        .header {
+            margin-bottom: var(--spacing-xl2);
+        }
+        
+        .app-title {
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .subtitle, .page-subtitle {
+            font-size: 10px;
+            color: var(--color-gray-500);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        
+        .view-container {
+            display: none;
+        }
+        
+        .view-container.active {
+            display: block;
+        }
+        
+        /* Detail View Styles */
+        .detail-view {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%);
+            z-index: 200;
+            overflow-y: auto;
+        }
+        
+        .detail-view.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+        
+        .detail-orb-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .detail-orb-1 {
+            width: 550px;
+            height: 550px;
+            background: linear-gradient(135deg, #9C27B0, #CE93D8);
+            top: -180px;
+            right: -180px;
+            animation-duration: 28s;
+        }
+        
+        .detail-orb-2 {
+            width: 450px;
+            height: 450px;
+            background: linear-gradient(135deg, #E91E63, #F48FB1);
+            bottom: -120px;
+            left: -120px;
+            animation-duration: 32s;
+            animation-delay: 6s;
+        }
+        
+        .detail-orb-3 {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(135deg, #FF6B35, #FFA07A);
+            top: 45%;
+            right: 65%;
+            animation-duration: 38s;
+            animation-delay: 12s;
+        }
+        
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .back-button {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .detail-header-content {
+            flex: 1;
+        }
+        
+        .detail-header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+        
+        .detail-header-emoji {
+            font-size: 32px;
+        }
+        
+        .detail-header-text {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+        
+        .detail-header-subtitle {
+            font-size: 10px;
+            color: var(--color-gray-500);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        
+        .detail-score-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        
+        .detail-score-label {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--color-gray-500);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .detail-score-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 72px;
+            font-weight: 900;
+            letter-spacing: -3px;
+            background: linear-gradient(135deg, #00C853 0%, #0088CC 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .detail-score-bar {
+            height: 4px;
+            background: var(--color-gray-300);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .detail-score-fill {
+            height: 100%;
+            background: var(--color-optimal);
+            border-radius: 2px;
+            transition: width 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        .detail-insight-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .detail-insight-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .detail-insight-label {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--color-gray-500);
+        }
+        
+        .detail-insight-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            padding: 4px 8px;
+            background: rgba(0, 136, 204, 0.1);
+            border-radius: var(--radius-sm);
+            color: var(--color-accent-blue);
+            letter-spacing: 1px;
+        }
+        
+        .detail-insight-text {
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--color-gray-800);
+            letter-spacing: 0.2px;
+        }
+        
+        .detail-trend-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .detail-trend-title {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--color-gray-500);
+            margin-bottom: 16px;
+        }
+        
+        .detail-trend-graph {
+            height: 120px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 12px;
+            padding: 16px;
+            position: relative;
+        }
+        
+        .detail-section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .detail-section-line {
+            width: 30px;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .detail-section-text {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--color-gray-500);
+        }
+        
+        .detail-blood-gauge {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .detail-gene-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .detail-gene-chip {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 600;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .detail-bacteria-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .detail-bacteria-name {
+            font-size: 10px;
+            font-weight: 500;
+            font-style: italic;
+        }
+        
+        .detail-bacteria-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-bacteria-excellent {
+            background: rgba(0, 136, 204, 0.2);
+            color: var(--color-accent-blue);
+        }
+        
+        .detail-bacteria-good {
+            background: rgba(0, 200, 83, 0.2);
+            color: var(--color-optimal);
+        }
+        
+        .detail-healthkit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .detail-healthkit-name {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        
+        .detail-healthkit-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .ai-core-section {
+            position: relative;
+            margin-bottom: var(--spacing-xl2);
+            padding: var(--spacing-xl);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .ai-core-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .ai-label {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--color-gray-500);
+        }
+        
+        .ai-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            padding: 4px 8px;
+            background: rgba(0, 136, 204, 0.1);
+            border-radius: var(--radius-sm);
+            color: var(--color-accent-blue);
+            letter-spacing: 1px;
+        }
+        
+        .ai-insight {
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--color-gray-800);
+            margin-bottom: var(--spacing-lg);
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+        
+        .ai-data-stream {
+            position: relative;
+            height: 60px;
+            margin-bottom: var(--spacing-lg);
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        
+        .data-wave {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: translateY(-50%);
+        }
+        
+        .wave-path {
+            stroke: var(--color-accent-blue);
+            stroke-width: 1.5;
+            fill: none;
+            opacity: 0.6;
+            filter: drop-shadow(0 0 10px rgba(0, 136, 204, 0.3));
+        }
+        
+        .data-points {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 var(--spacing-md);
+        }
+        
+        .data-point {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7px;
+            color: var(--color-gray-400);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: slide-left 12s linear infinite;
+            margin-right: var(--spacing-xl2);
+            white-space: nowrap;
+        }
+        
+        @keyframes slide-left {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-200%); }
+        }
+        
+        .ai-processing-dots {
+            position: absolute;
+            bottom: 8px;
+            right: 16px;
+            display: flex;
+            gap: 4px;
+        }
+        
+        .processing-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--color-accent-blue);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: dot-pulse 1.5s infinite;
+        }
+        
+        .processing-dot:nth-child(1) { animation-delay: 0s; }
+        .processing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .processing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes dot-pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        .ai-metrics {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+        
+        .ai-metric {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .ai-metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-gray-900);
+            letter-spacing: -0.5px;
+        }
+        
+        .ai-metric-label {
+            font-size: 8px;
+            color: var(--color-gray-500);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+        
+        .bio-age-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .bio-age-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .bio-age-title {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--color-gray-500);
+        }
+        
+        .bio-age-delta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-optimal);
+            letter-spacing: 0.5px;
+        }
+        
+        .age-comparison {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xl);
+        }
+        
+        .age-item {
+            text-align: center;
+        }
+        
+        .age-label {
+            font-size: 9px;
+            color: var(--color-gray-400);
+            margin-bottom: var(--spacing-xs);
+            letter-spacing: 1px;
+        }
+        
+        .age-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+        
+        .age-arrow {
+            font-size: 20px;
+            color: var(--color-accent-blue);
+            opacity: 0.3;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .metric-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .metric-title {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--color-gray-500);
+        }
+        
+        .metric-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--color-optimal);
+        }
+        
+        .metric-badge-high {
+            color: var(--color-accent-blue);
+        }
+        
+        .metric-description {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--color-gray-800);
+            margin-bottom: var(--spacing-xs);
+            letter-spacing: 0.2px;
+        }
+        
+        .metric-insight {
+            font-size: 11px;
+            color: var(--color-gray-600);
+            margin-bottom: var(--spacing-md);
+            letter-spacing: 0.3px;
+        }
+        
+        .metric-data-sources-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+            cursor: pointer;
+            margin-bottom: var(--spacing-sm);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: var(--spacing-md);
+        }
+        
+        .toggle-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--color-gray-600);
+            text-transform: uppercase;
+        }
+        
+        .toggle-icon {
+            font-size: 10px;
+            color: var(--color-gray-500);
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-icon.open {
+            transform: rotate(180deg);
+        }
+        
+        .metric-data-sources {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .data-source-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) 0;
+            cursor: pointer;
+        }
+        
+        .source-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .source-label {
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+        }
+        
+        .source-arrow {
+            font-size: 8px;
+            color: var(--color-gray-400);
+            transition: transform 0.3s ease;
+        }
+        
+        .source-arrow.open {
+            transform: rotate(180deg);
+        }
+        
+        .source-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+            margin-top: var(--spacing-xs);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .source-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .blood-data-item {
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        .blood-data-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .blood-data-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .blood-data-name {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--color-gray-600);
+        }
+        
+        .blood-data-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--color-black);
+            letter-spacing: -0.5px;
+        }
+        
+        .blood-gauge-container {
+            position: relative;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .blood-gauge {
+            position: relative;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            display: flex;
+            background: var(--color-gray-200);
+        }
+        
+        .gauge-zone {
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .gauge-zone-risk {
+            background: rgba(237, 28, 36, 0.5);
+        }
+        
+        .gauge-zone-normal {
+            background: rgba(255, 203, 5, 0.45);
+        }
+        
+        .gauge-zone-good {
+            background: rgba(0, 200, 83, 0.5);
+        }
+        
+        .gauge-zone-excellent {
+            background: rgba(0, 136, 204, 0.5);
+        }
+        
+        .gauge-marker {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: var(--color-black);
+            border: 1.5px solid var(--color-pure-white);
+            border-radius: 50%;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            transition: left 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        .blood-gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            padding: 0 2px;
+        }
+        
+        .gauge-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+        }
+        
+        .gauge-label-risk { color: var(--color-risk); }
+        .gauge-label-normal { color: var(--color-reference); }
+        .gauge-label-good { color: var(--color-optimal); }
+        .gauge-label-excellent { color: var(--color-accent-blue); }
+        
+        .healthkit-data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm);
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius-md);
+        }
+        
+        .healthkit-data-name {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        
+        .healthkit-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .healthkit-badge-normal {
+            background: rgba(255, 203, 5, 0.2);
+            color: var(--color-reference);
+        }
+        
+        .healthkit-badge-good {
+            background: rgba(0, 200, 83, 0.2);
+            color: var(--color-optimal);
+        }
+        
+        .healthkit-badge-excellent {
+            background: rgba(0, 136, 204, 0.2);
+            color: var(--color-accent-blue);
+        }
+        
+        .biomarker-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 3px 6px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: var(--radius-sm);
+            color: var(--color-gray-500);
+        }
+        
+        .section-title {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--color-gray-500);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .protocols-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .weekly-plan-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .weekly-plan-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        
+        .weekly-day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .weekly-day {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .weekly-phase {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 4px 8px;
+            background: rgba(0, 136, 204, 0.1);
+            border-radius: var(--radius-sm);
+            color: var(--color-accent-blue);
+        }
+        
+        .weekly-calories {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .weekly-pfc {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .pfc-item {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        
+        .pfc-label {
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--color-gray-500);
+        }
+        
+        .pfc-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .weekly-exercise {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--color-gray-700);
+            margin-bottom: var(--spacing-xs);
+            letter-spacing: 0.2px;
+        }
+        
+        .weekly-point {
+            font-size: 9px;
+            color: var(--color-gray-500);
+            letter-spacing: 0.3px;
+        }
+        
+        .protocol-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .protocol-card:hover {
+            transform: translateX(4px);
+        }
+        
+        .protocol-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .protocol-title {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        
+        .protocol-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--color-gray-400);
+            letter-spacing: 0.5px;
+        }
+        
+        .protocol-status {
+            font-size: 9px;
+            color: var(--color-gray-500);
+            letter-spacing: 0.2px;
+        }
+        
+        .tab-nav {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xl);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: var(--spacing-sm);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--color-gray-500);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            background: var(--color-black);
+            color: var(--color-pure-white);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .section-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .biomarker-grid {
+            display: grid;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .biomarker-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .biomarker-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        
+        .biomarker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .biomarker-name {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .biomarker-value {
+            text-align: right;
+        }
+        
+        .value-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .value-unit {
+            font-size: 9px;
+            color: var(--color-gray-500);
+            margin-left: 2px;
+        }
+        
+        .value-range {
+            font-size: 8px;
+            color: var(--color-gray-400);
+            margin-top: 2px;
+        }
+        
+        .biomarker-status {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .status-optimal {
+            background: rgba(0, 200, 83, 0.1);
+            color: var(--color-optimal);
+        }
+        
+        .status-reference {
+            background: rgba(255, 203, 5, 0.1);
+            color: var(--color-reference);
+        }
+        
+        .status-risk {
+            background: rgba(237, 28, 36, 0.1);
+            color: var(--color-risk);
+        }
+        
+        .biomarker-chart {
+            height: 40px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(to right, 
+                rgba(0, 136, 204, 0.1) 0%, 
+                rgba(0, 136, 204, 0.3) 100%);
+            clip-path: polygon(
+                0% 80%, 20% 70%, 40% 75%, 
+                60% 60%, 80% 45%, 100% 50%,
+                100% 100%, 0% 100%
+            );
+        }
+        
+        .biomarker-info {
+            font-size: 9px;
+            color: var(--color-gray-500);
+            line-height: 1.4;
+        }
+        
+        .life-score-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .life-score-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .life-score-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        
+        .life-score-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .life-score-emoji {
+            font-size: 16px;
+        }
+        
+        .life-score-title {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            flex: 1;
+        }
+        
+        .life-score-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .life-score-bar {
+            height: 3px;
+            background: var(--color-gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .life-score-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        .microbiome-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .microbiome-diversity {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .diversity-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--color-optimal) 0%, var(--color-accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .diversity-label {
+            font-size: 9px;
+            color: var(--color-gray-500);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: var(--spacing-xs);
+        }
+        
+        .bacteria-list {
+            display: grid;
+            gap: var(--spacing-sm);
+        }
+        
+        .bacteria-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm);
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: var(--radius-md);
+        }
+        
+        .bacteria-name {
+            font-size: 10px;
+            font-weight: 500;
+            font-style: italic;
+        }
+        
+        .bacteria-percentage {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-gray-600);
+        }
+        
+        .ai-chat-button {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: var(--color-black);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .ai-chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .ai-chat-icon {
+            color: var(--color-pure-white);
+            font-size: 24px;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-md) 0;
+            z-index: 99;
+        }
+        
+        .nav-container {
+            max-width: 390px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xs);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--color-gray-400);
+        }
+        
+        .nav-item.active {
+            color: var(--color-black);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .long-press-hint {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 16px;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: var(--color-gray-400);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .metric-card:hover .long-press-hint,
+        .protocol-card:hover .long-press-hint,
+        .biomarker-card:hover .long-press-hint,
+        .life-score-card:hover .long-press-hint {
+            opacity: 1;
+        }
+        
+        /* Chat View */
+        .chat-view {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%);
+            z-index: 300;
+            animation: slideUpChat 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        .chat-view.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @keyframes slideUpChat {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        .chat-header {
+            position: relative;
+            z-index: 2;
+            max-width: 390px;
+            margin: 0 auto;
+            width: 100%;
+            padding: var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .chat-header-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .chat-close-button {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-close-button:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .chat-title-container {
+            flex: 1;
+        }
+        
+        .chat-title {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 2px;
+        }
+        
+        .chat-subtitle {
+            font-size: 9px;
+            color: var(--color-gray-500);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        
+        .chat-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            padding: 4px 8px;
+            background: rgba(0, 136, 204, 0.1);
+            border-radius: var(--radius-sm);
+            color: var(--color-accent-blue);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .chat-messages-container {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .chat-messages {
+            max-width: 390px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .chat-message {
+            display: flex;
+            gap: var(--spacing-sm);
+            animation: messageFadeIn 0.4s ease;
+        }
+        
+        @keyframes messageFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+        
+        .chat-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .chat-message.user .chat-avatar {
+            background: var(--color-black);
+            border: none;
+        }
+        
+        .chat-bubble-container {
+            flex: 1;
+            max-width: 75%;
+        }
+        
+        .chat-bubble {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: 12px 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            letter-spacing: 0.2px;
+            margin-bottom: 4px;
+        }
+        
+        .chat-message.user .chat-bubble {
+            background: var(--color-black);
+            color: var(--color-pure-white);
+            border: none;
+        }
+        
+        .chat-timestamp {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            color: var(--color-gray-400);
+            letter-spacing: 0.5px;
+            padding: 0 4px;
+        }
+        
+        .chat-message.user .chat-timestamp {
+            text-align: right;
+        }
+        
+        .chat-typing {
+            display: flex;
+            gap: 4px;
+            padding: 8px;
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--color-gray-400);
+            border-radius: 50%;
+            animation: typingDot 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typingDot {
+            0%, 60%, 100% {
+                transform: scale(1);
+                opacity: 0.4;
+            }
+            30% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        .chat-input-container {
+            position: relative;
+            z-index: 2;
+            max-width: 390px;
+            margin: 0 auto;
+            width: 100%;
+            padding: var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .chat-input-wrapper {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: flex-end;
+        }
+        
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: 12px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            line-height: 1.6;
+            letter-spacing: 0.2px;
+            resize: none;
+            outline: none;
+            max-height: 120px;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input:focus {
+            border-color: rgba(0, 136, 204, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .chat-send-button {
+            width: 44px;
+            height: 44px;
+            background: var(--color-black);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .chat-send-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .chat-send-button:active {
+            transform: scale(0.95);
+        }
+        
+        .chat-send-button svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--color-pure-white);
+        }
+        
+        .chat-suggestions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        
+        .chat-suggestions::-webkit-scrollbar {
+            height: 0;
+        }
+        
+        .chat-suggestion-chip {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+        }
+        
+        .chat-suggestion-chip:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="orb-container">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    
+    <div class="grid-overlay">
+        <div class="grid-line vertical" style="left: 25%"></div>
+        <div class="grid-line vertical" style="left: 50%"></div>
+        <div class="grid-line vertical" style="left: 75%"></div>
+        <div class="grid-line horizontal" style="top: 33.33%"></div>
+        <div class="grid-line horizontal" style="top: 66.66%"></div>
+    </div>
+    
+    <div class="container">
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="status-icons">
+                <span>📶</span>
+                <span>📡</span>
+                <span>🔋</span>
+            </div>
+        </div>
+        
+        <div id="home-view" class="view-container active">
+            <div class="header">
+                <div class="app-title">TUUN</div>
+                <div class="subtitle">body operating system</div>
+            </div>
+            
+            <div class="ai-core-section">
+                <div class="ai-core-header">
+                    <div class="ai-label">ai real-time insight</div>
+                    <div class="ai-status">analyzing...</div>
+                </div>
+                <div class="ai-insight" id="aiInsight">
+                    睡眠効率が前週比12%向上。深睡眠時の成長ホルモン分泌が最適化されています...
+                </div>
+                
+                <div class="ai-data-stream">
+                    <svg class="data-wave" viewBox="0 0 400 60">
+                        <path class="wave-path" id="wavePath" d="M0,30 Q50,20 100,30 T200,30 T300,30 T400,30"/>
+                    </svg>
+                    <div class="data-points">
+                        <span class="data-point">hba1c: 5.2%</span>
+                        <span class="data-point">crp: 0.3mg/l</span>
+                        <span class="data-point">ferritin: 95ng/ml</span>
+                        <span class="data-point">hrv: 68ms</span>
+                        <span class="data-point">vo2max: 42ml</span>
+                        <span class="data-point">tg: 85mg/dl</span>
+                    </div>
+                    <div class="ai-processing-dots">
+                        <div class="processing-dot"></div>
+                        <div class="processing-dot"></div>
+                        <div class="processing-dot"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bio-age-card">
+                <div class="bio-age-header">
+                    <div class="bio-age-title">biological age</div>
+                    <div class="bio-age-delta">-6 years</div>
+                </div>
+                <div class="age-comparison">
+                    <div class="age-item">
+                        <div class="age-label">実年齢</div>
+                        <div class="age-value">35</div>
+                    </div>
+                    <div class="age-arrow">→</div>
+                    <div class="age-item">
+                        <div class="age-label">生物学的年齢</div>
+                        <div class="age-value" style="color: var(--color-optimal)">29</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <span class="long-press-hint">?</span>
+                <div class="metric-header">
+                    <div class="metric-title">Longevity Pace™</div>
+                    <div class="metric-badge">0.82</div>
+                </div>
+                <div class="metric-description">
+                    あなたの<strong>Longevity Pace 0.82</strong>
+                </div>
+                <div class="metric-insight">
+                    平均より<strong>18%遅い</strong>老化速度
+                </div>
+                <div class="metric-data-sources-toggle" onclick="toggleDataSources(event, 'longevity-sources')">
+                    <span class="toggle-label">データソースを見る</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="metric-data-sources" id="longevity-sources" style="display: none;">
+                    <div class="data-source-group" onclick="toggleSourceGroup(event, 'longevity-gene')">
+                        <div class="source-header">
+                            <div class="source-label">遺伝子</div>
+                            <span class="source-arrow">▼</span>
+                        </div>
+                        <div class="source-tags" id="longevity-gene" style="display: none;">
+                            <span class="biomarker-tag">TCF7L2</span>
+                            <span class="biomarker-tag">APOE</span>
+                            <span class="biomarker-tag">CETP</span>
+                            <span class="biomarker-tag">IL6</span>
+                        </div>
+                    </div>
+                    <div class="data-source-group" onclick="toggleSourceGroup(event, 'longevity-blood')">
+                        <div class="source-header">
+                            <div class="source-label">血液</div>
+                            <span class="source-arrow">▼</span>
+                        </div>
+                        <div class="source-content" id="longevity-blood" style="display: none;">
+                            <div class="blood-data-item">
+                                <div class="blood-data-header">
+                                    <span class="blood-data-name">Albumin (ALB)</span>
+                                    <span class="blood-data-value">4.5 <span style="font-size: 9px; font-weight: 500;">g/dL</span></span>
+                                </div>
+                                <div class="blood-gauge-container">
+                                    <div class="blood-gauge">
+                                        <div class="gauge-zone gauge-zone-risk" style="width: 10%"></div>
+                                        <div class="gauge-zone gauge-zone-normal" style="width: 20%"></div>
+                                        <div class="gauge-zone gauge-zone-good" style="width: 40%"></div>
+                                        <div class="gauge-zone gauge-zone-excellent" style="width: 30%"></div>
+                                        <div class="gauge-marker" style="left: 75%"></div>
+                                    </div>
+                                    <div class="blood-gauge-labels">
+                                        <span class="gauge-label gauge-label-risk">RISK</span>
+                                        <span class="gauge-label gauge-label-normal">NORMAL</span>
+                                        <span class="gauge-label gauge-label-good">GOOD</span>
+                                        <span class="gauge-label gauge-label-excellent">EXCELLENT</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="blood-data-item">
+                                <div class="blood-data-header">
+                                    <span class="blood-data-name">CRP</span>
+                                    <span class="blood-data-value">0.3 <span style="font-size: 9px; font-weight: 500;">mg/L</span></span>
+                                </div>
+                                <div class="blood-gauge-container">
+                                    <div class="blood-gauge">
+                                        <div class="gauge-zone gauge-zone-excellent" style="width: 25%"></div>
+                                        <div class="gauge-zone gauge-zone-good" style="width: 35%"></div>
+                                        <div class="gauge-zone gauge-zone-normal" style="width: 25%"></div>
+                                        <div class="gauge-zone gauge-zone-risk" style="width: 15%"></div>
+                                        <div class="gauge-marker" style="left: 15%"></div>
+                                    </div>
+                                    <div class="blood-gauge-labels">
+                                        <span class="gauge-label gauge-label-excellent">EXCELLENT</span>
+                                        <span class="gauge-label gauge-label-good">GOOD</span>
+                                        <span class="gauge-label gauge-label-normal">NORMAL</span>
+                                        <span class="gauge-label gauge-label-risk">RISK</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="data-source-group" onclick="toggleSourceGroup(event, 'longevity-gut')">
+                        <div class="source-header">
+                            <div class="source-label">腸内</div>
+                            <span class="source-arrow">▼</span>
+                        </div>
+                        <div class="source-tags" id="longevity-gut" style="display: none;">
+                            <span class="biomarker-tag">α多様性</span>
+                            <span class="biomarker-tag">SCFA産生菌</span>
+                            <span class="biomarker-tag">LPSリスク</span>
+                        </div>
+                    </div>
+                    <div class="data-source-group" onclick="toggleSourceGroup(event, 'longevity-health')">
+                        <div class="source-header">
+                            <div class="source-label">HealthKit</div>
+                            <span class="source-arrow">▼</span>
+                        </div>
+                        <div class="source-content" id="longevity-health" style="display: none;">
+                            <div class="healthkit-data-item">
+                                <span class="healthkit-data-name">VO₂max</span>
+                                <span class="healthkit-badge healthkit-badge-excellent">Excellent</span>
+                            </div>
+                            <div class="healthkit-data-item">
+                                <span class="healthkit-data-name">夜間HRV</span>
+                                <span class="healthkit-badge healthkit-badge-good">Good</span>
+                            </div>
+                            <div class="healthkit-data-item">
+                                <span class="healthkit-data-name">安静時心拍 (RHR)</span>
+                                <span class="healthkit-badge healthkit-badge-excellent">Excellent</span>
+                            </div>
+                            <div class="healthkit-data-item">
+                                <span class="healthkit-data-name">睡眠規則性</span>
+                                <span class="healthkit-badge healthkit-badge-good">Good</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="protocols-section">
+                <div class="section-title">weekly plan</div>
+                
+                <div class="weekly-plan-card">
+                    <span class="long-press-hint">?</span>
+                    <div class="weekly-day-header">
+                        <div class="weekly-day">月曜日</div>
+                        <div class="weekly-phase">燃焼期①</div>
+                    </div>
+                    <div class="weekly-calories">1,850 kcal</div>
+                    <div class="weekly-pfc">
+                        <div class="pfc-item">
+                            <span class="pfc-label">P</span>
+                            <span class="pfc-value">139g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">F</span>
+                            <span class="pfc-value">62g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">C</span>
+                            <span class="pfc-value">185g</span>
+                        </div>
+                    </div>
+                    <div class="weekly-exercise">筋トレ（上半身）＋有酸素5km</div>
+                    <div class="weekly-point">通常燃焼日</div>
+                </div>
+                
+                <div class="weekly-plan-card">
+                    <span class="long-press-hint">?</span>
+                    <div class="weekly-day-header">
+                        <div class="weekly-day">火曜日</div>
+                        <div class="weekly-phase" style="background: rgba(0, 200, 83, 0.1); color: var(--color-optimal);">ロングラン日①</div>
+                    </div>
+                    <div class="weekly-calories">2,200 kcal</div>
+                    <div class="weekly-pfc">
+                        <div class="pfc-item">
+                            <span class="pfc-label">P</span>
+                            <span class="pfc-value">150g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">F</span>
+                            <span class="pfc-value">80g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">C</span>
+                            <span class="pfc-value">220g</span>
+                        </div>
+                    </div>
+                    <div class="weekly-exercise">10kmラン</div>
+                    <div class="weekly-point">炭水化物200〜230gで筋分解防止</div>
+                </div>
+                
+                <div class="weekly-plan-card">
+                    <span class="long-press-hint">?</span>
+                    <div class="weekly-day-header">
+                        <div class="weekly-day">水曜日</div>
+                        <div class="weekly-phase">燃焼期②</div>
+                    </div>
+                    <div class="weekly-calories">1,850 kcal</div>
+                    <div class="weekly-pfc">
+                        <div class="pfc-item">
+                            <span class="pfc-label">P</span>
+                            <span class="pfc-value">139g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">F</span>
+                            <span class="pfc-value">62g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">C</span>
+                            <span class="pfc-value">185g</span>
+                        </div>
+                    </div>
+                    <div class="weekly-exercise">下半身トレ</div>
+                    <div class="weekly-point">代謝刺激</div>
+                </div>
+                
+                <div class="weekly-plan-card">
+                    <span class="long-press-hint">?</span>
+                    <div class="weekly-day-header">
+                        <div class="weekly-day">木曜日</div>
+                        <div class="weekly-phase" style="background: rgba(255, 203, 5, 0.15); color: var(--color-reference);">リフィード</div>
+                    </div>
+                    <div class="weekly-calories">2,400 kcal</div>
+                    <div class="weekly-pfc">
+                        <div class="pfc-item">
+                            <span class="pfc-label">P</span>
+                            <span class="pfc-value">150g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">F</span>
+                            <span class="pfc-value">67g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">C</span>
+                            <span class="pfc-value">300g</span>
+                        </div>
+                    </div>
+                    <div class="weekly-exercise">休養 or 軽ウォーク</div>
+                    <div class="weekly-point">グリコーゲン再補充</div>
+                </div>
+                
+                <div class="weekly-plan-card">
+                    <span class="long-press-hint">?</span>
+                    <div class="weekly-day-header">
+                        <div class="weekly-day">金曜日</div>
+                        <div class="weekly-phase">燃焼期③</div>
+                    </div>
+                    <div class="weekly-calories">1,850 kcal</div>
+                    <div class="weekly-pfc">
+                        <div class="pfc-item">
+                            <span class="pfc-label">P</span>
+                            <span class="pfc-value">139g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">F</span>
+                            <span class="pfc-value">62g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">C</span>
+                            <span class="pfc-value">185g</span>
+                        </div>
+                    </div>
+                    <div class="weekly-exercise">筋トレ（全身 or 上半身）＋HIIT20分</div>
+                    <div class="weekly-point">代謝維持日</div>
+                </div>
+                
+                <div class="weekly-plan-card">
+                    <span class="long-press-hint">?</span>
+                    <div class="weekly-day-header">
+                        <div class="weekly-day">土曜日</div>
+                        <div class="weekly-phase" style="background: rgba(0, 200, 83, 0.1); color: var(--color-optimal);">ロングラン日②</div>
+                    </div>
+                    <div class="weekly-calories">2,250 kcal</div>
+                    <div class="weekly-pfc">
+                        <div class="pfc-item">
+                            <span class="pfc-label">P</span>
+                            <span class="pfc-value">150g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">F</span>
+                            <span class="pfc-value">90g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">C</span>
+                            <span class="pfc-value">210g</span>
+                        </div>
+                    </div>
+                    <div class="weekly-exercise">10kmラン or 散歩＋サウナ</div>
+                    <div class="weekly-point">状況に応じて</div>
+                </div>
+                
+                <div class="weekly-plan-card">
+                    <span class="long-press-hint">?</span>
+                    <div class="weekly-day-header">
+                        <div class="weekly-day">日曜日</div>
+                        <div class="weekly-phase" style="background: rgba(156, 39, 176, 0.1); color: #9C27B0;">回復日</div>
+                    </div>
+                    <div class="weekly-calories">2,050 kcal</div>
+                    <div class="weekly-pfc">
+                        <div class="pfc-item">
+                            <span class="pfc-label">P</span>
+                            <span class="pfc-value">154g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">F</span>
+                            <span class="pfc-value">68g</span>
+                        </div>
+                        <div class="pfc-item">
+                            <span class="pfc-label">C</span>
+                            <span class="pfc-value">205g</span>
+                        </div>
+                    </div>
+                    <div class="weekly-exercise">軽いウォーク or ストレッチ</div>
+                    <div class="weekly-point">自律神経リセット</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="data-view" class="view-container">
+            <div class="header">
+                <div class="page-title">data</div>
+                <div class="page-subtitle">comprehensive health metrics</div>
+            </div>
+            
+            <div class="tab-nav">
+                <button class="tab-button active" data-tab="biomarkers">blood</button>
+                <button class="tab-button" data-tab="microbiome">microbiome</button>
+                <button class="tab-button" data-tab="lifestyle">lifestyle</button>
+            </div>
+            
+            <div id="biomarkers-tab" class="tab-content">
+                <div class="section-header">
+                    <div class="section-title">blood biomarkers</div>
+                    <div class="section-score" style="color: var(--color-optimal)">87</div>
+                </div>
+                
+                <div class="biomarker-grid">
+                    <div class="biomarker-card">
+                        <span class="long-press-hint">?</span>
+                        <div class="biomarker-header">
+                            <div>
+                                <div class="biomarker-name">HbA1c</div>
+                                <div class="biomarker-status status-optimal">optimal</div>
+                            </div>
+                            <div class="biomarker-value">
+                                <div class="value-number">5.2<span class="value-unit">%</span></div>
+                                <div class="value-range">4.0-5.6</div>
+                            </div>
+                        </div>
+                        <div class="biomarker-chart">
+                            <div class="chart-line"></div>
+                        </div>
+                        <div class="biomarker-info">
+                            長期血糖管理指標・糖尿病リスク評価
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="microbiome-tab" class="tab-content" style="display: none;">
+                <div class="microbiome-card">
+                    <div class="microbiome-diversity">
+                        <div class="diversity-score">85</div>
+                        <div class="diversity-label">diversity score</div>
+                    </div>
+                    <div class="bacteria-list">
+                        <div class="bacteria-item">
+                            <span class="bacteria-name">Faecalibacterium</span>
+                            <span class="bacteria-percentage">18.5%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="lifestyle-tab" class="tab-content" style="display: none;">
+                <div class="section-header">
+                    <div class="section-title">lifestyle scores</div>
+                </div>
+                <div class="life-score-grid">
+                    <div class="life-score-card" onclick="openDetailView('cognitive')">
+                        <span class="long-press-hint">?</span>
+                        <div class="life-score-header">
+                            <span class="life-score-emoji">🧠</span>
+                            <span class="life-score-title">認知機能</span>
+                        </div>
+                        <div class="life-score-value" style="color: var(--color-optimal)">92</div>
+                        <div class="life-score-bar">
+                            <div class="life-score-fill" style="width: 92%; background: var(--color-optimal)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 認知機能 Detail View -->
+    <div id="cognitive-detail" class="detail-view">
+      <div class="detail-orb-container">
+          <div class="orb detail-orb-1"></div>
+          <div class="orb detail-orb-2"></div>
+          <div class="orb detail-orb-3"></div>
+      </div>
+      
+      <div class="grid-overlay">
+          <div class="grid-line vertical" style="left: 25%"></div>
+          <div class="grid-line vertical" style="left: 50%"></div>
+          <div class="grid-line vertical" style="left: 75%"></div>
+          <div class="grid-line horizontal" style="top: 33.33%"></div>
+          <div class="grid-line horizontal" style="top: 66.66%"></div>
+      </div>
+      
+      <div class="container">
+          <div class="detail-header">
+              <div class="back-button" onclick="closeDetailView()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M15 18l-6-6 6-6"></path>
+                  </svg>
+              </div>
+              <div class="detail-header-content">
+                  <div class="detail-header-title">
+                      <span class="detail-header-emoji">🧠</span>
+                      <div class="detail-header-text">認知機能</div>
+                  </div>
+                  <div class="detail-header-subtitle">lifestyle metrics</div>
+              </div>
+          </div>
+          
+          <div class="detail-score-card">
+              <div class="detail-score-label">current score</div>
+              <div class="detail-score-value">92</div>
+              <div class="detail-score-bar">
+                  <div class="detail-score-fill" style="width: 92%;"></div>
+              </div>
+          </div>
+          
+          <div class="detail-insight-card">
+              <div class="detail-insight-header">
+                  <div class="detail-insight-label">ai insight</div>
+                  <div class="detail-insight-badge">updated</div>
+              </div>
+              <div class="detail-insight-text">
+                  血糖値の安定性が高く、HRV値も良好。深睡眠の質が認知機能を強くサポートしています。
+              </div>
+          </div>
+          
+          <div class="detail-trend-card">
+              <div class="detail-trend-title">6-month trend</div>
+              <div class="detail-trend-graph">
+                  <svg width="100%" height="100%" viewBox="0 0 300 80" style="overflow: visible;">
+                      <defs>
+                          <linearGradient id="trendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                              <stop offset="0%" style="stop-color: #0088CC; stop-opacity: 0.3;"></stop>
+                              <stop offset="100%" style="stop-color: #0088CC; stop-opacity: 0;"></stop>
+                          </linearGradient>
+                      </defs>
+                      <path d="M 0,40 L 60,36 L 120,34 L 180,30 L 240,28 L 300,26" fill="url(#trendGradient)" stroke="#0088CC" stroke-width="2"></path>
+                      <circle cx="0" cy="40" r="4" fill="#0088CC"></circle>
+                      <circle cx="60" cy="36" r="4" fill="#0088CC"></circle>
+                      <circle cx="120" cy="34" r="4" fill="#0088CC"></circle>
+                      <circle cx="180" cy="30" r="4" fill="#0088CC"></circle>
+                      <circle cx="240" cy="28" r="4" fill="#0088CC"></circle>
+                      <circle cx="300" cy="26" r="4" fill="#0088CC"></circle>
+                  </svg>
+              </div>
+          </div>
+          
+          <div style="margin-bottom: 24px;">
+              <div class="detail-section-title">
+                  <div class="detail-section-line"></div>
+                  <div class="detail-section-text">FIGURE. BLOOD</div>
+              </div>
+              
+              <div class="detail-blood-gauge">
+                  <div class="blood-data-header">
+                      <span class="blood-data-name">HbA1c</span>
+                      <span class="blood-data-value">5.2 <span style="font-size: 9px; font-weight: 500;">%</span></span>
+                  </div>
+                  <div class="blood-gauge-container">
+                      <div class="blood-gauge">
+                          <div class="gauge-zone gauge-zone-excellent" style="width: 25%;"></div>
+                          <div class="gauge-zone gauge-zone-good" style="width: 35%;"></div>
+                          <div class="gauge-zone gauge-zone-normal" style="width: 25%;"></div>
+                          <div class="gauge-zone gauge-zone-risk" style="width: 15%;"></div>
+                          <div class="gauge-marker" style="left: 48%;"></div>
+                      </div>
+                      <div class="blood-gauge-labels">
+                          <span class="gauge-label gauge-label-excellent">EXCELLENT</span>
+                          <span class="gauge-label gauge-label-good">GOOD</span>
+                          <span class="gauge-label gauge-label-normal">NORMAL</span>
+                          <span class="gauge-label gauge-label-risk">RISK</span>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="detail-blood-gauge">
+                  <div class="blood-data-header">
+                      <span class="blood-data-name">Ferritin</span>
+                      <span class="blood-data-value">95 <span style="font-size: 9px; font-weight: 500;">ng/mL</span></span>
+                  </div>
+                  <div class="blood-gauge-container">
+                      <div class="blood-gauge">
+                          <div class="gauge-zone gauge-zone-risk" style="width: 20%;"></div>
+                          <div class="gauge-zone gauge-zone-normal" style="width: 30%;"></div>
+                          <div class="gauge-zone gauge-zone-excellent" style="width: 30%;"></div>
+                          <div class="gauge-zone gauge-zone-normal" style="width: 20%;"></div>
+                          <div class="gauge-marker" style="left: 58%;"></div>
+                      </div>
+                      <div class="blood-gauge-labels">
+                          <span class="gauge-label gauge-label-risk">LOW</span>
+                          <span class="gauge-label gauge-label-good">GOOD</span>
+                          <span class="gauge-label gauge-label-excellent">OPTIMAL</span>
+                          <span class="gauge-label gauge-label-normal">HIGH</span>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="detail-blood-gauge">
+                  <div class="blood-data-header">
+                      <span class="blood-data-name">CRP</span>
+                      <span class="blood-data-value">0.3 <span style="font-size: 9px; font-weight: 500;">mg/L</span></span>
+                  </div>
+                  <div class="blood-gauge-container">
+                      <div class="blood-gauge">
+                          <div class="gauge-zone gauge-zone-excellent" style="width: 25%;"></div>
+                          <div class="gauge-zone gauge-zone-good" style="width: 35%;"></div>
+                          <div class="gauge-zone gauge-zone-normal" style="width: 25%;"></div>
+                          <div class="gauge-zone gauge-zone-risk" style="width: 15%;"></div>
+                          <div class="gauge-marker" style="left: 15%;"></div>
+                      </div>
+                      <div class="blood-gauge-labels">
+                          <span class="gauge-label gauge-label-excellent">EXCELLENT</span>
+                          <span class="gauge-label gauge-label-good">GOOD</span>
+                          <span class="gauge-label gauge-label-normal">NORMAL</span>
+                          <span class="gauge-label gauge-label-risk">RISK</span>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="detail-blood-gauge">
+                  <div class="blood-data-header">
+                      <span class="blood-data-name">Albumin</span>
+                      <span class="blood-data-value">4.5 <span style="font-size: 9px; font-weight: 500;">g/dL</span></span>
+                  </div>
+                  <div class="blood-gauge-container">
+                      <div class="blood-gauge">
+                          <div class="gauge-zone gauge-zone-risk" style="width: 10%;"></div>
+                          <div class="gauge-zone gauge-zone-normal" style="width: 20%;"></div>
+                          <div class="gauge-zone gauge-zone-good" style="width: 40%;"></div>
+                          <div class="gauge-zone gauge-zone-excellent" style="width: 30%;"></div>
+                          <div class="gauge-marker" style="left: 75%;"></div>
+                      </div>
+                      <div class="blood-gauge-labels">
+                          <span class="gauge-label gauge-label-risk">RISK</span>
+                          <span class="gauge-label gauge-label-normal">NORMAL</span>
+                          <span class="gauge-label gauge-label-good">GOOD</span>
+                          <span class="gauge-label gauge-label-excellent">EXCELLENT</span>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="detail-gene-card">
+              <div class="detail-trend-title" style="margin-bottom: 12px;">related genes</div>
+              <div style="display: flex; flex-wrap: wrap;">
+                  <div class="detail-gene-chip">APOE</div>
+                  <div class="detail-gene-chip">BDNF</div>
+                  <div class="detail-gene-chip">TCF7L2</div>
+                  <div class="detail-gene-chip">COMT</div>
+              </div>
+          </div>
+          
+          <div class="detail-gene-card">
+              <div class="detail-trend-title" style="margin-bottom: 12px;">gut microbiome</div>
+              <div class="detail-bacteria-item">
+                  <span class="detail-bacteria-name">酪酸産生菌</span>
+                  <span class="detail-bacteria-status detail-bacteria-excellent">excellent</span>
+              </div>
+              <div class="detail-bacteria-item">
+                  <span class="detail-bacteria-name">Bifidobacterium</span>
+                  <span class="detail-bacteria-status detail-bacteria-good">good</span>
+              </div>
+              <div class="detail-bacteria-item">
+                  <span class="detail-bacteria-name">Akkermansia</span>
+                  <span class="detail-bacteria-status detail-bacteria-good">good</span>
+              </div>
+          </div>
+          
+          <div class="detail-gene-card" style="margin-bottom: 0;">
+              <div class="detail-trend-title" style="margin-bottom: 12px;">healthkit data</div>
+              <div class="detail-healthkit-item">
+                  <span class="detail-healthkit-name">深睡眠時間</span>
+                  <span class="detail-healthkit-value healthkit-badge-excellent">Excellent</span>
+              </div>
+              <div class="detail-healthkit-item">
+                  <span class="detail-healthkit-name">HRV</span>
+                  <span class="detail-healthkit-value healthkit-badge-excellent">Excellent</span>
+              </div>
+              <div class="detail-healthkit-item">
+                  <span class="detail-healthkit-name">安静時心拍</span>
+                  <span class="detail-healthkit-value healthkit-badge-good">Good</span>
+              </div>
+              <div class="detail-healthkit-item">
+                  <span class="detail-healthkit-name">日中活動量</span>
+                  <span class="detail-healthkit-value healthkit-badge-excellent">Excellent</span>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  <!-- Chat View -->
+  <div id="chat-view" class="chat-view">
+      <div class="orb-container">
+          <div class="orb orb-1"></div>
+          <div class="orb orb-2"></div>
+          <div class="orb orb-3"></div>
+      </div>
+      
+      <div class="grid-overlay">
+          <div class="grid-line vertical" style="left: 25%"></div>
+          <div class="grid-line vertical" style="left: 50%"></div>
+          <div class="grid-line vertical" style="left: 75%"></div>
+          <div class="grid-line horizontal" style="top: 33.33%"></div>
+          <div class="grid-line horizontal" style="top: 66.66%"></div>
+      </div>
+      
+      <div class="chat-header">
+          <div class="chat-header-content">
+              <div class="chat-close-button" onclick="closeChatView()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 6L6 18M6 6l12 12"></path>
+                  </svg>
+              </div>
+              <div class="chat-title-container">
+                  <div class="chat-title">AI Health Assistant</div>
+                  <div class="chat-subtitle">powered by claude</div>
+              </div>
+              <div class="chat-status">online</div>
+          </div>
+      </div>
+      
+      <div class="chat-messages-container">
+          <div class="chat-messages" id="chatMessages">
+              <div class="chat-message">
+                  <div class="chat-avatar">🤖</div>
+                  <div class="chat-bubble-container">
+                      <div class="chat-bubble">
+                          こんにちは！私はあなたの健康データを分析し、最適なアドバイスを提供するAIアシスタントです。何についてお話ししましょうか？
+                      </div>
+                      <div class="chat-timestamp">9:41</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
+      <div class="chat-input-container">
+          <div class="chat-suggestions">
+              <div class="chat-suggestion-chip" onclick="sendSuggestion('睡眠の質を改善したい')">睡眠の質を改善したい</div>
+              <div class="chat-suggestion-chip" onclick="sendSuggestion('認知機能について詳しく')">認知機能について詳しく</div>
+              <div class="chat-suggestion-chip" onclick="sendSuggestion('血液データを分析して')">血液データを分析して</div>
+          </div>
+          <div class="chat-input-wrapper">
+              <textarea 
+                  class="chat-input" 
+                  id="chatInput"
+                  placeholder="メッセージを入力..."
+                  rows="1"
+                  onkeydown="handleChatKeydown(event)"
+              ></textarea>
+              <button class="chat-send-button" onclick="sendMessage()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+                  </svg>
+              </button>
+          </div>
+      </div>
+  </div>
+  
+  <div class="ai-chat-button" onclick="openChatView()">
+      <div class="ai-chat-icon">💬</div>
+  </div>
+  
+  <div class="bottom-nav">
+      <div class="nav-container">
+          <div class="nav-item active" data-view="home">
+              <div class="nav-icon">🏠</div>
+              <div class="nav-label">HOME</div>
+          </div>
+          <div class="nav-item" data-view="data">
+              <div class="nav-icon">📊</div>
+              <div class="nav-label">DATA</div>
+          </div>
+          <div class="nav-item" data-view="profile">
+              <div class="nav-icon">👤</div>
+              <div class="nav-label">PROFILE</div>
+          </div>
+      </div>
+  </div>
+  
+  <script>
+      const navItems = document.querySelectorAll('.nav-item');
+      const views = {
+          'home': document.getElementById('home-view'),
+          'data': document.getElementById('data-view')
+      };
+      
+      navItems.forEach(item => {
+          item.addEventListener('click', () => {
+              const viewName = item.getAttribute('data-view');
+              navItems.forEach(nav => nav.classList.remove('active'));
+              item.classList.add('active');
+              Object.values(views).forEach(view => {
+                  if (view) view.classList.remove('active');
+              });
+              if (views[viewName]) {
+                  views[viewName].classList.add('active');
+              }
+          });
+      });
+      
+      function toggleDataSources(event, sourceId) {
+          event.stopPropagation();
+          const sourcesElement = document.getElementById(sourceId);
+          const toggleIcon = event.currentTarget.querySelector('.toggle-icon');
+          if (sourcesElement.style.display === 'none') {
+              sourcesElement.style.display = 'flex';
+              toggleIcon.classList.add('open');
+          } else {
+              sourcesElement.style.display = 'none';
+              toggleIcon.classList.remove('open');
+          }
+      }
+      
+      function toggleSourceGroup(event, groupId) {
+          event.stopPropagation();
+          const groupElement = document.getElementById(groupId);
+          const arrow = event.currentTarget.querySelector('.source-arrow');
+          if (groupElement.style.display === 'none') {
+              groupElement.style.display = 'flex';
+              arrow.classList.add('open');
+          } else {
+              groupElement.style.display = 'none';
+              arrow.classList.remove('open');
+          }
+      }
+      
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabContents = {
+          'biomarkers': document.getElementById('biomarkers-tab'),
+          'microbiome': document.getElementById('microbiome-tab'),
+          'lifestyle': document.getElementById('lifestyle-tab')
+      };
+      
+      tabButtons.forEach(button => {
+          button.addEventListener('click', () => {
+              tabButtons.forEach(btn => btn.classList.remove('active'));
+              Object.values(tabContents).forEach(content => {
+                  content.style.display = 'none';
+              });
+              button.classList.add('active');
+              const tabName = button.getAttribute('data-tab');
+              if (tabContents[tabName]) {
+                  tabContents[tabName].style.display = 'block';
+              }
+          });
+      });
+      
+      const insights = [
+          '睡眠効率が前週比12%向上。深睡眠時の成長ホルモン分泌が最適化されています...',
+          '腸内細菌の多様性スコアが85点に到達。酪酸産生菌が23%増加しました...',
+          'hrv朝測定値が68msに改善。自律神経バランスが最適範囲です...'
+      ];
+      
+      let insightIndex = 0;
+      setInterval(() => {
+          const element = document.getElementById('aiInsight');
+          element.style.opacity = '0';
+          setTimeout(() => {
+              element.textContent = insights[insightIndex];
+              element.style.opacity = '1';
+              element.style.transition = 'opacity 0.5s ease';
+              insightIndex = (insightIndex + 1) % insights.length;
+          }, 300);
+      }, 8000);
+      
+      let waveOffset = 0;
+      function animateWave() {
+          const path = document.getElementById('wavePath');
+          if (!path) return;
+          waveOffset += 2;
+          const amplitude = 15;
+          const frequency = 0.02;
+          let d = 'M0,30 ';
+          for (let x = 0; x <= 400; x += 10) {
+              const y = 30 + amplitude * Math.sin((x + waveOffset) * frequency) * (0.8 + 0.4 * Math.random());
+              d += `L${x},${y} `;
+          }
+          path.setAttribute('d', d);
+          requestAnimationFrame(animateWave);
+      }
+      animateWave();
+      
+      function openDetailView(type) {
+          if (type === 'cognitive') {
+              document.getElementById('cognitive-detail').classList.add('active');
+              document.body.style.overflow = 'hidden';
+          }
+      }
+      
+      function closeDetailView() {
+          document.querySelectorAll('.detail-view').forEach(view => {
+              view.classList.remove('active');
+          });
+          document.body.style.overflow = 'auto';
+      }
+      
+      // Chat Functions
+      function openChatView() {
+          document.getElementById('chat-view').classList.add('active');
+          document.body.style.overflow = 'hidden';
+          const input = document.getElementById('chatInput');
+          setTimeout(() => input.focus(), 300);
+      }
+      
+      function closeChatView() {
+          document.getElementById('chat-view').classList.remove('active');
+          document.body.style.overflow = 'auto';
+      }
+      
+      function sendMessage() {
+          const input = document.getElementById('chatInput');
+          const message = input.value.trim();
+          
+          if (!message) return;
+          
+          addUserMessage(message);
+          input.value = '';
+          input.style.height = 'auto';
+          
+          setTimeout(() => {
+              addTypingIndicator();
+              setTimeout(() => {
+                  removeTypingIndicator();
+                  addAIMessage(generateAIResponse(message));
+              }, 1500);
+          }, 300);
+      }
+      
+      function sendSuggestion(text) {
+          document.getElementById('chatInput').value = text;
+          sendMessage();
+      }
+      
+      function handleChatKeydown(event) {
+          if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
+              sendMessage();
+          }
+          
+          // Auto-resize textarea
+          setTimeout(() => {
+              const input = event.target;
+              input.style.height = 'auto';
+              input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+          }, 0);
+      }
+      
+      function addUserMessage(text) {
+          const messagesContainer = document.getElementById('chatMessages');
+          const time = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+          
+          const messageHTML = `
+              <div class="chat-message user">
+                  <div class="chat-avatar">👤</div>
+                  <div class="chat-bubble-container">
+                      <div class="chat-bubble">${text}</div>
+                      <div class="chat-timestamp">${time}</div>
+                  </div>
+              </div>
+          `;
+          
+          messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
+          scrollToBottom();
+      }
+      
+      function addAIMessage(text) {
+          const messagesContainer = document.getElementById('chatMessages');
+          const time = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+          
+          const messageHTML = `
+              <div class="chat-message">
+                  <div class="chat-avatar">🤖</div>
+                  <div class="chat-bubble-container">
+                      <div class="chat-bubble">${text}</div>
+                      <div class="chat-timestamp">${time}</div>
+                  </div>
+              </div>
+          `;
+          
+          messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
+          scrollToBottom();
+      }
+      
+      function addTypingIndicator() {
+          const messagesContainer = document.getElementById('chatMessages');
+          const typingHTML = `
+              <div class="chat-message typing-indicator">
+                  <div class="chat-avatar">🤖</div>
+                  <div class="chat-bubble-container">
+                      <div class="chat-bubble">
+                          <div class="chat-typing">
+                              <div class="typing-dot"></div>
+                              <div class="typing-dot"></div>
+                              <div class="typing-dot"></div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          `;
+          
+          messagesContainer.insertAdjacentHTML('beforeend', typingHTML);
+          scrollToBottom();
+      }
+      
+      function removeTypingIndicator() {
+          const indicator = document.querySelector('.typing-indicator');
+          if (indicator) indicator.remove();
+      }
+      
+      function scrollToBottom() {
+          const container = document.querySelector('.chat-messages-container');
+          container.scrollTo({
+              top: container.scrollHeight,
+              behavior: 'smooth'
+          });
+      }
+      
+      function generateAIResponse(userMessage) {
+          const responses = {
+              '睡眠': '睡眠の質を改善するために、現在のHRV値と深睡眠時間を分析しました。就寝2時間前のブルーライト制限と、マグネシウムサプリメント（400mg）の摂取をお勧めします。',
+              '認知': '認知機能スコア92は素晴らしい結果です！HbA1cが5.2%と安定しており、脳の糖代謝が最適化されています。この状態を維持するため、オメガ3脂肪酸の摂取を継続してください。',
+              '血液': '最新の血液データを分析しました。CRP 0.3mg/Lは優秀で、全身の炎症が非常に低く抑えられています。Ferritin 95ng/mLも最適範囲内です。',
+              'default': 'ご質問ありがとうございます。あなたの健康データを確認しながら、最適なアドバイスを提供いたします。具体的にどの指標について知りたいですか？'
+          };
+          
+          for (const [key, response] of Object.entries(responses)) {
+              if (userMessage.includes(key)) {
+                  return response;
+              }
+          }
+          
+          return responses.default;
+      }
+  </script>
+</body>
+</html>
+-->

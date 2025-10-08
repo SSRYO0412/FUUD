@@ -16,11 +16,11 @@
 		607C5CF72E68287800E33ED1 /* HealthProfileModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */; };
 		607C5CFB2E68287800E33ED1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC12E68287800E33ED1 /* Assets.xcassets */; };
 		607C5CFC2E68287800E33ED1 /* CognitoService.swift.backup in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC52E68287800E33ED1 /* CognitoService.swift.backup */; };
-		90A1B0012E6A000000000001 /* SimpleCognitoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0112E6A00000000001 /* SimpleCognitoService.swift */; };
-		90A1B0022E6A000000000002 /* ConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0212E6A00000000002 /* ConfigurationManager.swift */; };
-		90A1B0032E6A000000000003 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0312E6A00000000003 /* NetworkManager.swift */; };
-		90A1B0042E6A000000000004 /* ErrorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0412E6A00000000004 /* ErrorManager.swift */; };
-		90A1B0052E6A000000000005 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0512E6A00000000005 /* KeychainHelper.swift */; };
+		90A1B0012E6A000000000001 /* Services/SimpleCognitoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0112E6A00000000001 /* Services/SimpleCognitoService.swift */; };
+		90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */; };
+		90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */; };
+		90A1B0042E6A000000000004 /* Managers/ErrorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0412E6A00000000004 /* Managers/ErrorManager.swift */; };
+		90A1B0052E6A000000000005 /* Helpers/KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0512E6A00000000005 /* Helpers/KeychainHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,12 +53,29 @@
 		607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileModels.swift; sourceTree = "<group>"; };
 		607C5CC82E68287800E33ED1 /* HealthProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileService.swift; sourceTree = "<group>"; };
 		607C5CCF2E68287800E33ED1 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
-		90A1AF0112E6A00000000001 /* SimpleCognitoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SimpleCognitoService.swift; sourceTree = "<group>"; };
-		90A1AF0212E6A00000000002 /* ConfigurationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ConfigurationManager.swift; sourceTree = "<group>"; };
-		90A1AF0312E6A00000000003 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/NetworkManager.swift; sourceTree = "<group>"; };
-		90A1AF0412E6A00000000004 /* ErrorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ErrorManager.swift; sourceTree = "<group>"; };
-		90A1AF0512E6A00000000005 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers/KeychainHelper.swift; sourceTree = "<group>"; };
+		90A1AF0112E6A00000000001 /* Services/SimpleCognitoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SimpleCognitoService.swift; sourceTree = "<group>"; };
+		90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ConfigurationManager.swift; sourceTree = "<group>"; };
+		90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/NetworkManager.swift; sourceTree = "<group>"; };
+		90A1AF0412E6A00000000004 /* Managers/ErrorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ErrorManager.swift; sourceTree = "<group>"; };
+		90A1AF0512E6A00000000005 /* Helpers/KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers/KeychainHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		608EB9502E95EC0D00F094F9 /* Exceptions for "Views" folder in "AWStestTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Components/CustomBottomNavBar.swift,
+			);
+			target = 35A15C372E31EA8200678A42 /* AWStestTests */;
+		};
+		608EB9512E95EC0D00F094F9 /* Exceptions for "Views" folder in "AWStestUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Components/CustomBottomNavBar.swift,
+			);
+			target = 35A15C412E31EA8200678A42 /* AWStestUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		35A15C2D2E31EA8100678A42 /* AWStest */ = {
@@ -83,7 +100,21 @@
 		};
 		607C5CE02E68287800E33ED1 /* Views */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				608EB9502E95EC0D00F094F9 /* Exceptions for "Views" folder in "AWStestTests" target */,
+				608EB9512E95EC0D00F094F9 /* Exceptions for "Views" folder in "AWStestUITests" target */,
+			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		608EB9482E95EBF200F094F9 /* Models */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		608EB9562E95EC2E00F094F9 /* DesignSystem */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DesignSystem;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -132,6 +163,9 @@
 				607C5CCF2E68287800E33ED1 /* OnboardingView.swift */,
 				607C5CD42E68287800E33ED1 /* Services */,
 				607C5CE02E68287800E33ED1 /* Views */,
+				608EB91F2E95D84300F094F9 /* Recovered References */,
+				608EB9482E95EBF200F094F9 /* Models */,
+				608EB9562E95EC2E00F094F9 /* DesignSystem */,
 			);
 			sourceTree = "<group>";
 		};
@@ -150,6 +184,18 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		608EB91F2E95D84300F094F9 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				90A1AF0112E6A00000000001 /* Services/SimpleCognitoService.swift */,
+				90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */,
+				90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */,
+				90A1AF0412E6A00000000004 /* Managers/ErrorManager.swift */,
+				90A1AF0512E6A00000000005 /* Helpers/KeychainHelper.swift */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -173,6 +219,8 @@
 				607C5CCE2E68287800E33ED1 /* Managers */,
 				607C5CD42E68287800E33ED1 /* Services */,
 				607C5CE02E68287800E33ED1 /* Views */,
+				608EB9482E95EBF200F094F9 /* Models */,
+				608EB9562E95EC2E00F094F9 /* DesignSystem */,
 			);
 			name = AWStest;
 			packageProductDependencies = (
@@ -194,6 +242,10 @@
 			dependencies = (
 				35A15C3A2E31EA8200678A42 /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				608EB9482E95EBF200F094F9 /* Models */,
+				608EB9562E95EC2E00F094F9 /* DesignSystem */,
+			);
 			name = AWStestTests;
 			packageProductDependencies = (
 			);
@@ -213,6 +265,10 @@
 			);
 			dependencies = (
 				35A15C442E31EA8200678A42 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				608EB9482E95EBF200F094F9 /* Models */,
+				608EB9562E95EC2E00F094F9 /* DesignSystem */,
 			);
 			name = AWStestUITests;
 			packageProductDependencies = (
@@ -305,11 +361,11 @@
 				607C5CEF2E68287800E33ED1 /* ChatView.swift in Sources */,
 				607C5CF22E68287800E33ED1 /* AWStestApp.swift in Sources */,
 				607C5CF72E68287800E33ED1 /* HealthProfileModels.swift in Sources */,
-				90A1B0012E6A000000000001 /* SimpleCognitoService.swift in Sources */,
-				90A1B0022E6A000000000002 /* ConfigurationManager.swift in Sources */,
-				90A1B0032E6A000000000003 /* NetworkManager.swift in Sources */,
-				90A1B0042E6A000000000004 /* ErrorManager.swift in Sources */,
-				90A1B0052E6A000000000005 /* KeychainHelper.swift in Sources */,
+				90A1B0012E6A000000000001 /* Services/SimpleCognitoService.swift in Sources */,
+				90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */,
+				90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */,
+				90A1B0042E6A000000000004 /* Managers/ErrorManager.swift in Sources */,
+				90A1B0052E6A000000000005 /* Helpers/KeychainHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
