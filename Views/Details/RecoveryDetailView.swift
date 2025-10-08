@@ -1,0 +1,190 @@
+//
+//  RecoveryDetailView.swift
+//  AWStest
+//
+//  疲労回復詳細ページ
+//
+
+import SwiftUI
+
+struct RecoveryDetailView: View {
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: VirgilSpacing.lg) {
+                // Header Score
+                VStack(spacing: VirgilSpacing.md) {
+                    Text("💪")
+                        .font(.system(size: 48))
+
+                    Text("87")  // [DUMMY] スコア、API連携後に実データ使用
+                        .font(.system(size: 64, weight: .black))
+                        .foregroundColor(Color(hex: "00C853"))
+
+                    Text("RECOVERY")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.virgilTextSecondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(VirgilSpacing.xl)
+                .virgilGlassCard()
+
+                // Score Graph
+                VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+                    Text("SCORE TREND")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.virgilTextSecondary)
+
+                    ScoreTrendGraph(scores: [79, 81, 83, 84, 86, 87])  // [DUMMY] 過去6ヶ月のスコア
+                }
+                .padding(VirgilSpacing.md)
+                .virgilGlassCard()
+
+                // Related Genes
+                VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+                    HStack {
+                        Text("🧬")
+                            .font(.system(size: 16))
+                        Text("RELATED GENES")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundColor(.virgilTextSecondary)
+                    }
+
+                    VStack(spacing: VirgilSpacing.sm) {
+                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        GeneCard(
+                            name: "ACTN3 R577X",
+                            description: "筋肉回復能力・速筋型",
+                            impact: "優秀",
+                            color: Color(hex: "00C853")
+                        )
+
+                        GeneCard(
+                            name: "PPARGC1A Gly482Ser",
+                            description: "ミトコンドリア機能・持久力",
+                            impact: "良好",
+                            color: Color(hex: "FFCB05")
+                        )
+                    }
+                }
+                .padding(VirgilSpacing.md)
+                .virgilGlassCard()
+
+                // Related Blood Markers
+                VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+                    HStack {
+                        Text("💉")
+                            .font(.system(size: 16))
+                        Text("RELATED BLOOD MARKERS")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundColor(.virgilTextSecondary)
+                    }
+
+                    VStack(spacing: VirgilSpacing.sm) {
+                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        BloodMarkerRow(name: "CK", value: "120 U/L", status: "最適")
+                        BloodMarkerRow(name: "Mb", value: "45 ng/mL", status: "良好")
+                        BloodMarkerRow(name: "LAC", value: "12 mg/dL", status: "最適")
+                        BloodMarkerRow(name: "TKB", value: "0.8 mg/dL", status: "良好")
+                        BloodMarkerRow(name: "Ferritin", value: "95 ng/mL", status: "最適")
+                        BloodMarkerRow(name: "ALB", value: "4.5 g/dL", status: "最適")
+                        BloodMarkerRow(name: "Mg", value: "2.2 mg/dL", status: "良好")
+                    }
+                }
+                .padding(VirgilSpacing.md)
+                .virgilGlassCard()
+
+                // Related Microbiome
+                MicrobiomeSection(bacteria: [
+                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    MicrobiomeItem(
+                        name: "乳酸代謝菌",
+                        description: "乳酸除去・筋肉回復促進",
+                        impact: "優秀",
+                        color: Color(hex: "00C853")
+                    ),
+                    MicrobiomeItem(
+                        name: "SCFA産生菌",
+                        description: "短鎖脂肪酸・抗炎症作用",
+                        impact: "良好",
+                        color: Color(hex: "FFCB05")
+                    )
+                ])
+
+                // Related HealthKit
+                HealthKitSection(metrics: [
+                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    HealthKitMetric(name: "心拍回復 (HRR)", value: "35bpm/1min", status: "優秀"),
+                    HealthKitMetric(name: "トレーニング負荷", value: "適正", status: "良好"),
+                    HealthKitMetric(name: "ワークアウト強度", value: "中", status: "最適"),
+                    HealthKitMetric(name: "HRV", value: "68ms", status: "良好")
+                ])
+
+                // Recommendations
+                VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+                    Text("RECOMMENDATIONS")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.virgilTextSecondary)
+
+                    VStack(spacing: VirgilSpacing.sm) {
+                        // [DUMMY] 推奨アクション、API連携後に実データ使用
+                        RecommendationCard(
+                            icon: "😴",
+                            title: "睡眠最適化",
+                            description: "トレーニング後8時間以上の睡眠確保",
+                            priority: "高"
+                        )
+
+                        RecommendationCard(
+                            icon: "🧊",
+                            title: "アイシング",
+                            description: "高強度トレーニング後15分のアイシング",
+                            priority: "中"
+                        )
+
+                        RecommendationCard(
+                            icon: "🥩",
+                            title: "タンパク質摂取",
+                            description: "運動後30分以内にタンパク質20g摂取",
+                            priority: "高"
+                        )
+                    }
+                }
+                .padding(VirgilSpacing.md)
+                .virgilGlassCard()
+            }
+            .padding(.horizontal, VirgilSpacing.md)
+            .padding(.top, VirgilSpacing.md)
+            .padding(.bottom, 100)
+        }
+        .background(
+            ZStack {
+                LinearGradient(
+                    colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
+                OrbBackground()
+                GridOverlay()
+            }
+        )
+        .navigationTitle("疲労回復")
+        .navigationBarTitleDisplayMode(.large)
+        .floatingChatButton()
+    }
+}
+
+// MARK: - Preview
+
+#if DEBUG
+struct RecoveryDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationView {
+            RecoveryDetailView()
+        }
+    }
+}
+#endif
