@@ -252,6 +252,20 @@ struct BloodMarkerRow: View {
     let value: String
     let status: String
 
+    // ステータスに応じた色分け (Optimal/最適=緑, Reference/正常範囲=黄, Risk/注意=赤)
+    private var statusColor: Color {
+        switch status {
+        case "最適", "優秀", "Optimal", "Excellent":
+            return Color(hex: "00C853")  // 緑
+        case "良好", "正常範囲", "Reference", "Good", "Normal":
+            return Color(hex: "FFCB05")  // 黄
+        case "注意", "要注意", "Risk", "Warning":
+            return Color(hex: "ED1C24")  // 赤
+        default:
+            return Color.gray
+        }
+    }
+
     var body: some View {
         HStack {
             Text(name)
@@ -266,10 +280,10 @@ struct BloodMarkerRow: View {
 
             Text(status)
                 .font(.system(size: 8, weight: .medium))
-                .foregroundColor(Color(hex: "00C853"))
+                .foregroundColor(statusColor)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(Color(hex: "00C853").opacity(0.1))
+                .background(statusColor.opacity(0.1))
                 .cornerRadius(4)
         }
         .padding(VirgilSpacing.sm)

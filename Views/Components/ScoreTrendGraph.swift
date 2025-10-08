@@ -1,0 +1,75 @@
+//
+//  ScoreTrendGraph.swift
+//  AWStest
+//
+//  汎用スコアトレンドグラフコンポーネント
+//
+
+import SwiftUI
+
+struct ScoreTrendGraph: View {
+    let scores: [Int]  // [DUMMY] 過去6ヶ月のスコア、API連携後に実データ使用
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .bottomLeading) {
+                // Grid lines
+                VStack(spacing: 0) {
+                    ForEach(0..<5) { _ in
+                        Divider()
+                            .background(Color.gray.opacity(0.2))
+                        Spacer()
+                    }
+                }
+
+                // Score line
+                Path { path in
+                    let width = geometry.size.width
+                    let height = geometry.size.height
+                    let stepX = width / CGFloat(scores.count - 1)
+
+                    for (index, score) in scores.enumerated() {
+                        let x = CGFloat(index) * stepX
+                        let y = height - (CGFloat(score) / 100.0 * height)
+
+                        if index == 0 {
+                            path.move(to: CGPoint(x: x, y: y))
+                        } else {
+                            path.addLine(to: CGPoint(x: x, y: y))
+                        }
+                    }
+                }
+                .stroke(Color(hex: "00C853"), lineWidth: 3)
+
+                // Data points
+                HStack(spacing: 0) {
+                    ForEach(scores.indices, id: \.self) { index in
+                        VStack {
+                            Spacer()
+                            Circle()
+                                .fill(Color(hex: "00C853"))
+                                .frame(width: 8, height: 8)
+                                .offset(y: -(CGFloat(scores[index]) / 100.0 * geometry.size.height))
+                        }
+                        if index < scores.count - 1 {
+                            Spacer()
+                        }
+                    }
+                }
+            }
+        }
+        .frame(height: 150)
+    }
+}
+
+// MARK: - Preview
+
+#if DEBUG
+struct ScoreTrendGraph_Previews: PreviewProvider {
+    static var previews: some View {
+        ScoreTrendGraph(scores: [78, 82, 85, 88, 90, 92])  // [DUMMY] プレビュー用データ
+            .padding()
+            .background(Color.white)
+    }
+}
+#endif

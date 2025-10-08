@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DataView: View {
-    @State private var selectedTab: DataTab = .blood
+    @State private var selectedTab: DataTab = .lifestyle
 
     var body: some View {
         NavigationView {
@@ -72,9 +72,9 @@ struct DataView: View {
 // MARK: - Data Tab Enum
 
 enum DataTab: String, CaseIterable, Identifiable {
+    case lifestyle = "LIFESTYLE"
     case blood = "BLOOD"
     case microbiome = "MICROBIOME"
-    case lifestyle = "LIFESTYLE"
 
     var id: String { rawValue }
 }
