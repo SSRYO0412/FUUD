@@ -288,25 +288,15 @@ struct LongevityPaceCard: View {
         ZStack(alignment: .topTrailing) {
             VStack(alignment: .leading, spacing: VirgilSpacing.md) {
                 // Main Score Section
-                Button {
-                    withAnimation(.spring(response: 0.3)) {
-                        isExpanded.toggle()
-                    }
-                } label: {
-                    HStack {
-                        Text("LONGEVITY PACE™")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.virgilTextSecondary)
+                HStack {
+                    Text("LONGEVITY PACE™")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.virgilTextSecondary)
 
-                        Spacer()
+                    Spacer()
 
-                        Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundColor(.virgilTextSecondary)
-
-                        Text("0.82")
-                            .font(.system(size: 20, weight: .black))
-                    }
+                    Text("0.82")
+                        .font(.system(size: 20, weight: .black))
                 }
 
                 Text("あなたの")
@@ -328,6 +318,24 @@ struct LongevityPaceCard: View {
 
                 // Expandable Data Sources
                 if isExpanded {
+                    // Close Toggle at Top
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            isExpanded.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("閉じる")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Image(systemName: "chevron.up")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Spacer()
+                        }
+                    }
+
                     Divider()
                         .background(Color.white.opacity(0.2))
                         .padding(.vertical, VirgilSpacing.xs)
@@ -347,16 +355,52 @@ struct LongevityPaceCard: View {
                         ]
                     )
 
-                    // Blood Markers Section
-                    DataSourceSection(
-                        icon: "💉",
-                        title: "血液マーカー",
-                        items: [
-                            DataSourceItem(name: "HbA1c", value: "5.2%", impact: "最適"),
-                            DataSourceItem(name: "CRP", value: "0.3mg/L", impact: "低炎症"),
-                            DataSourceItem(name: "Ferritin", value: "95ng/mL", impact: "良好")
-                        ]
-                    )
+                    // Blood Markers Section with Gauge
+                    VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
+                        HStack(spacing: VirgilSpacing.xs) {
+                            Text("💉")
+                                .font(.system(size: 14))
+
+                            Text("血液マーカー")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextPrimary)
+                        }
+
+                        VStack(spacing: 0) {
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "Albumin (ALB)",
+                                value: "4.5",
+                                unit: "g/dL",
+                                position: 0.75,
+                                pattern: .higherIsBetter
+                            ))
+
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "HbA1c",
+                                value: "5.2",
+                                unit: "%",
+                                position: 0.35,
+                                pattern: .middleIsBest
+                            ))
+
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "CRP",
+                                value: "0.3",
+                                unit: "mg/L",
+                                position: 0.20,
+                                pattern: .lowerIsBetter
+                            ))
+
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "Homocysteine",
+                                value: "8.2",
+                                unit: "μmol/L",
+                                position: 0.30,
+                                pattern: .middleLowBest
+                            ))
+                        }
+                    }
+                    .padding(.top, VirgilSpacing.xs)
 
                     // Gut Microbiome Section
                     DataSourceSection(
@@ -380,6 +424,26 @@ struct LongevityPaceCard: View {
                         ]
                     )
                 }
+
+                // Toggle Button at Bottom
+                if !isExpanded {
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            isExpanded.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("詳細なバイオマーカーをみる")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Spacer()
+                        }
+                    }
+                }
             }
             .padding(VirgilSpacing.md)
             .virgilGlassCard()
@@ -396,6 +460,23 @@ struct DataSourceItem {
     let name: String
     let value: String
     let impact: String
+}
+
+// MARK: - Blood Marker Data Model
+
+enum GaugePattern {
+    case higherIsBetter    // 高い方が良い: Risk → Normal → Good → Excellent
+    case lowerIsBetter     // 低い方が良い: Excellent → Good → Normal → Risk
+    case middleIsBest      // 中間が最適: Risk → Good → Excellent → Good → Risk
+    case middleLowBest     // やや低めが最適: Excellent → Good → Normal → Risk
+}
+
+struct BloodMarkerData {
+    let name: String
+    let value: String
+    let unit: String
+    let position: Double  // 0.0〜1.0でゲージ上の位置
+    let pattern: GaugePattern
 }
 
 struct DataSourceSection: View {
@@ -443,6 +524,150 @@ struct DataSourceSection: View {
             }
         }
         .padding(.top, VirgilSpacing.xs)
+    }
+}
+
+// MARK: - Blood Gauge Components
+
+struct BloodGaugeView: View {
+    let position: Double  // 0.0〜1.0
+    let pattern: GaugePattern
+
+    var body: some View {
+        VStack(spacing: 6) {
+            // ゲージバー
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    // パターンに応じたゲージゾーン
+                    HStack(spacing: 0) {
+                        ForEach(0..<gaugeZones.count, id: \.self) { index in
+                            Rectangle()
+                                .fill(gaugeZones[index].color)
+                                .frame(width: geometry.size.width * gaugeZones[index].width)
+                        }
+                    }
+                    .frame(height: 6)
+                    .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+
+                    // マーカー（HTML: 8px circle, white with black border）
+                    let markerX = max(4, min(geometry.size.width - 4, geometry.size.width * position - 4))
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 8, height: 8)
+                        .overlay(Circle().stroke(Color.black, lineWidth: 1))
+                        .offset(x: markerX, y: -1)
+                }
+            }
+            .frame(height: 6)
+
+            // ラベル（パターンに応じて配置）
+            HStack(spacing: 0) {
+                ForEach(0..<gaugeLabels.count, id: \.self) { index in
+                    Text(gaugeLabels[index].text)
+                        .font(.system(size: 7, weight: .semibold))
+                        .foregroundColor(gaugeLabels[index].color)
+                        .frame(maxWidth: .infinity, alignment: gaugeLabels[index].alignment)
+                }
+            }
+            .textCase(.uppercase)
+            .padding(.horizontal, 2)
+        }
+    }
+
+    // パターンごとのゲージゾーン定義
+    private var gaugeZones: [(color: Color, width: CGFloat)] {
+        let riskColor = Color(hex: "ED1C24").opacity(0.5)
+        let normalColor = Color(hex: "FFCB05").opacity(0.45)
+        let goodColor = Color(hex: "00C853").opacity(0.5)
+        let excellentColor = Color(hex: "0088CC").opacity(0.5)  // 青
+
+        switch pattern {
+        case .higherIsBetter:
+            return [(riskColor, 0.10), (normalColor, 0.20), (goodColor, 0.40), (excellentColor, 0.30)]
+        case .lowerIsBetter:
+            return [(excellentColor, 0.30), (goodColor, 0.40), (normalColor, 0.20), (riskColor, 0.10)]
+        case .middleIsBest:
+            return [(riskColor, 0.15), (goodColor, 0.25), (excellentColor, 0.20), (goodColor, 0.25), (riskColor, 0.15)]
+        case .middleLowBest:
+            return [(excellentColor, 0.25), (goodColor, 0.35), (normalColor, 0.25), (riskColor, 0.15)]
+        }
+    }
+
+    // パターンごとのラベル定義
+    private var gaugeLabels: [(text: String, color: Color, alignment: Alignment)] {
+        let riskColor = Color(hex: "ED1C24")
+        let normalColor = Color(hex: "FFCB05")
+        let goodColor = Color(hex: "00C853")
+        let excellentColor = Color(hex: "0088CC")  // 青
+
+        switch pattern {
+        case .higherIsBetter:
+            return [
+                ("RISK", riskColor, .leading),
+                ("NORMAL", normalColor, .center),
+                ("GOOD", goodColor, .center),
+                ("EXCELLENT", excellentColor, .trailing)
+            ]
+        case .lowerIsBetter:
+            return [
+                ("EXCELLENT", excellentColor, .leading),
+                ("GOOD", goodColor, .center),
+                ("NORMAL", normalColor, .center),
+                ("RISK", riskColor, .trailing)
+            ]
+        case .middleIsBest:
+            return [
+                ("RISK", riskColor, .leading),
+                ("GOOD", goodColor, .center),
+                ("EXCELLENT", excellentColor, .center),
+                ("RISK", riskColor, .trailing)
+            ]
+        case .middleLowBest:
+            return [
+                ("EXCELLENT", excellentColor, .leading),
+                ("GOOD", goodColor, .center),
+                ("NORMAL", normalColor, .center),
+                ("RISK", riskColor, .trailing)
+            ]
+        }
+    }
+}
+
+struct BloodMarkerItem: View {
+    let marker: BloodMarkerData
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            // ヘッダー（名前と値）
+            HStack {
+                Text(marker.name)
+                    .font(.system(size: 9, weight: .regular))
+                    .foregroundColor(.virgilTextSecondary)
+
+                Spacer()
+
+                Text(marker.value)
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(.virgilTextPrimary) +
+                Text(" ")
+                    .font(.system(size: 9, weight: .medium)) +
+                Text(marker.unit)
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundColor(.virgilTextSecondary)
+            }
+
+            // ゲージ
+            BloodGaugeView(position: marker.position, pattern: marker.pattern)
+                .padding(.top, 2)
+        }
+        .padding(.vertical, VirgilSpacing.sm)
+        .padding(.bottom, VirgilSpacing.sm)
+        .overlay(
+            Rectangle()
+                .fill(Color.black.opacity(0.03))
+                .frame(height: 1),
+            alignment: .bottom
+        )
     }
 }
 

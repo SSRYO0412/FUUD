@@ -22,8 +22,14 @@ struct CustomBottomNavBar: View {
             }
         }
         .padding(.horizontal, VirgilSpacing.md)
-        .padding(.vertical, VirgilSpacing.sm)
-        .virgilGlassBottomBar()
+        .padding(.vertical, 7.6)
+        .offset(y: 15)
+        .background(
+            // 背景だけを画面最下部まで伸ばす
+            Color.clear
+                .virgilGlassBottomBar()
+                .ignoresSafeArea(edges: .bottom)
+        )
     }
 }
 
@@ -44,7 +50,7 @@ private struct TabButton: View {
                 selectedTab = tab
             }
         }) {
-            VStack(spacing: VirgilSpacing.xs) {
+            VStack(spacing: 3.8) {
                 // Icon
                 Image(systemName: isSelected ? tab.icon : tab.inactiveIcon)
                     .font(.system(size: VirgilSpacing.iconSizeMedium))
@@ -69,7 +75,7 @@ private struct TabButton: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, VirgilSpacing.xs)
+            .padding(.vertical, 3.8)
         }
         .buttonStyle(.plain)
     }
