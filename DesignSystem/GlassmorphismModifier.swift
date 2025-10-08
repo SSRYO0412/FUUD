@@ -16,28 +16,24 @@ struct GlassmorphismModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .background(
-                ZStack {
-                    // iOS 26 Liquid Glass公式仕様: 透明な白ティント (10-40%)
-                    // ultraThinMaterialではなく純粋な白色を使用してグレー味を除去
-                    RoundedRectangle(cornerRadius: borderRadius)
-                        .fill(Color.white.opacity(intensity.glassTintOpacity))
-                        .background(
-                            // 背景のぼかし効果
-                            RoundedRectangle(cornerRadius: borderRadius)
-                                .fill(.ultraThinMaterial)
-                                .opacity(0.1) // 最小限のmaterial効果
-                        )
-                }
-            )
-            .overlay(
-                // 公式: Inner Shadow (blur 15px, inset)
+                // Apple公式: ultraThinMaterial
                 RoundedRectangle(cornerRadius: borderRadius)
-                    .stroke(Color.black.opacity(0.05), lineWidth: 1)
-                    .blur(radius: 15)
-                    .offset(x: 0, y: 0)
-                    .mask(
+                    .fill(.ultraThinMaterial)
+            )
+            .background(
+                // Inner Shadow (iOS 16+) with fallback for iOS 15
+                Group {
+                    if #available(iOS 16.0, *) {
                         RoundedRectangle(cornerRadius: borderRadius)
-                    )
+                            .fill(Color.clear.shadow(.inner(color: .black.opacity(0.05), radius: 15)))
+                    } else {
+                        // iOS 15 fallback: カスタムInner Shadow
+                        RoundedRectangle(cornerRadius: borderRadius)
+                            .stroke(Color.black.opacity(0.05), lineWidth: 1)
+                            .blur(radius: 15)
+                            .mask(RoundedRectangle(cornerRadius: borderRadius))
+                    }
+                }
             )
             .overlay(
                 RoundedRectangle(cornerRadius: borderRadius)
