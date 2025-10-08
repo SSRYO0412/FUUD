@@ -185,10 +185,21 @@ private struct LifestyleTab: View {
                 .foregroundColor(.gray)
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: VirgilSpacing.sm) {
-                LifeScoreCard(emoji: "🧠", title: "認知機能", score: 92)
-                LifeScoreCard(emoji: "💪", title: "筋力", score: 88)
-                LifeScoreCard(emoji: "❤️", title: "心肺機能", score: 85)
+                // [DUMMY] スコア値は仮データ、API連携後に実データ使用
+                LifeScoreCard(emoji: "🧠", title: "脳の認知機能", score: 92)
+                LifeScoreCard(emoji: "⚡️", title: "ダイエット", score: 85)
+                LifeScoreCard(emoji: "✨", title: "見た目の健康", score: 88)
                 LifeScoreCard(emoji: "😴", title: "睡眠", score: 90)
+                LifeScoreCard(emoji: "💪", title: "疲労回復", score: 87)
+                LifeScoreCard(emoji: "🌸", title: "肌", score: 86)
+                LifeScoreCard(emoji: "🛡️", title: "抗酸化", score: 84)
+                LifeScoreCard(emoji: "🧘", title: "ストレス", score: 82)
+                LifeScoreCard(emoji: "🏃", title: "運動能力", score: 89)
+                LifeScoreCard(emoji: "❤️", title: "性的な健康", score: 83)
+                LifeScoreCard(emoji: "⚡", title: "活力", score: 91)
+                LifeScoreCard(emoji: "❤️‍🩹", title: "心臓の健康", score: 88)
+                LifeScoreCard(emoji: "🫘", title: "肝機能", score: 85)
+                LifeScoreCard(emoji: "📊", title: "生活習慣", score: 87)
             }
         }
     }
@@ -240,15 +251,36 @@ private struct LifeScoreCard: View {
 
     @ViewBuilder
     private var destinationView: some View {
+        // タイトル完全一致で分岐（1文字でも違うと遷移失敗するため注意）
         switch title {
-        case "認知機能":
+        case "脳の認知機能":
             CognitiveDetailView()
-        case "筋力":
-            StrengthDetailView()
-        case "心肺機能":
-            CardioDetailView()
+        case "ダイエット":
+            MetabolicDetailView()
+        case "見た目の健康":
+            AppearanceDetailView()
         case "睡眠":
             SleepDetailView()
+        case "疲労回復":
+            RecoveryDetailView()
+        case "肌":
+            SkinDetailView()
+        case "抗酸化":
+            AntioxidantDetailView()
+        case "ストレス":
+            StressDetailView()
+        case "運動能力":
+            AthleticDetailView()
+        case "性的な健康":
+            SexualHealthDetailView()
+        case "活力":
+            VitalityDetailView()
+        case "心臓の健康":
+            CardioDetailView()
+        case "肝機能":
+            LiverDetailView()
+        case "生活習慣":
+            LifestyleHabitsDetailView()
         default:
             EmptyView()
         }

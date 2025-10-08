@@ -36,7 +36,7 @@ struct CognitiveDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    CognitiveScoreGraph()
+                    ScoreTrendGraph(scores: [78, 82, 85, 88, 90, 92])  // [DUMMY] 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .virgilGlassCard()
@@ -97,6 +97,44 @@ struct CognitiveDetailView: View {
                 .padding(VirgilSpacing.md)
                 .virgilGlassCard()
 
+                // Related Microbiome
+                MicrobiomeSection(bacteria: [
+                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    MicrobiomeItem(
+                        name: "Faecalibacterium",
+                        description: "酪酸産生菌・腸内環境を改善",
+                        impact: "優秀",
+                        color: Color(hex: "00C853")
+                    ),
+                    MicrobiomeItem(
+                        name: "Roseburia",
+                        description: "酪酸産生菌・抗炎症作用",
+                        impact: "良好",
+                        color: Color(hex: "FFCB05")
+                    ),
+                    MicrobiomeItem(
+                        name: "Bifidobacterium",
+                        description: "プロバイオティクス・免疫機能向上",
+                        impact: "優秀",
+                        color: Color(hex: "00C853")
+                    ),
+                    MicrobiomeItem(
+                        name: "Akkermansia",
+                        description: "腸管バリア機能強化",
+                        impact: "最適",
+                        color: Color(hex: "00C853")
+                    )
+                ])
+
+                // Related HealthKit
+                HealthKitSection(metrics: [
+                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    HealthKitMetric(name: "睡眠時間", value: "7.5時間", status: "最適"),
+                    HealthKitMetric(name: "深睡眠", value: "90分", status: "優秀"),
+                    HealthKitMetric(name: "HRV", value: "68ms", status: "良好"),
+                    HealthKitMetric(name: "安静時心拍", value: "58bpm", status: "最適")
+                ])
+
                 // Recommendations
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
                     Text("RECOMMENDATIONS")
@@ -149,63 +187,6 @@ struct CognitiveDetailView: View {
         .navigationTitle("認知機能")
         .navigationBarTitleDisplayMode(.large)
         .floatingChatButton()
-    }
-}
-
-// MARK: - Cognitive Score Graph
-
-struct CognitiveScoreGraph: View {
-    private let scores = [78, 82, 85, 88, 90, 92]
-
-    var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .bottomLeading) {
-                // Grid lines
-                VStack(spacing: 0) {
-                    ForEach(0..<5) { _ in
-                        Divider()
-                            .background(Color.gray.opacity(0.2))
-                        Spacer()
-                    }
-                }
-
-                // Score line
-                Path { path in
-                    let width = geometry.size.width
-                    let height = geometry.size.height
-                    let stepX = width / CGFloat(scores.count - 1)
-
-                    for (index, score) in scores.enumerated() {
-                        let x = CGFloat(index) * stepX
-                        let y = height - (CGFloat(score) / 100.0 * height)
-
-                        if index == 0 {
-                            path.move(to: CGPoint(x: x, y: y))
-                        } else {
-                            path.addLine(to: CGPoint(x: x, y: y))
-                        }
-                    }
-                }
-                .stroke(Color(hex: "00C853"), lineWidth: 3)
-
-                // Data points
-                HStack(spacing: 0) {
-                    ForEach(scores.indices, id: \.self) { index in
-                        VStack {
-                            Spacer()
-                            Circle()
-                                .fill(Color(hex: "00C853"))
-                                .frame(width: 8, height: 8)
-                                .offset(y: -(CGFloat(scores[index]) / 100.0 * geometry.size.height))
-                        }
-                        if index < scores.count - 1 {
-                            Spacer()
-                        }
-                    }
-                }
-            }
-        }
-        .frame(height: 150)
     }
 }
 
