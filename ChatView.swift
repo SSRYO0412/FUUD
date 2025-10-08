@@ -90,7 +90,7 @@ struct ChatView: View {
                 .padding(.bottom, VirgilSpacing.md)
             }
         }
-        .navigationTitle("AI相談")
+        .navigationTitle("TUUN.ai")
         .navigationBarTitleDisplayMode(.large)
     }
     
