@@ -467,7 +467,14 @@ struct WeeklyPlanSection: View {
 
             ZStack(alignment: .top) {
                 // 7. 日曜日（最背面）
-                if isExpanded {
+                ZStack {
+                    EmptyPlanCard(size: cardSize)
+                        .scaleEffect(0.88)
+                        .offset(y: 20)
+                        .opacity(isExpanded ? 0 : 1)
+                        .blur(radius: isExpanded ? 5 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.00 : 0.35), value: isExpanded)
+
                     WeeklyPlanCard(
                         day: "日曜日",
                         phase: "回復日",
@@ -480,21 +487,23 @@ struct WeeklyPlanSection: View {
                         note: "自律神経リセット"
                     )
                     .scaleEffect(isExpanded ? 1.0 : 0.91)
-                    .opacity(isExpanded ? 1.0 : 0.7)
                     .offset(y: isExpanded ? 1080 : 20)
                     .padding(.horizontal, isExpanded ? 0 : 12)
-                    .zIndex(0)
-                } else {
-                    EmptyPlanCard(size: cardSize, blurRadius: 8)
-                        .scaleEffect(isExpanded ? 1.0 : 0.91)
-                        .opacity(isExpanded ? 1.0 : 0.7)
-                        .offset(y: isExpanded ? 1080 : 20)
-                        .padding(.horizontal, isExpanded ? 0 : 12)
-                        .zIndex(0)
+                    .opacity(isExpanded ? 1.0 : 0)
+                    .blur(radius: isExpanded ? 0 : 5)
+                    .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.00 : 0.35), value: isExpanded)
                 }
+                .zIndex(0)
 
                 // 6. 土曜日
-                if isExpanded {
+                ZStack {
+                    EmptyPlanCard(size: cardSize)
+                        .scaleEffect(0.90)
+                        .offset(y: 20)
+                        .opacity(isExpanded ? 0 : 1)
+                        .blur(radius: isExpanded ? 5 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.05 : 0.30), value: isExpanded)
+
                     WeeklyPlanCard(
                         day: "土曜日",
                         phase: "ロングラン日②",
@@ -507,21 +516,23 @@ struct WeeklyPlanSection: View {
                         note: "状況に応じて"
                     )
                     .scaleEffect(isExpanded ? 1.0 : 0.91)
-                    .opacity(isExpanded ? 1.0 : 0.7)
                     .offset(y: isExpanded ? 900 : 20)
                     .padding(.horizontal, isExpanded ? 0 : 12)
-                    .zIndex(1)
-                } else {
-                    EmptyPlanCard(size: cardSize, blurRadius: 8)
-                        .scaleEffect(isExpanded ? 1.0 : 0.91)
-                        .opacity(isExpanded ? 1.0 : 0.7)
-                        .offset(y: isExpanded ? 900 : 20)
-                        .padding(.horizontal, isExpanded ? 0 : 12)
-                        .zIndex(1)
+                    .opacity(isExpanded ? 1.0 : 0)
+                    .blur(radius: isExpanded ? 0 : 5)
+                    .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.05 : 0.30), value: isExpanded)
                 }
+                .zIndex(1)
 
                 // 5. 金曜日
-                if isExpanded {
+                ZStack {
+                    EmptyPlanCard(size: cardSize)
+                        .scaleEffect(0.92)
+                        .offset(y: 20)
+                        .opacity(isExpanded ? 0 : 1)
+                        .blur(radius: isExpanded ? 5 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.10 : 0.25), value: isExpanded)
+
                     WeeklyPlanCard(
                         day: "金曜日",
                         phase: "燃焼期③",
@@ -534,21 +545,23 @@ struct WeeklyPlanSection: View {
                         note: "代謝維持日"
                     )
                     .scaleEffect(isExpanded ? 1.0 : 0.91)
-                    .opacity(isExpanded ? 1.0 : 0.7)
                     .offset(y: isExpanded ? 720 : 20)
                     .padding(.horizontal, isExpanded ? 0 : 12)
-                    .zIndex(2)
-                } else {
-                    EmptyPlanCard(size: cardSize, blurRadius: 8)
-                        .scaleEffect(isExpanded ? 1.0 : 0.91)
-                        .opacity(isExpanded ? 1.0 : 0.7)
-                        .offset(y: isExpanded ? 720 : 20)
-                        .padding(.horizontal, isExpanded ? 0 : 12)
-                        .zIndex(2)
+                    .opacity(isExpanded ? 1.0 : 0)
+                    .blur(radius: isExpanded ? 0 : 5)
+                    .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.10 : 0.25), value: isExpanded)
                 }
+                .zIndex(2)
 
                 // 4. 木曜日
-                if isExpanded {
+                ZStack {
+                    EmptyPlanCard(size: cardSize)
+                        .scaleEffect(0.94)
+                        .offset(y: 20)
+                        .opacity(isExpanded ? 0 : 1)
+                        .blur(radius: isExpanded ? 5 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.15 : 0.20), value: isExpanded)
+
                     WeeklyPlanCard(
                         day: "木曜日",
                         phase: "リフィード",
@@ -561,21 +574,23 @@ struct WeeklyPlanSection: View {
                         note: "グリコーゲン再補充"
                     )
                     .scaleEffect(isExpanded ? 1.0 : 0.91)
-                    .opacity(isExpanded ? 1.0 : 0.7)
                     .offset(y: isExpanded ? 540 : 20)
                     .padding(.horizontal, isExpanded ? 0 : 12)
-                    .zIndex(3)
-                } else {
-                    EmptyPlanCard(size: cardSize, blurRadius: 8)
-                        .scaleEffect(isExpanded ? 1.0 : 0.91)
-                        .opacity(isExpanded ? 1.0 : 0.7)
-                        .offset(y: isExpanded ? 540 : 20)
-                        .padding(.horizontal, isExpanded ? 0 : 12)
-                        .zIndex(3)
+                    .opacity(isExpanded ? 1.0 : 0)
+                    .blur(radius: isExpanded ? 0 : 5)
+                    .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.15 : 0.20), value: isExpanded)
                 }
+                .zIndex(3)
 
                 // 3. 水曜日
-                if isExpanded {
+                ZStack {
+                    EmptyPlanCard(size: cardSize)
+                        .scaleEffect(0.96)
+                        .offset(y: 10)
+                        .opacity(isExpanded ? 0 : 1)
+                        .blur(radius: isExpanded ? 5 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.20 : 0.15), value: isExpanded)
+
                     WeeklyPlanCard(
                         day: "水曜日",
                         phase: "燃焼期②",
@@ -588,21 +603,23 @@ struct WeeklyPlanSection: View {
                         note: "代謝刺激"
                     )
                     .scaleEffect(isExpanded ? 1.0 : 0.94)
-                    .opacity(isExpanded ? 1.0 : 0.8)
-                    .offset(y: isExpanded ? 360 : 20)
+                    .offset(y: isExpanded ? 360 : 10)
                     .padding(.horizontal, isExpanded ? 0 : 8)
-                    .zIndex(4)
-                } else {
-                    EmptyPlanCard(size: cardSize, blurRadius: 8)
-                        .scaleEffect(isExpanded ? 1.0 : 0.94)
-                        .opacity(isExpanded ? 1.0 : 0.8)
-                        .offset(y: isExpanded ? 360 : 20)
-                        .padding(.horizontal, isExpanded ? 0 : 8)
-                        .zIndex(4)
+                    .opacity(isExpanded ? 1.0 : 0)
+                    .blur(radius: isExpanded ? 0 : 5)
+                    .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.20 : 0.15), value: isExpanded)
                 }
+                .zIndex(4)
 
                 // 2. 火曜日
-                if isExpanded {
+                ZStack {
+                    EmptyPlanCard(size: cardSize)
+                        .scaleEffect(0.98)
+                        .offset(y: 3)
+                        .opacity(isExpanded ? 0 : 1)
+                        .blur(radius: isExpanded ? 5 : 0)
+                        .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.25 : 0.10), value: isExpanded)
+
                     WeeklyPlanCard(
                         day: "火曜日",
                         phase: "ロングラン日①",
@@ -615,18 +632,13 @@ struct WeeklyPlanSection: View {
                         note: "炭水化物200〜230gで筋分解防止"
                     )
                     .scaleEffect(isExpanded ? 1.0 : 0.97)
-                    .opacity(isExpanded ? 1.0 : 0.9)
-                    .offset(y: isExpanded ? 180 : 10)
+                    .offset(y: isExpanded ? 180 : 3)
                     .padding(.horizontal, isExpanded ? 0 : 4)
-                    .zIndex(5)
-                } else {
-                    EmptyPlanCard(size: cardSize, blurRadius: 8)
-                        .scaleEffect(isExpanded ? 1.0 : 0.97)
-                        .opacity(isExpanded ? 1.0 : 0.9)
-                        .offset(y: isExpanded ? 180 : 10)
-                        .padding(.horizontal, isExpanded ? 0 : 4)
-                        .zIndex(5)
+                    .opacity(isExpanded ? 1.0 : 0)
+                    .blur(radius: isExpanded ? 0 : 5)
+                    .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.25 : 0.10), value: isExpanded)
                 }
+                .zIndex(5)
 
                 // 1. 月曜日（最前面・固定）
                 WeeklyPlanCard(
@@ -646,12 +658,11 @@ struct WeeklyPlanSection: View {
                     }
                 )
                 .offset(y: 0)
+                .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.30 : 0.05), value: isExpanded)
                 .zIndex(6)
             }
             .onTapGesture {
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
-                    isExpanded.toggle()
-                }
+                isExpanded.toggle()
             }
             .onPreferenceChange(WeeklyPlanCardSizeKey.self) { size in
                 cardSize = size
@@ -660,6 +671,7 @@ struct WeeklyPlanSection: View {
             // 展開時のスクロール用スペース確保
             Spacer()
                 .frame(height: isExpanded ? 1080 : 0)
+                .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.35 : 0.00), value: isExpanded)
         }
     }
 }
@@ -741,15 +753,16 @@ struct PFCBadge: View {
 
 private struct EmptyPlanCard: View {
     let size: CGSize
-    let blurRadius: CGFloat
 
     var body: some View {
+        let fallbackWidth: CGFloat = 350
         let fallbackHeight: CGFloat = 180
+        let actualWidth = size.width > 0 ? size.width : fallbackWidth
         let actualHeight = size.height > 0 ? size.height : fallbackHeight
 
         RoundedRectangle(cornerRadius: 28, style: .continuous)
             .fill(.clear)
-            .frame(height: actualHeight)
+            .frame(width: actualWidth, height: actualHeight)
             .background(.ultraThinMaterial)
             .mask(
                 VStack(spacing: 0) {
@@ -760,10 +773,19 @@ private struct EmptyPlanCard: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .stroke(Color.white.opacity(0.25), lineWidth: 0.5)
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.6),
+                                Color.white.opacity(0.25)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 0.5
+                    )
             )
-            .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 4)
-            .blur(radius: blurRadius)
+            .shadow(color: Color.black.opacity(0.12), radius: 2, x: 0, y: 1)
             .allowsHitTesting(false)
     }
 }

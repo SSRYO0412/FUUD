@@ -15,28 +15,10 @@ struct GlassmorphismModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .background(
-                // Apple公式: ultraThinMaterial
-                RoundedRectangle(cornerRadius: borderRadius)
-                    .fill(.ultraThinMaterial)
-            )
-            .background(
-                // Inner Shadow (iOS 16+) with fallback for iOS 15
-                Group {
-                    if #available(iOS 16.0, *) {
-                        RoundedRectangle(cornerRadius: borderRadius)
-                            .fill(Color.clear.shadow(.inner(color: .black.opacity(0.05), radius: 15)))
-                    } else {
-                        // iOS 15 fallback: カスタムInner Shadow
-                        RoundedRectangle(cornerRadius: borderRadius)
-                            .stroke(Color.black.opacity(0.05), lineWidth: 1)
-                            .blur(radius: 15)
-                            .mask(RoundedRectangle(cornerRadius: borderRadius))
-                    }
-                }
-            )
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: borderRadius, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: borderRadius)
+                RoundedRectangle(cornerRadius: borderRadius, style: .continuous)
                     .strokeBorder(
                         LinearGradient(
                             colors: [
@@ -50,10 +32,10 @@ struct GlassmorphismModifier: ViewModifier {
                     )
             )
             .shadow(
-                color: Color.black.opacity(0.15), // より軽いシャドウ
-                radius: 6,
+                color: Color.black.opacity(0.08),
+                radius: 4,
                 x: 0,
-                y: 6
+                y: 4
             )
     }
 }
