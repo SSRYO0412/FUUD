@@ -53,6 +53,12 @@ struct HomeView: View {
                         // Longevity Pace Card
                         LongevityPaceCard()
 
+                        // Metabolic Power Card
+                        MetabolicPowerCard()
+
+                        // Recovery Sync Card
+                        RecoverySyncCard()
+
                         // Weekly Plan Section
                         WeeklyPlanSection()
                     }
@@ -449,6 +455,367 @@ struct LongevityPaceCard: View {
             .virgilGlassCard()
 
             LongPressHint(helpText: "Longevity Paceは、あなたの老化速度を示す独自指標です。1.0が平均で、低いほど老化が遅いことを示します。")
+                .padding(8)
+        }
+    }
+}
+
+// MARK: - Metabolic Power Card
+
+struct MetabolicPowerCard: View {
+    @State private var isExpanded = false
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+                // Main Score Section
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("METABOLIC POWER™")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.virgilTextSecondary)
+
+                        Text("Maintenance cal 1850")
+                            .font(.system(size: 9, weight: .medium))
+                            .foregroundColor(.virgilTextSecondary.opacity(0.7))
+                    }
+
+                    Spacer()
+
+                    Text("HIGH")
+                        .font(.system(size: 20, weight: .black))
+                }
+
+                Text("あなたの")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.virgilTextPrimary) +
+                Text("Metabolic Power HIGH")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(.virgilTextPrimary)
+
+                Text("推定燃焼効率 ")
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.virgilTextSecondary) +
+                Text("+9%")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.virgilTextSecondary)
+
+                // Expandable Data Sources
+                if isExpanded {
+                    // Close Toggle at Top
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            isExpanded.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("閉じる")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Image(systemName: "chevron.up")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Spacer()
+                        }
+                    }
+
+                    Divider()
+                        .background(Color.white.opacity(0.2))
+                        .padding(.vertical, VirgilSpacing.xs)
+
+                    Text("DATA SOURCES")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.virgilTextSecondary)
+
+                    // Genes Section
+                    DataSourceSection(
+                        icon: "🧬",
+                        title: "遺伝子",
+                        items: [
+                            DataSourceItem(name: "TCF7L2", value: "代謝型", impact: "良好"),
+                            DataSourceItem(name: "FTO", value: "標準型", impact: "標準"),
+                            DataSourceItem(name: "PPARG", value: "効率型", impact: "優秀"),
+                            DataSourceItem(name: "ADRB2", value: "高応答型", impact: "+代謝")
+                        ]
+                    )
+
+                    // Blood Markers Section with Gauge
+                    VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
+                        HStack(spacing: VirgilSpacing.xs) {
+                            Text("💉")
+                                .font(.system(size: 14))
+
+                            Text("血液マーカー")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextPrimary)
+                        }
+
+                        VStack(spacing: 0) {
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "HbA1c",
+                                value: "5.2",
+                                unit: "%",
+                                position: 0.35,
+                                pattern: .middleIsBest
+                            ))
+
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "インスリン",
+                                value: "6.5",
+                                unit: "µU/mL",
+                                position: 0.25,
+                                pattern: .lowerIsBetter
+                            ))
+
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "TG (中性脂肪)",
+                                value: "85",
+                                unit: "mg/dL",
+                                position: 0.30,
+                                pattern: .lowerIsBetter
+                            ))
+
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "CK",
+                                value: "120",
+                                unit: "U/L",
+                                position: 0.45,
+                                pattern: .middleIsBest
+                            ))
+
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "フェリチン",
+                                value: "65",
+                                unit: "ng/mL",
+                                position: 0.50,
+                                pattern: .middleIsBest
+                            ))
+                        }
+                    }
+                    .padding(.top, VirgilSpacing.xs)
+
+                    // Gut Microbiome Section
+                    DataSourceSection(
+                        icon: "🦠",
+                        title: "腸内細菌",
+                        items: [
+                            DataSourceItem(name: "プロピオン酸産生菌", value: "高水準", impact: "優秀"),
+                            DataSourceItem(name: "酪酸産生菌", value: "良好", impact: "良好"),
+                            DataSourceItem(name: "胆汁酸変換菌", value: "標準", impact: "標準")
+                        ]
+                    )
+
+                    // HealthKit Section
+                    DataSourceSection(
+                        icon: "📊",
+                        title: "HealthKit",
+                        items: [
+                            DataSourceItem(name: "アクティブkcal/体重", value: "", impact: "Good"),
+                            DataSourceItem(name: "ゾーン2比率", value: "", impact: "Excellent"),
+                            DataSourceItem(name: "歩行速度", value: "", impact: "Good"),
+                            DataSourceItem(name: "NEAT", value: "", impact: "Excellent")
+                        ]
+                    )
+                }
+
+                // Toggle Button at Bottom
+                if !isExpanded {
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            isExpanded.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("詳細なバイオマーカーをみる")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Spacer()
+                        }
+                    }
+                }
+            }
+            .padding(VirgilSpacing.md)
+            .virgilGlassCard()
+
+            LongPressHint(helpText: "Metabolic Powerは、エネルギー代謝とパフォーマンスの統合指標です。燃焼効率×行動の総合評価を示します。")
+                .padding(8)
+        }
+    }
+}
+
+// MARK: - Recovery Sync Card
+
+struct RecoverySyncCard: View {
+    @State private var isExpanded = false
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+                // Main Score Section
+                HStack {
+                    Text("RECOVERY SYNC™")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.virgilTextSecondary)
+
+                    Spacer()
+
+                    Text("RISK")
+                        .font(.system(size: 20, weight: .black))
+                        .foregroundColor(Color(hex: "ED1C24"))
+                }
+
+                Text("あなたの")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.virgilTextPrimary) +
+                Text("回復リズム：RISK")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(Color(hex: "ED1C24"))
+
+                Text("回復が遅くパフォーマンスが低くなっています対処しましょう。")
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.virgilTextSecondary)
+
+                // Expandable Data Sources
+                if isExpanded {
+                    // Close Toggle at Top
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            isExpanded.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("閉じる")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Image(systemName: "chevron.up")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Spacer()
+                        }
+                    }
+
+                    Divider()
+                        .background(Color.white.opacity(0.2))
+                        .padding(.vertical, VirgilSpacing.xs)
+
+                    Text("DATA SOURCES")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.virgilTextSecondary)
+
+                    // Genes Section
+                    DataSourceSection(
+                        icon: "🧬",
+                        title: "遺伝子",
+                        items: [
+                            DataSourceItem(name: "PER3", value: "夜型傾向", impact: "注意"),
+                            DataSourceItem(name: "CLOCK", value: "標準型", impact: "標準"),
+                            DataSourceItem(name: "NR3C1", value: "ストレス感受性", impact: "高め"),
+                            DataSourceItem(name: "BDNF", value: "回復力", impact: "標準")
+                        ]
+                    )
+
+                    // Blood Markers Section with Gauge
+                    VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
+                        HStack(spacing: VirgilSpacing.xs) {
+                            Text("💉")
+                                .font(.system(size: 14))
+
+                            Text("血液マーカー")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextPrimary)
+                        }
+
+                        VStack(spacing: 0) {
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "CRP",
+                                value: "0.3",
+                                unit: "mg/L",
+                                position: 0.20,
+                                pattern: .lowerIsBetter
+                            ))
+
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "アルブミン",
+                                value: "4.5",
+                                unit: "g/dL",
+                                position: 0.75,
+                                pattern: .higherIsBetter
+                            ))
+
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "テストステロン",
+                                value: "650",
+                                unit: "ng/dL",
+                                position: 0.60,
+                                pattern: .middleIsBest
+                            ))
+
+                            BloodMarkerItem(marker: BloodMarkerData(
+                                name: "プレアルブミン",
+                                value: "28",
+                                unit: "mg/dL",
+                                position: 0.70,
+                                pattern: .higherIsBetter
+                            ))
+                        }
+                    }
+                    .padding(.top, VirgilSpacing.xs)
+
+                    // Gut Microbiome Section
+                    DataSourceSection(
+                        icon: "🦠",
+                        title: "腸内細菌",
+                        items: [
+                            DataSourceItem(name: "メラトニン前駆体菌", value: "低め", impact: "要注意"),
+                            DataSourceItem(name: "トリプトファン代謝菌", value: "標準", impact: "標準"),
+                            DataSourceItem(name: "炎症性菌指標", value: "やや高め", impact: "注意")
+                        ]
+                    )
+
+                    // HealthKit Section
+                    DataSourceSection(
+                        icon: "📊",
+                        title: "HealthKit",
+                        items: [
+                            DataSourceItem(name: "夜間HRV", value: "", impact: "Excellent"),
+                            DataSourceItem(name: "睡眠効率", value: "", impact: "Good"),
+                            DataSourceItem(name: "深睡眠%", value: "", impact: "Good"),
+                            DataSourceItem(name: "入眠潜時", value: "", impact: "Excellent"),
+                            DataSourceItem(name: "皮膚温Δ", value: "", impact: "Good")
+                        ]
+                    )
+                }
+
+                // Toggle Button at Bottom
+                if !isExpanded {
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            isExpanded.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("詳細なバイオマーカーをみる")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(.virgilTextSecondary)
+                            Spacer()
+                        }
+                    }
+                }
+            }
+            .padding(VirgilSpacing.md)
+            .virgilGlassCard()
+
+            LongPressHint(helpText: "Recovery Syncは、睡眠×自律神経×炎症×ホルモンの同調度を示す指標です。回復の質とリズムを評価します。")
                 .padding(8)
         }
     }
