@@ -2,7 +2,7 @@
 //  CardioDetailView.swift
 //  AWStest
 //
-//  心肺機能詳細ページ
+//  心臓の健康詳細ページ
 //
 
 import SwiftUI
@@ -18,16 +18,27 @@ struct CardioDetailView: View {
                     Text("❤️")
                         .font(.system(size: 48))
 
-                    Text("85")
+                    Text("85")  // [DUMMY] スコア、API連携後に実データ使用
                         .font(.system(size: 64, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
 
-                    Text("CARDIO FITNESS")
+                    Text("CARDIAC HEALTH")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(VirgilSpacing.xl)
+                .virgilGlassCard()
+
+                // Score Graph
+                VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+                    Text("SCORE TREND")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.virgilTextSecondary)
+
+                    ScoreTrendGraph(scores: [78, 80, 82, 83, 84, 85])  // [DUMMY] 過去6ヶ月のスコア
+                }
+                .padding(VirgilSpacing.md)
                 .virgilGlassCard()
 
                 // Related Genes
@@ -41,24 +52,25 @@ struct CardioDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
+                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        GeneCard(
+                            name: "APOE",
+                            description: "コレステロール代謝・動脈硬化リスク",
+                            impact: "良好",
+                            color: Color(hex: "FFCB05")
+                        )
+
                         GeneCard(
                             name: "ACE I/D",
-                            description: "心肺持久力：ID型（良好）",
+                            description: "血圧調節・心筋機能",
                             impact: "良好",
-                            color: Color(hex: "0088CC")
+                            color: Color(hex: "FFCB05")
                         )
 
                         GeneCard(
-                            name: "PPARGC1A Gly482Ser",
-                            description: "ミトコンドリア生成：最適",
+                            name: "NOS3",
+                            description: "血管内皮機能・一酸化窒素産生",
                             impact: "優秀",
-                            color: Color(hex: "00C853")
-                        )
-
-                        GeneCard(
-                            name: "NOS3 -786T>C",
-                            description: "血管拡張能：良好",
-                            impact: "最適",
                             color: Color(hex: "00C853")
                         )
                     }
@@ -77,14 +89,51 @@ struct CardioDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        BloodMarkerRow(name: "VO2max", value: "42 mL/kg/min", status: "良好")
-                        BloodMarkerRow(name: "Resting HR", value: "58 bpm", status: "最適")
-                        BloodMarkerRow(name: "HDL", value: "65 mg/dL", status: "良好")
-                        BloodMarkerRow(name: "Triglycerides", value: "85 mg/dL", status: "最適")
+                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        BloodMarkerRow(name: "ApoB", value: "82 mg/dL", status: "最適")
+                        BloodMarkerRow(name: "Lp(a)", value: "15 mg/dL", status: "最適")
+                        BloodMarkerRow(name: "TG", value: "85 mg/dL", status: "最適")
+                        BloodMarkerRow(name: "HDL", value: "68 mg/dL", status: "優秀")
+                        BloodMarkerRow(name: "LDL", value: "95 mg/dL", status: "最適")
+                        BloodMarkerRow(name: "HbA1c", value: "5.2%", status: "最適")
+                        BloodMarkerRow(name: "CRP", value: "0.04 mg/dL", status: "最適")
                     }
                 }
                 .padding(VirgilSpacing.md)
                 .virgilGlassCard()
+
+                // Related Microbiome
+                MicrobiomeSection(bacteria: [
+                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    MicrobiomeItem(
+                        name: "Akkermansia muciniphila",
+                        description: "腸粘膜保護・動脈硬化予防",
+                        impact: "優秀",
+                        color: Color(hex: "00C853")
+                    ),
+                    MicrobiomeItem(
+                        name: "SCFA産生菌",
+                        description: "血圧調節・炎症抑制",
+                        impact: "優秀",
+                        color: Color(hex: "00C853")
+                    ),
+                    MicrobiomeItem(
+                        name: "多様性スコア",
+                        description: "腸内フローラの多様性・心血管保護",
+                        impact: "良好",
+                        color: Color(hex: "FFCB05")
+                    )
+                ])
+
+                // Related HealthKit
+                HealthKitSection(metrics: [
+                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    HealthKitMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
+                    HealthKitMetric(name: "HRV", value: "68ms", status: "優秀"),
+                    HealthKitMetric(name: "血圧", value: "118/75", status: "最適"),
+                    HealthKitMetric(name: "VO2max", value: "42 ml/kg/min", status: "良好"),
+                    HealthKitMetric(name: "有酸素運動時間", value: "150分/週", status: "最適")
+                ])
 
                 // Recommendations
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -93,24 +142,25 @@ struct CardioDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
+                        // [DUMMY] 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "🏃",
                             title: "有酸素運動",
-                            description: "週3回、30分以上の中強度運動",
+                            description: "週150分の中強度運動で心血管保護",
                             priority: "高"
                         )
 
                         RecommendationCard(
-                            icon: "⚡",
-                            title: "HIIT導入",
-                            description: "週1-2回の高強度インターバルトレーニング",
-                            priority: "中"
+                            icon: "🥗",
+                            title: "抗酸化食材摂取",
+                            description: "オメガ3・食物繊維で動脈硬化予防",
+                            priority: "高"
                         )
 
                         RecommendationCard(
                             icon: "🫀",
-                            title: "心拍変動モニタリング",
-                            description: "毎朝のHRV測定で回復状態を確認",
+                            title: "HRVモニタリング",
+                            description: "毎朝のHRV測定で自律神経バランス確認",
                             priority: "中"
                         )
                     }
@@ -135,7 +185,7 @@ struct CardioDetailView: View {
                 GridOverlay()
             }
         )
-        .navigationTitle("心肺機能")
+        .navigationTitle("心臓の健康")
         .navigationBarTitleDisplayMode(.large)
         .floatingChatButton()
     }

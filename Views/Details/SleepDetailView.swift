@@ -18,7 +18,7 @@ struct SleepDetailView: View {
                     Text("😴")
                         .font(.system(size: 48))
 
-                    Text("90")
+                    Text("90")  // [DUMMY] スコア、API連携後に実データ使用
                         .font(.system(size: 64, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
 
@@ -28,6 +28,17 @@ struct SleepDetailView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(VirgilSpacing.xl)
+                .virgilGlassCard()
+
+                // Score Graph
+                VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+                    Text("SCORE TREND")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(.virgilTextSecondary)
+
+                    ScoreTrendGraph(scores: [84, 86, 87, 88, 89, 90])  // [DUMMY] 過去6ヶ月のスコア
+                }
+                .padding(VirgilSpacing.md)
                 .virgilGlassCard()
 
                 // Related Genes
@@ -41,6 +52,7 @@ struct SleepDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
+                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
                         GeneCard(
                             name: "PER3 VNTR",
                             description: "概日リズム：安定型",
@@ -52,14 +64,14 @@ struct SleepDetailView: View {
                             name: "CLOCK 3111T/C",
                             description: "睡眠パターン：夜型傾向軽度",
                             impact: "良好",
-                            color: Color(hex: "0088CC")
+                            color: Color(hex: "FFCB05")
                         )
 
                         GeneCard(
                             name: "ADORA2A",
                             description: "カフェイン感受性：中程度",
                             impact: "良好",
-                            color: Color(hex: "0088CC")
+                            color: Color(hex: "FFCB05")
                         )
                     }
                 }
@@ -77,6 +89,7 @@ struct SleepDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
+                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
                         BloodMarkerRow(name: "Melatonin", value: "12 pg/mL", status: "最適")
                         BloodMarkerRow(name: "Cortisol (朝)", value: "15 μg/dL", status: "良好")
                         BloodMarkerRow(name: "Magnesium", value: "2.3 mg/dL", status: "最適")
@@ -86,6 +99,39 @@ struct SleepDetailView: View {
                 .padding(VirgilSpacing.md)
                 .virgilGlassCard()
 
+                // Related Microbiome
+                MicrobiomeSection(bacteria: [
+                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    MicrobiomeItem(
+                        name: "Lactobacillus",
+                        description: "GABA産生・睡眠の質向上",
+                        impact: "優秀",
+                        color: Color(hex: "00C853")
+                    ),
+                    MicrobiomeItem(
+                        name: "Bifidobacterium",
+                        description: "セロトニン前駆体産生・メラトニン合成",
+                        impact: "優秀",
+                        color: Color(hex: "00C853")
+                    ),
+                    MicrobiomeItem(
+                        name: "多様性スコア",
+                        description: "腸内フローラの多様性・概日リズム調整",
+                        impact: "良好",
+                        color: Color(hex: "FFCB05")
+                    )
+                ])
+
+                // Related HealthKit
+                HealthKitSection(metrics: [
+                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    HealthKitMetric(name: "睡眠時間", value: "7h 12m", status: "最適"),
+                    HealthKitMetric(name: "深睡眠", value: "2h 30m", status: "優秀"),
+                    HealthKitMetric(name: "レム睡眠", value: "1h 48m", status: "良好"),
+                    HealthKitMetric(name: "睡眠効率", value: "89%", status: "優秀"),
+                    HealthKitMetric(name: "HRV", value: "70ms", status: "優秀")
+                ])
+
                 // Sleep Stages
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
                     Text("SLEEP STAGES")
@@ -93,6 +139,7 @@ struct SleepDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
+                        // [DUMMY] 睡眠ステージデータ、API連携後に実データ使用
                         SleepStageRow(stage: "深睡眠", duration: "2.5時間", percentage: 35)
                         SleepStageRow(stage: "レム睡眠", duration: "1.8時間", percentage: 25)
                         SleepStageRow(stage: "浅睡眠", duration: "2.9時間", percentage: 40)
@@ -108,6 +155,7 @@ struct SleepDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
+                        // [DUMMY] 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "🌙",
                             title: "就寝時刻の固定",

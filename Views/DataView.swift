@@ -216,31 +216,31 @@ private struct LifeScoreCard: View {
                 VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
                 HStack {
                     Text(emoji)
-                        .font(.system(size: 16))
+                        .font(.system(size: 17.6))  // 16 * 1.1
                     Text(title)
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 11, weight: .semibold))  // 10 * 1.1
                         .foregroundColor(.virgilTextPrimary)
                     Spacer()
                 }
 
                 Text("\(score)")
-                    .font(.system(size: 24, weight: .black))
+                    .font(.system(size: 26.4, weight: .black))  // 24 * 1.1
                     .foregroundColor(Color(hex: "#00C853"))
 
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
                         Rectangle()
                             .fill(Color.gray.opacity(0.2))
-                            .frame(height: 3)
+                            .frame(height: 3.3)  // 3 * 1.1
 
                         Rectangle()
                             .fill(Color(hex: "#00C853"))
-                            .frame(width: geometry.size.width * CGFloat(score) / 100, height: 3)
+                            .frame(width: geometry.size.width * CGFloat(score) / 100, height: 3.3)  // 3 * 1.1
                     }
                     }
-                    .frame(height: 3)
+                    .frame(height: 3.3)  // 3 * 1.1
                 }
-                .padding(VirgilSpacing.md)
+                .padding(VirgilSpacing.md * 1.1)  // padding 10%拡大
                 .virgilGlassCard()
 
                 LongPressHint(helpText: "\(title)のスコアです。タップすると詳細な分析が表示されます。")
