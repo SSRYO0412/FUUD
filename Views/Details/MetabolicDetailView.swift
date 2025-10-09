@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MetabolicDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 代謝スコアと各セクションは仮の固定値
 
     var body: some View {
@@ -68,6 +69,14 @@ struct MetabolicDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareGenes) { // [DUMMY] 遺伝子セクション共有ボタン
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -112,6 +121,14 @@ struct MetabolicDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareBloodMarkers) { // [DUMMY] 血液マーカーセクション共有ボタン
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -208,7 +225,73 @@ struct MetabolicDetailView: View {
         )
         .navigationTitle("ダイエット")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar { // [DUMMY] NavigationBarに共有ボタンを追加
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー通知トースト
+    }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateDetailViewPrompt(
+            category: "ダイエット",
+            score: 85,
+            relatedGenes: [
+                (name: "FTO rs9939609", variant: "rs9939609", risk: "標準", description: "肥満リスク：標準型"),
+                (name: "TCF7L2 rs7903146", variant: "rs7903146", risk: "保護型", description: "2型糖尿病リスク：低"),
+                (name: "UCP1 rs1800592", variant: "rs1800592", risk: "優秀", description: "脂肪燃焼効率：高"),
+                (name: "ADRB2 rs1042714", variant: "rs1042714", risk: "良好", description: "代謝応答性：良好")
+            ],
+            relatedBloodMarkers: [
+                (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-6.0", status: "最適"),
+                (name: "GA", value: "14.5", unit: "%", range: "11-16", status: "良好"),
+                (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
+                (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
+                (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "良好"),
+                (name: "LDL", value: "95", unit: "mg/dL", range: "<120", status: "最適"),
+                (name: "TCHO", value: "180", unit: "mg/dL", range: "150-220", status: "正常範囲"),
+                (name: "ApoB", value: "75", unit: "mg/dL", range: "<90", status: "最適")
+            ]
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
+            (name: "FTO rs9939609", variant: "rs9939609", risk: "標準", description: "肥満リスク：標準型"),
+            (name: "TCF7L2 rs7903146", variant: "rs7903146", risk: "保護型", description: "2型糖尿病リスク：低"),
+            (name: "UCP1 rs1800592", variant: "rs1800592", risk: "優秀", description: "脂肪燃焼効率：高"),
+            (name: "ADRB2 rs1042714", variant: "rs1042714", risk: "良好", description: "代謝応答性：良好")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
+            (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-6.0", status: "最適"),
+            (name: "GA", value: "14.5", unit: "%", range: "11-16", status: "良好"),
+            (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
+            (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
+            (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "良好"),
+            (name: "LDL", value: "95", unit: "mg/dL", range: "<120", status: "最適"),
+            (name: "TCHO", value: "180", unit: "mg/dL", range: "150-220", status: "正常範囲"),
+            (name: "ApoB", value: "75", unit: "mg/dL", range: "<90", status: "最適")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
 

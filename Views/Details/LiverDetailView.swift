@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LiverDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 肝機能スコアや関連指標はモック値
 
     var body: some View {
@@ -68,6 +69,14 @@ struct LiverDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer() // [DUMMY]
+
+                        Button(action: shareGenes) { // [DUMMY]
+                            Image(systemName: "doc.on.doc") // [DUMMY]
+                                .font(.system(size: 14)) // [DUMMY]
+                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
+                        } // [DUMMY]
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -98,6 +107,14 @@ struct LiverDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer() // [DUMMY]
+
+                        Button(action: shareBloodMarkers) { // [DUMMY]
+                            Image(systemName: "doc.on.doc") // [DUMMY]
+                                .font(.system(size: 14)) // [DUMMY]
+                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
+                        } // [DUMMY]
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -199,8 +216,70 @@ struct LiverDetailView: View {
         )
         .navigationTitle("肝機能")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar { // [DUMMY]
+            ToolbarItem(placement: .navigationBarTrailing) { // [DUMMY]
+                Button(action: shareDetailView) { // [DUMMY]
+                    Image(systemName: "square.and.arrow.up") // [DUMMY]
+                        .font(.system(size: 16, weight: .medium)) // [DUMMY]
+                        .foregroundColor(.virgilTextPrimary) // [DUMMY]
+                } // [DUMMY]
+            } // [DUMMY]
+        } // [DUMMY]
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY]
     }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() { // [DUMMY]
+        let prompt = PromptGenerator.generateDetailViewPrompt( // [DUMMY]
+            category: "肝機能", // [DUMMY]
+            score: 85, // [DUMMY]
+            relatedGenes: [ // [DUMMY]
+                (name: "PNPLA3", variant: "PNPLA3", risk: "良好", description: "脂肪肝リスク・脂質代謝"), // [DUMMY]
+                (name: "ALDH2", variant: "ALDH2", risk: "優秀", description: "アルコール代謝・アセトアルデヒド分解") // [DUMMY]
+            ], // [DUMMY]
+            relatedBloodMarkers: [ // [DUMMY]
+                (name: "AST", value: "22", unit: "U/L", range: "10-40", status: "最適"), // [DUMMY]
+                (name: "ALT", value: "18", unit: "U/L", range: "5-45", status: "最適"), // [DUMMY]
+                (name: "GGT", value: "25", unit: "U/L", range: "0-50", status: "最適"), // [DUMMY]
+                (name: "ALP", value: "195", unit: "U/L", range: "100-325", status: "正常範囲"), // [DUMMY]
+                (name: "T-Bil", value: "0.9", unit: "mg/dL", range: "0.2-1.2", status: "最適"), // [DUMMY]
+                (name: "D-Bil", value: "0.2", unit: "mg/dL", range: "0.0-0.4", status: "最適"), // [DUMMY]
+                (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.3", status: "最適"), // [DUMMY]
+                (name: "TG", value: "88", unit: "mg/dL", range: "30-150", status: "最適") // [DUMMY]
+            ] // [DUMMY]
+        ) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() { // [DUMMY]
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [ // [DUMMY]
+            (name: "PNPLA3", variant: "PNPLA3", risk: "良好", description: "脂肪肝リスク・脂質代謝"), // [DUMMY]
+            (name: "ALDH2", variant: "ALDH2", risk: "優秀", description: "アルコール代謝・アセトアルデヒド分解") // [DUMMY]
+        ]) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() { // [DUMMY]
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [ // [DUMMY]
+            (name: "AST", value: "22", unit: "U/L", range: "10-40", status: "最適"), // [DUMMY]
+            (name: "ALT", value: "18", unit: "U/L", range: "5-45", status: "最適"), // [DUMMY]
+            (name: "GGT", value: "25", unit: "U/L", range: "0-50", status: "最適"), // [DUMMY]
+            (name: "ALP", value: "195", unit: "U/L", range: "100-325", status: "正常範囲"), // [DUMMY]
+            (name: "T-Bil", value: "0.9", unit: "mg/dL", range: "0.2-1.2", status: "最適"), // [DUMMY]
+            (name: "D-Bil", value: "0.2", unit: "mg/dL", range: "0.0-0.4", status: "最適"), // [DUMMY]
+            (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.3", status: "最適"), // [DUMMY]
+            (name: "TG", value: "88", unit: "mg/dL", range: "30-150", status: "最適") // [DUMMY]
+        ]) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
 }
 
 // MARK: - Preview

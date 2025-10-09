@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SkinDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 肌関連のスコアや指標はモックデータ
 
     var body: some View {
@@ -68,6 +69,14 @@ struct SkinDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareGenes) { // [DUMMY] 遺伝子セクション共有ボタン
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -105,6 +114,14 @@ struct SkinDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareBloodMarkers) { // [DUMMY] 血液マーカーセクション共有ボタン
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -206,7 +223,71 @@ struct SkinDetailView: View {
         )
         .navigationTitle("肌")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar { // [DUMMY] NavigationBar共有ボタン
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー完了トースト表示
+    }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateDetailViewPrompt(
+            category: "肌",
+            score: 86,
+            relatedGenes: [
+                (name: "FLG", variant: "FLG", risk: "良好", description: "肌バリア機能遺伝子"),
+                (name: "MMP1", variant: "MMP1", risk: "最適", description: "コラーゲン分解酵素"),
+                (name: "SOD2", variant: "SOD2", risk: "優秀", description: "抗酸化能力")
+            ],
+            relatedBloodMarkers: [
+                (name: "Zn", value: "95", unit: "μg/dL", range: "60-130", status: "最適"),
+                (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
+                (name: "ALB", value: "4.5", unit: "g/dL", range: "4.0-5.0", status: "最適"),
+                (name: "CRP", value: "0.3", unit: "mg/L", range: "<3.0", status: "最適"),
+                (name: "GGT", value: "22", unit: "U/L", range: "0-73", status: "最適"),
+                (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適"),
+                (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "良好"),
+                (name: "pAlb", value: "28", unit: "mg/dL", range: "25-30", status: "最適")
+            ]
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
+            (name: "FLG", variant: "FLG", risk: "良好", description: "肌バリア機能遺伝子"),
+            (name: "MMP1", variant: "MMP1", risk: "最適", description: "コラーゲン分解酵素"),
+            (name: "SOD2", variant: "SOD2", risk: "優秀", description: "抗酸化能力")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
+            (name: "Zn", value: "95", unit: "μg/dL", range: "60-130", status: "最適"),
+            (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
+            (name: "ALB", value: "4.5", unit: "g/dL", range: "4.0-5.0", status: "最適"),
+            (name: "CRP", value: "0.3", unit: "mg/L", range: "<3.0", status: "最適"),
+            (name: "GGT", value: "22", unit: "U/L", range: "0-73", status: "最適"),
+            (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適"),
+            (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "良好"),
+            (name: "pAlb", value: "28", unit: "mg/dL", range: "25-30", status: "最適")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
 

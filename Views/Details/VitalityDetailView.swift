@@ -9,6 +9,7 @@ import SwiftUI
 
 struct VitalityDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 活力スコアおよび各指標は仮の固定値
 
     var body: some View {
@@ -68,6 +69,14 @@ struct VitalityDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer() // [DUMMY]
+
+                        Button(action: shareGenes) { // [DUMMY]
+                            Image(systemName: "doc.on.doc") // [DUMMY]
+                                .font(.system(size: 14)) // [DUMMY]
+                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
+                        } // [DUMMY]
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -105,6 +114,14 @@ struct VitalityDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer() // [DUMMY]
+
+                        Button(action: shareBloodMarkers) { // [DUMMY]
+                            Image(systemName: "doc.on.doc") // [DUMMY]
+                                .font(.system(size: 14)) // [DUMMY]
+                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
+                        } // [DUMMY]
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -205,8 +222,68 @@ struct VitalityDetailView: View {
         )
         .navigationTitle("活力")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar { // [DUMMY]
+            ToolbarItem(placement: .navigationBarTrailing) { // [DUMMY]
+                Button(action: shareDetailView) { // [DUMMY]
+                    Image(systemName: "square.and.arrow.up") // [DUMMY]
+                        .font(.system(size: 16, weight: .medium)) // [DUMMY]
+                        .foregroundColor(.virgilTextPrimary) // [DUMMY]
+                } // [DUMMY]
+            } // [DUMMY]
+        } // [DUMMY]
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY]
     }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() { // [DUMMY]
+        let prompt = PromptGenerator.generateDetailViewPrompt( // [DUMMY]
+            category: "活力", // [DUMMY]
+            score: 91, // [DUMMY]
+            relatedGenes: [ // [DUMMY]
+                (name: "PPARGC1A", variant: "PPARGC1A", risk: "優秀", description: "ミトコンドリア生合成・エネルギー産生"), // [DUMMY]
+                (name: "NRF1", variant: "NRF1", risk: "優秀", description: "抗酸化・細胞エネルギー代謝"), // [DUMMY]
+                (name: "SIRT1", variant: "SIRT1", risk: "良好", description: "長寿遺伝子・代謝調節") // [DUMMY]
+            ], // [DUMMY]
+            relatedBloodMarkers: [ // [DUMMY]
+                (name: "Ferritin", value: "98", unit: "ng/mL", range: "30-400", status: "最適"), // [DUMMY]
+                (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.4-1.5", status: "良好"), // [DUMMY]
+                (name: "LAC", value: "11", unit: "mg/dL", range: "4-16", status: "最適"), // [DUMMY]
+                (name: "ALB", value: "4.6", unit: "g/dL", range: "4.1-5.1", status: "最適"), // [DUMMY]
+                (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "正常範囲"), // [DUMMY]
+                (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適") // [DUMMY]
+            ] // [DUMMY]
+        ) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() { // [DUMMY]
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [ // [DUMMY]
+            (name: "PPARGC1A", variant: "PPARGC1A", risk: "優秀", description: "ミトコンドリア生合成・エネルギー産生"), // [DUMMY]
+            (name: "NRF1", variant: "NRF1", risk: "優秀", description: "抗酸化・細胞エネルギー代謝"), // [DUMMY]
+            (name: "SIRT1", variant: "SIRT1", risk: "良好", description: "長寿遺伝子・代謝調節") // [DUMMY]
+        ]) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() { // [DUMMY]
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [ // [DUMMY]
+            (name: "Ferritin", value: "98", unit: "ng/mL", range: "30-400", status: "最適"), // [DUMMY]
+            (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.4-1.5", status: "良好"), // [DUMMY]
+            (name: "LAC", value: "11", unit: "mg/dL", range: "4-16", status: "最適"), // [DUMMY]
+            (name: "ALB", value: "4.6", unit: "g/dL", range: "4.1-5.1", status: "最適"), // [DUMMY]
+            (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "正常範囲"), // [DUMMY]
+            (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適") // [DUMMY]
+        ]) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
 }
 
 // MARK: - Preview

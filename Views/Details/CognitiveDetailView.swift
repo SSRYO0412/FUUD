@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CognitiveDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] スコア・遺伝子・血液・推奨事項はモックデータ
 
     var body: some View {
@@ -68,6 +69,14 @@ struct CognitiveDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareGenes) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     // [DUMMY] 遺伝子パネルはモックデータ
@@ -105,6 +114,14 @@ struct CognitiveDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareBloodMarkers) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     // [DUMMY] 血液マーカーはモックデータ
@@ -208,7 +225,63 @@ struct CognitiveDetailView: View {
         )
         .navigationTitle("認知機能")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast)
+    }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateDetailViewPrompt(
+            category: "認知機能",
+            score: 92,
+            relatedGenes: [
+                (name: "APOE ε3/ε3", variant: "ε3/ε3", risk: "低", description: "アルツハイマー病リスク：低"),
+                (name: "BDNF Val66Met", variant: "Val66Met", risk: "良好", description: "学習・記憶能力：優良"),
+                (name: "COMT Val158Met", variant: "Val158Met", risk: "最適", description: "ドーパミン代謝：バランス型")
+            ],
+            relatedBloodMarkers: [
+                (name: "Homocysteine", value: "8.2", unit: "μmol/L", range: "5-15", status: "最適"),
+                (name: "Vitamin B12", value: "580", unit: "pg/mL", range: "200-900", status: "良好"),
+                (name: "Folate", value: "12.5", unit: "ng/mL", range: "3-20", status: "最適"),
+                (name: "Omega-3 Index", value: "8.2", unit: "%", range: ">8", status: "優秀")
+            ]
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
+            (name: "APOE ε3/ε3", variant: "ε3/ε3", risk: "低", description: "アルツハイマー病リスク：低"),
+            (name: "BDNF Val66Met", variant: "Val66Met", risk: "良好", description: "学習・記憶能力：優良"),
+            (name: "COMT Val158Met", variant: "Val158Met", risk: "最適", description: "ドーパミン代謝：バランス型")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
+            (name: "Homocysteine", value: "8.2", unit: "μmol/L", range: "5-15", status: "最適"),
+            (name: "Vitamin B12", value: "580", unit: "pg/mL", range: "200-900", status: "良好"),
+            (name: "Folate", value: "12.5", unit: "ng/mL", range: "3-20", status: "最適"),
+            (name: "Omega-3 Index", value: "8.2", unit: "%", range: ">8", status: "優秀")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
 
@@ -219,6 +292,7 @@ struct GeneCard: View {
     let description: String
     let impact: String
     let color: Color
+    @State private var showCopyToast = false // [DUMMY] コピー通知トースト表示状態
 
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
@@ -245,6 +319,17 @@ struct GeneCard: View {
         .padding(VirgilSpacing.sm)
         .background(Color.black.opacity(0.02))
         .cornerRadius(8)
+        .onLongPressGesture(minimumDuration: 0.5) {
+            // [DUMMY] 遺伝子カード長押し時にプロンプト生成＆コピー
+            let prompt = PromptGenerator.generateGenePrompt(
+                geneName: name,
+                variant: name, // [DUMMY] バリアント情報が分離されていないため名前を使用
+                riskLevel: impact,
+                description: description
+            )
+            CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+        }
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast)
     }
 }
 
@@ -254,6 +339,7 @@ struct BloodMarkerRow: View {
     let name: String
     let value: String
     let status: String
+    @State private var showCopyToast = false // [DUMMY] コピー通知トースト表示状態
 
     // ステータスに応じた色分け (Optimal/最適=緑, Reference/正常範囲=黄, Risk/注意=赤)
     private var statusColor: Color {
@@ -292,6 +378,18 @@ struct BloodMarkerRow: View {
         .padding(VirgilSpacing.sm)
         .background(Color.black.opacity(0.02))
         .cornerRadius(6)
+        .onLongPressGesture(minimumDuration: 0.5) {
+            // [DUMMY] 血液マーカー長押し時にプロンプト生成＆コピー
+            let prompt = PromptGenerator.generateBloodMarkerPrompt(
+                markerName: name,
+                value: value.components(separatedBy: " ").first ?? value,
+                unit: value.components(separatedBy: " ").last ?? "",
+                referenceRange: "基準値範囲", // [DUMMY] 基準値が構造化されていないため固定文言
+                status: status
+            )
+            CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+        }
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast)
     }
 }
 

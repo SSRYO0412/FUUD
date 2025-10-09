@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SleepDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 睡眠指標や関連データはテスト用の固定値
 
     var body: some View {
@@ -68,6 +69,15 @@ struct SleepDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        // [DUMMY] 共有ボタン追加
+                        Button(action: shareGenes) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -105,6 +115,15 @@ struct SleepDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        // [DUMMY] 共有ボタン追加
+                        Button(action: shareBloodMarkers) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -219,7 +238,64 @@ struct SleepDetailView: View {
         )
         .navigationTitle("睡眠")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            // [DUMMY] NavigationBarに共有ボタン追加
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー通知トースト
+    }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateDetailViewPrompt(
+            category: "睡眠",
+            score: 90,
+            relatedGenes: [
+                (name: "PER3 VNTR", variant: "VNTR", risk: "最適", description: "概日リズム：安定型"),
+                (name: "CLOCK 3111T/C", variant: "3111T/C", risk: "良好", description: "睡眠パターン：夜型傾向軽度"),
+                (name: "ADORA2A", variant: "ADORA2A", risk: "良好", description: "カフェイン感受性：中程度")
+            ],
+            relatedBloodMarkers: [
+                (name: "Melatonin", value: "12", unit: "pg/mL", range: "10-15", status: "最適"),
+                (name: "Cortisol (朝)", value: "15", unit: "μg/dL", range: "10-20", status: "良好"),
+                (name: "Magnesium", value: "2.3", unit: "mg/dL", range: "1.8-2.6", status: "最適"),
+                (name: "Vitamin D", value: "45", unit: "ng/mL", range: "30-100", status: "最適")
+            ]
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
+            (name: "PER3 VNTR", variant: "VNTR", risk: "最適", description: "概日リズム：安定型"),
+            (name: "CLOCK 3111T/C", variant: "3111T/C", risk: "良好", description: "睡眠パターン：夜型傾向軽度"),
+            (name: "ADORA2A", variant: "ADORA2A", risk: "良好", description: "カフェイン感受性：中程度")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
+            (name: "Melatonin", value: "12", unit: "pg/mL", range: "10-15", status: "最適"),
+            (name: "Cortisol (朝)", value: "15", unit: "μg/dL", range: "10-20", status: "良好"),
+            (name: "Magnesium", value: "2.3", unit: "mg/dL", range: "1.8-2.6", status: "最適"),
+            (name: "Vitamin D", value: "45", unit: "ng/mL", range: "30-100", status: "最適")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
 

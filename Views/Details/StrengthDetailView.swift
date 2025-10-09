@@ -9,6 +9,7 @@ import SwiftUI
 
 struct StrengthDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 筋力指標と推奨事項はモックデータ
 
     var body: some View {
@@ -57,6 +58,14 @@ struct StrengthDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareGenes) { // [DUMMY] 遺伝子セクション共有ボタン
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     // [DUMMY] 遺伝子データはモック
@@ -94,6 +103,14 @@ struct StrengthDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareBloodMarkers) { // [DUMMY] 血液マーカーセクション共有ボタン
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     // [DUMMY] 血液マーカーはモック
@@ -159,7 +176,63 @@ struct StrengthDetailView: View {
         )
         .navigationTitle("筋力")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar { // [DUMMY] NavigationBarに共有ボタン追加
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー完了トースト
+    }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateDetailViewPrompt(
+            category: "筋力",
+            score: 88,
+            relatedGenes: [
+                (name: "ACTN3 R577X", variant: "RR型", risk: "優秀", description: "速筋繊維タイプ：RR型（パワー型）"),
+                (name: "ACE I/D", variant: "ID型", risk: "良好", description: "持久力遺伝子：ID型（バランス型）"),
+                (name: "MSTN K153R", variant: "良好", risk: "最適", description: "筋肉量調節：良好")
+            ],
+            relatedBloodMarkers: [
+                (name: "Testosterone", value: "650", unit: "ng/dL", range: "300-1000", status: "最適"),
+                (name: "Creatinine", value: "0.95", unit: "mg/dL", range: "0.6-1.2", status: "良好"),
+                (name: "CK (CPK)", value: "180", unit: "U/L", range: "50-200", status: "正常"),
+                (name: "Vitamin D", value: "45", unit: "ng/mL", range: "30-100", status: "最適")
+            ]
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
+            (name: "ACTN3 R577X", variant: "RR型", risk: "優秀", description: "速筋繊維タイプ：RR型（パワー型）"),
+            (name: "ACE I/D", variant: "ID型", risk: "良好", description: "持久力遺伝子：ID型（バランス型）"),
+            (name: "MSTN K153R", variant: "良好", risk: "最適", description: "筋肉量調節：良好")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
+            (name: "Testosterone", value: "650", unit: "ng/dL", range: "300-1000", status: "最適"),
+            (name: "Creatinine", value: "0.95", unit: "mg/dL", range: "0.6-1.2", status: "良好"),
+            (name: "CK (CPK)", value: "180", unit: "U/L", range: "50-200", status: "正常"),
+            (name: "Vitamin D", value: "45", unit: "ng/mL", range: "30-100", status: "最適")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
 

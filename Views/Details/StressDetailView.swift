@@ -9,6 +9,7 @@ import SwiftUI
 
 struct StressDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] ストレス関連データはモック
 
     var body: some View {
@@ -68,6 +69,14 @@ struct StressDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareGenes) { // [DUMMY] 遺伝子セクション共有ボタン
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -105,6 +114,14 @@ struct StressDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareBloodMarkers) { // [DUMMY] 血液マーカーセクション共有ボタン
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -196,7 +213,63 @@ struct StressDetailView: View {
         )
         .navigationTitle("ストレス")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar { // [DUMMY] NavigationBar共有ボタン追加
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー完了トースト表示
+    }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateDetailViewPrompt(
+            category: "ストレス",
+            score: 82,
+            relatedGenes: [
+                (name: "NR3C1", variant: "NR3C1", risk: "注意", description: "コルチゾール受容体・ストレス応答"),
+                (name: "COMT Val158Met", variant: "Val158Met", risk: "良好", description: "ドーパミン代謝・ストレス耐性"),
+                (name: "SLC6A4", variant: "SLC6A4", risk: "標準", description: "セロトニントランスポーター")
+            ],
+            relatedBloodMarkers: [
+                (name: "CRP", value: "0.3", unit: "mg/L", range: "0-5", status: "最適"),
+                (name: "LAC", value: "12", unit: "mg/dL", range: "4-16", status: "良好"),
+                (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
+                (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適")
+            ]
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
+            (name: "NR3C1", variant: "NR3C1", risk: "注意", description: "コルチゾール受容体・ストレス応答"),
+            (name: "COMT Val158Met", variant: "Val158Met", risk: "良好", description: "ドーパミン代謝・ストレス耐性"),
+            (name: "SLC6A4", variant: "SLC6A4", risk: "標準", description: "セロトニントランスポーター")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
+            (name: "CRP", value: "0.3", unit: "mg/L", range: "0-5", status: "最適"),
+            (name: "LAC", value: "12", unit: "mg/dL", range: "4-16", status: "良好"),
+            (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
+            (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
 

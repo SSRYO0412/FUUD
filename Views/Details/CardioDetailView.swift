@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CardioDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 心血管関連の数値と指標はモック
 
     var body: some View {
@@ -68,6 +69,15 @@ struct CardioDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        // [DUMMY] 遺伝子セクション共有ボタン
+                        Button(action: shareGenes) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -105,6 +115,15 @@ struct CardioDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        // [DUMMY] 血液マーカーセクション共有ボタン
+                        Button(action: shareBloodMarkers) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -206,7 +225,70 @@ struct CardioDetailView: View {
         )
         .navigationTitle("心臓の健康")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                // [DUMMY] DetailView全体共有ボタン
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー通知トースト
+    }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateDetailViewPrompt(
+            category: "心臓の健康",
+            score: 85,
+            relatedGenes: [
+                (name: "APOE", variant: "APOE", risk: "良好", description: "コレステロール代謝・動脈硬化リスク"),
+                (name: "ACE I/D", variant: "ACE I/D", risk: "良好", description: "血圧調節・心筋機能"),
+                (name: "NOS3", variant: "NOS3", risk: "優秀", description: "血管内皮機能・一酸化窒素産生")
+            ],
+            relatedBloodMarkers: [
+                (name: "ApoB", value: "82", unit: "mg/dL", range: "<90", status: "最適"),
+                (name: "Lp(a)", value: "15", unit: "mg/dL", range: "<30", status: "最適"),
+                (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
+                (name: "HDL", value: "68", unit: "mg/dL", range: ">40", status: "優秀"),
+                (name: "LDL", value: "95", unit: "mg/dL", range: "<100", status: "最適"),
+                (name: "HbA1c", value: "5.2", unit: "%", range: "<5.7", status: "最適"),
+                (name: "CRP", value: "0.04", unit: "mg/dL", range: "<0.1", status: "最適")
+            ]
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
+            (name: "APOE", variant: "APOE", risk: "良好", description: "コレステロール代謝・動脈硬化リスク"),
+            (name: "ACE I/D", variant: "ACE I/D", risk: "良好", description: "血圧調節・心筋機能"),
+            (name: "NOS3", variant: "NOS3", risk: "優秀", description: "血管内皮機能・一酸化窒素産生")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
+            (name: "ApoB", value: "82", unit: "mg/dL", range: "<90", status: "最適"),
+            (name: "Lp(a)", value: "15", unit: "mg/dL", range: "<30", status: "最適"),
+            (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
+            (name: "HDL", value: "68", unit: "mg/dL", range: ">40", status: "優秀"),
+            (name: "LDL", value: "95", unit: "mg/dL", range: "<100", status: "最適"),
+            (name: "HbA1c", value: "5.2", unit: "%", range: "<5.7", status: "最適"),
+            (name: "CRP", value: "0.04", unit: "mg/dL", range: "<0.1", status: "最適")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
 

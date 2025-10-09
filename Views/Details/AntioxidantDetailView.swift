@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AntioxidantDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 抗酸化指標の数値・関連データはモック
 
     var body: some View {
@@ -68,6 +69,15 @@ struct AntioxidantDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        // [DUMMY] 遺伝子セクション共有ボタン
+                        Button(action: shareGenes) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -105,6 +115,15 @@ struct AntioxidantDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        // [DUMMY] 血液マーカーセクション共有ボタン
+                        Button(action: shareBloodMarkers) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -201,7 +220,66 @@ struct AntioxidantDetailView: View {
         )
         .navigationTitle("抗酸化")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            // [DUMMY] NavigationBar共有ボタン
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー完了トースト通知
+    }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateDetailViewPrompt(
+            category: "抗酸化",
+            score: 84,
+            relatedGenes: [
+                (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "スーパーオキシド分解酵素"),
+                (name: "GPX1 Pro198Leu", variant: "Pro198Leu", risk: "良好", description: "グルタチオンペルオキシダーゼ"),
+                (name: "CAT", variant: "-", risk: "最適", description: "カタラーゼ活性")
+            ],
+            relatedBloodMarkers: [
+                (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適"),
+                (name: "UA", value: "5.2", unit: "mg/dL", range: "3.0-7.0", status: "最適"),
+                (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
+                (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
+                (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "最適")
+            ]
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
+            (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "スーパーオキシド分解酵素"),
+            (name: "GPX1 Pro198Leu", variant: "Pro198Leu", risk: "良好", description: "グルタチオンペルオキシダーゼ"),
+            (name: "CAT", variant: "-", risk: "最適", description: "カタラーゼ活性")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
+            (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適"),
+            (name: "UA", value: "5.2", unit: "mg/dL", range: "3.0-7.0", status: "最適"),
+            (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
+            (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
+            (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "最適")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
 

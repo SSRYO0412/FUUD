@@ -212,6 +212,7 @@ private struct LifeScoreCard: View {
     let emoji: String
     let title: String
     let score: Int
+    @State private var showCopyToast = false // [DUMMY] コピー通知トースト表示状態
 
     var body: some View {
         NavigationLink(destination: destinationView) {
@@ -245,11 +246,21 @@ private struct LifeScoreCard: View {
                 }
                 .padding(VirgilSpacing.md * 1.1)  // padding 10%拡大
                 .virgilGlassCard()
+                .onLongPressGesture(minimumDuration: 0.5) {
+                    // [DUMMY] ライフスコアカード長押し時にプロンプト生成＆コピー
+                    let prompt = PromptGenerator.generateLifeScorePrompt(
+                        category: title,
+                        score: score,
+                        emoji: emoji
+                    )
+                    CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+                }
 
                 LongPressHint(helpText: "\(title)のスコアです。タップすると詳細な分析が表示されます。")
                     .padding(8)
             }
         }
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast)
     }
 
     @ViewBuilder

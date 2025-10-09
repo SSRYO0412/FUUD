@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AthleticDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 表示スコアと関連データは仮の固定値
 
     var body: some View {
@@ -68,6 +69,14 @@ struct AthleticDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareGenes) { // [DUMMY] 遺伝子セクション共有ボタン
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -98,6 +107,14 @@ struct AthleticDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareBloodMarkers) { // [DUMMY] 血液マーカーセクション共有ボタン
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -191,7 +208,63 @@ struct AthleticDetailView: View {
         )
         .navigationTitle("運動能力")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar { // [DUMMY] NavigationBarに全体共有ボタン追加
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー通知トースト
+    }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateDetailViewPrompt(
+            category: "運動能力",
+            score: 89,
+            relatedGenes: [
+                (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "速筋型・瞬発力優位"),
+                (name: "ACE I/D", variant: "I/D", risk: "良好", description: "持久力型・有酸素能力")
+            ],
+            relatedBloodMarkers: [
+                (name: "CK", value: "120", unit: "U/L", range: "30-200", status: "最適"),
+                (name: "Mb", value: "45", unit: "ng/mL", range: "20-80", status: "良好"),
+                (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
+                (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
+                (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適")
+            ]
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
+            (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "速筋型・瞬発力優位"),
+            (name: "ACE I/D", variant: "I/D", risk: "良好", description: "持久力型・有酸素能力")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
+            (name: "CK", value: "120", unit: "U/L", range: "30-200", status: "最適"),
+            (name: "Mb", value: "45", unit: "ng/mL", range: "20-80", status: "良好"),
+            (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
+            (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
+            (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適")
+        ])
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
 

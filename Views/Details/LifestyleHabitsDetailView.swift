@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LifestyleHabitsDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] ライフスタイル指標は仮データ
 
     var body: some View {
@@ -68,6 +69,14 @@ struct LifestyleHabitsDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareGenes) { // [DUMMY]
+                            Image(systemName: "doc.on.doc") // [DUMMY]
+                                .font(.system(size: 14)) // [DUMMY]
+                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
+                        } // [DUMMY]
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -105,6 +114,14 @@ struct LifestyleHabitsDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer()
+
+                        Button(action: shareBloodMarkers) { // [DUMMY]
+                            Image(systemName: "doc.on.doc") // [DUMMY]
+                                .font(.system(size: 14)) // [DUMMY]
+                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
+                        } // [DUMMY]
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -211,8 +228,80 @@ struct LifestyleHabitsDetailView: View {
         )
         .navigationTitle("生活習慣")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar { // [DUMMY]
+            ToolbarItem(placement: .navigationBarTrailing) { // [DUMMY]
+                Button(action: shareDetailView) { // [DUMMY]
+                    Image(systemName: "square.and.arrow.up") // [DUMMY]
+                        .font(.system(size: 16, weight: .medium)) // [DUMMY]
+                        .foregroundColor(.virgilTextPrimary) // [DUMMY]
+                } // [DUMMY]
+            } // [DUMMY]
+        } // [DUMMY]
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY]
     }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() { // [DUMMY]
+        let prompt = PromptGenerator.generateDetailViewPrompt( // [DUMMY]
+            category: "生活習慣", // [DUMMY]
+            score: 87, // [DUMMY]
+            relatedGenes: [ // [DUMMY]
+                (name: "FTO", variant: "FTO", risk: "良好", description: "食欲調節・肥満リスク"), // [DUMMY]
+                (name: "APOE", variant: "APOE", risk: "優秀", description: "脂質代謝・認知機能"), // [DUMMY]
+                (name: "ALDH2", variant: "ALDH2", risk: "優秀", description: "アルコール代謝") // [DUMMY]
+            ], // [DUMMY]
+            relatedBloodMarkers: [ // [DUMMY]
+                (name: "HbA1c", value: "5.4", unit: "%", range: "4.6-6.2", status: "最適"), // [DUMMY]
+                (name: "1,5-AG", value: "18", unit: "μg/mL", range: "14-26", status: "良好"), // [DUMMY]
+                (name: "TG", value: "92", unit: "mg/dL", range: "<150", status: "最適"), // [DUMMY]
+                (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "優秀"), // [DUMMY]
+                (name: "LDL", value: "105", unit: "mg/dL", range: "<120", status: "良好"), // [DUMMY]
+                (name: "ApoB", value: "88", unit: "mg/dL", range: "<90", status: "最適"), // [DUMMY]
+                (name: "UA", value: "5.8", unit: "mg/dL", range: "3.0-7.0", status: "正常範囲"), // [DUMMY]
+                (name: "GGT", value: "28", unit: "U/L", range: "<50", status: "最適"), // [DUMMY]
+                (name: "CRP", value: "0.08", unit: "mg/dL", range: "<0.3", status: "最適"), // [DUMMY]
+                (name: "ALB", value: "4.4", unit: "g/dL", range: "3.8-5.3", status: "最適"), // [DUMMY]
+                (name: "TP", value: "7.1", unit: "g/dL", range: "6.5-8.0", status: "正常範囲"), // [DUMMY]
+                (name: "Ferritin", value: "88", unit: "ng/mL", range: "30-400", status: "良好") // [DUMMY]
+            ] // [DUMMY]
+        ) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() { // [DUMMY]
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [ // [DUMMY]
+            (name: "FTO", variant: "FTO", risk: "良好", description: "食欲調節・肥満リスク"), // [DUMMY]
+            (name: "APOE", variant: "APOE", risk: "優秀", description: "脂質代謝・認知機能"), // [DUMMY]
+            (name: "ALDH2", variant: "ALDH2", risk: "優秀", description: "アルコール代謝") // [DUMMY]
+        ]) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() { // [DUMMY]
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [ // [DUMMY]
+            (name: "HbA1c", value: "5.4", unit: "%", range: "4.6-6.2", status: "最適"), // [DUMMY]
+            (name: "1,5-AG", value: "18", unit: "μg/mL", range: "14-26", status: "良好"), // [DUMMY]
+            (name: "TG", value: "92", unit: "mg/dL", range: "<150", status: "最適"), // [DUMMY]
+            (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "優秀"), // [DUMMY]
+            (name: "LDL", value: "105", unit: "mg/dL", range: "<120", status: "良好"), // [DUMMY]
+            (name: "ApoB", value: "88", unit: "mg/dL", range: "<90", status: "最適"), // [DUMMY]
+            (name: "UA", value: "5.8", unit: "mg/dL", range: "3.0-7.0", status: "正常範囲"), // [DUMMY]
+            (name: "GGT", value: "28", unit: "U/L", range: "<50", status: "最適"), // [DUMMY]
+            (name: "CRP", value: "0.08", unit: "mg/dL", range: "<0.3", status: "最適"), // [DUMMY]
+            (name: "ALB", value: "4.4", unit: "g/dL", range: "3.8-5.3", status: "最適"), // [DUMMY]
+            (name: "TP", value: "7.1", unit: "g/dL", range: "6.5-8.0", status: "正常範囲"), // [DUMMY]
+            (name: "Ferritin", value: "88", unit: "ng/mL", range: "30-400", status: "良好") // [DUMMY]
+        ]) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
 }
 
 // MARK: - Preview

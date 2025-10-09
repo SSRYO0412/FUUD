@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SexualHealthDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 性的健康に関するスコア・指標はモック
 
     var body: some View {
@@ -68,6 +69,14 @@ struct SexualHealthDetailView: View {
                         Text("RELATED GENES")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer() // [DUMMY]
+
+                        Button(action: shareGenes) { // [DUMMY]
+                            Image(systemName: "doc.on.doc") // [DUMMY]
+                                .font(.system(size: 14)) // [DUMMY]
+                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
+                        } // [DUMMY]
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -105,6 +114,14 @@ struct SexualHealthDetailView: View {
                         Text("RELATED BLOOD MARKERS")
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
+
+                        Spacer() // [DUMMY]
+
+                        Button(action: shareBloodMarkers) { // [DUMMY]
+                            Image(systemName: "doc.on.doc") // [DUMMY]
+                                .font(.system(size: 14)) // [DUMMY]
+                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
+                        } // [DUMMY]
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
@@ -208,8 +225,74 @@ struct SexualHealthDetailView: View {
         )
         .navigationTitle("性的な健康")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar { // [DUMMY]
+            ToolbarItem(placement: .navigationBarTrailing) { // [DUMMY]
+                Button(action: shareDetailView) { // [DUMMY]
+                    Image(systemName: "square.and.arrow.up") // [DUMMY]
+                        .font(.system(size: 16, weight: .medium)) // [DUMMY]
+                        .foregroundColor(.virgilTextPrimary) // [DUMMY]
+                } // [DUMMY]
+            } // [DUMMY]
+        } // [DUMMY]
         .floatingChatButton()
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY]
     }
+
+    // MARK: - Share Actions
+
+    /// DetailView全体のデータをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    private func shareDetailView() { // [DUMMY]
+        let prompt = PromptGenerator.generateDetailViewPrompt( // [DUMMY]
+            category: "性的な健康", // [DUMMY]
+            score: 83, // [DUMMY]
+            relatedGenes: [ // [DUMMY]
+                (name: "AR", variant: "AR", risk: "良好", description: "アンドロゲン受容体・テストステロン感受性"), // [DUMMY]
+                (name: "ESR1", variant: "ESR1", risk: "優秀", description: "エストロゲン受容体・ホルモンバランス"), // [DUMMY]
+                (name: "NOS3", variant: "NOS3", risk: "優秀", description: "一酸化窒素合成・血流調節") // [DUMMY]
+            ], // [DUMMY]
+            relatedBloodMarkers: [ // [DUMMY]
+                (name: "ApoB", value: "85", unit: "mg/dL", range: "<100", status: "最適"), // [DUMMY]
+                (name: "Lp(a)", value: "18", unit: "mg/dL", range: "<30", status: "最適"), // [DUMMY]
+                (name: "TG", value: "95", unit: "mg/dL", range: "<150", status: "最適"), // [DUMMY]
+                (name: "HDL", value: "62", unit: "mg/dL", range: ">40", status: "良好"), // [DUMMY]
+                (name: "LDL", value: "98", unit: "mg/dL", range: "<100", status: "最適"), // [DUMMY]
+                (name: "HbA1c", value: "5.3", unit: "%", range: "<5.7", status: "最適"), // [DUMMY]
+                (name: "CRP", value: "0.05", unit: "mg/dL", range: "<0.3", status: "最適"), // [DUMMY]
+                (name: "Ferritin", value: "92", unit: "ng/mL", range: "30-400", status: "最適"), // [DUMMY]
+                (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "良好") // [DUMMY]
+            ] // [DUMMY]
+        ) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
+
+    /// 遺伝子セクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareGenes() { // [DUMMY]
+        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [ // [DUMMY]
+            (name: "AR", variant: "AR", risk: "良好", description: "アンドロゲン受容体・テストステロン感受性"), // [DUMMY]
+            (name: "ESR1", variant: "ESR1", risk: "優秀", description: "エストロゲン受容体・ホルモンバランス"), // [DUMMY]
+            (name: "NOS3", variant: "NOS3", risk: "優秀", description: "一酸化窒素合成・血流調節") // [DUMMY]
+        ]) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
+
+    /// 血液マーカーセクションをプロンプトとしてコピー
+    /// [DUMMY] 現状はモックデータ
+    private func shareBloodMarkers() { // [DUMMY]
+        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [ // [DUMMY]
+            (name: "ApoB", value: "85", unit: "mg/dL", range: "<100", status: "最適"), // [DUMMY]
+            (name: "Lp(a)", value: "18", unit: "mg/dL", range: "<30", status: "最適"), // [DUMMY]
+            (name: "TG", value: "95", unit: "mg/dL", range: "<150", status: "最適"), // [DUMMY]
+            (name: "HDL", value: "62", unit: "mg/dL", range: ">40", status: "良好"), // [DUMMY]
+            (name: "LDL", value: "98", unit: "mg/dL", range: "<100", status: "最適"), // [DUMMY]
+            (name: "HbA1c", value: "5.3", unit: "%", range: "<5.7", status: "最適"), // [DUMMY]
+            (name: "CRP", value: "0.05", unit: "mg/dL", range: "<0.3", status: "最適"), // [DUMMY]
+            (name: "Ferritin", value: "92", unit: "ng/mL", range: "30-400", status: "最適"), // [DUMMY]
+            (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "良好") // [DUMMY]
+        ]) // [DUMMY]
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
+    } // [DUMMY]
 }
 
 // MARK: - Preview
