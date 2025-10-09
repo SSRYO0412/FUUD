@@ -38,12 +38,12 @@ struct DataView: View {
                     }
                     .padding(VirgilSpacing.xs)
                     .background(
-                        Color.white.opacity(0.08)
+                        Color.white.opacity(0.03)
                     )
                     .cornerRadius(VirgilSpacing.radiusLarge)
                     .overlay(
                         RoundedRectangle(cornerRadius: VirgilSpacing.radiusLarge)
-                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
                     )
 
                     // Tab Content
@@ -187,22 +187,22 @@ private struct LifestyleTab: View {
                 .font(.system(size: 9, weight: .semibold))
                 .foregroundColor(.gray)
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: VirgilSpacing.sm) {
+            VStack(spacing: VirgilSpacing.sm) {
                 // [DUMMY] スコア値は仮データ、API連携後に実データ使用
-                LifeScoreCard(emoji: "🧠", title: "脳の認知機能", score: 92) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "⚡️", title: "ダイエット", score: 85) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "✨", title: "見た目の健康", score: 88) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "😴", title: "睡眠", score: 90) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "💪", title: "疲労回復", score: 87) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "🌸", title: "肌", score: 86) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "🛡️", title: "抗酸化", score: 84) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "🧘", title: "ストレス", score: 82) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "🏃", title: "運動能力", score: 89) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "❤️", title: "性的な健康", score: 83) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "⚡", title: "活力", score: 91) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "❤️‍🩹", title: "心臓の健康", score: 88) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "🫘", title: "肝機能", score: 85) // [DUMMY] ライフスコアの仮値
-                LifeScoreCard(emoji: "📊", title: "生活習慣", score: 87) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "🧠", title: "脳の認知機能", score: 92) // [DUMMY] 緑グラデ
+                LifeScoreCard(emoji: "⚡️", title: "ダイエット", score: 68) // [DUMMY] 黄グラデ
+                LifeScoreCard(emoji: "✨", title: "見た目の健康", score: 45) // [DUMMY] 赤グラデ
+                LifeScoreCard(emoji: "😴", title: "睡眠", score: 88) // [DUMMY] 緑グラデ
+                LifeScoreCard(emoji: "💪", title: "疲労回復", score: 58) // [DUMMY] 黄グラデ
+                LifeScoreCard(emoji: "🌸", title: "肌", score: 82) // [DUMMY] 緑グラデ
+                LifeScoreCard(emoji: "🛡️", title: "抗酸化", score: 72) // [DUMMY] 黄グラデ
+                LifeScoreCard(emoji: "🧘", title: "ストレス", score: 38) // [DUMMY] 赤グラデ
+                LifeScoreCard(emoji: "🏃", title: "運動能力", score: 95) // [DUMMY] 緑グラデ
+                LifeScoreCard(emoji: "❤️", title: "性的な健康", score: 65) // [DUMMY] 黄グラデ
+                LifeScoreCard(emoji: "⚡", title: "活力", score: 42) // [DUMMY] 赤グラデ
+                LifeScoreCard(emoji: "❤️‍🩹", title: "心臓の健康", score: 86) // [DUMMY] 緑グラデ
+                LifeScoreCard(emoji: "🫘", title: "肝機能", score: 75) // [DUMMY] 黄グラデ
+                LifeScoreCard(emoji: "📊", title: "生活習慣", score: 48) // [DUMMY] 赤グラデ
             }
         }
     }
@@ -216,6 +216,45 @@ private struct LifeScoreCard: View {
     @State private var showActionDialog = false // [DUMMY] アクション選択ダイアログ表示状態
     @State private var navigateToDetail = false // [DUMMY] DetailView遷移フラグ
 
+    // スコア別グラデーションカラー（左濃→右薄）
+    private var scoreGradient: LinearGradient {
+        switch score {
+        case 80...100:
+            // 優秀: 緑基調の濃淡グラデーション（左濃→右薄）
+            return LinearGradient(
+                colors: [Color(hex: "66BB6A"), Color(hex: "C8E6C9")],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        case 50...79:
+            // 良好: 黄色基調の濃淡グラデーション（左濃→右薄）
+            return LinearGradient(
+                colors: [Color(hex: "FBC02D"), Color(hex: "FFF9C4")],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        default:
+            // 要改善: 赤色基調の濃淡グラデーション（左濃→右薄）
+            return LinearGradient(
+                colors: [Color(hex: "E57373"), Color(hex: "FFCCBC")],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        }
+    }
+
+    // スコア数値の色（左側の濃い色に合わせる）
+    private var scoreTextColor: Color {
+        switch score {
+        case 80...100:
+            return Color(hex: "66BB6A")
+        case 50...79:
+            return Color(hex: "FBC02D")
+        default:
+            return Color(hex: "E57373")
+        }
+    }
+
     var body: some View {
         NavigationLink(destination: destinationView) {
             ZStack(alignment: .topTrailing) {
@@ -224,27 +263,27 @@ private struct LifeScoreCard: View {
                     Text(emoji)
                         .font(.system(size: 17.6))  // 16 * 1.1
                     Text(title)
-                        .font(.system(size: 11, weight: .semibold))  // 10 * 1.1
+                        .font(.system(size: 17.6, weight: .semibold))  // 絵文字と同じサイズ
                         .foregroundColor(.virgilTextPrimary)
                     Spacer()
                 }
 
                 Text("\(score)")
                     .font(.system(size: 26.4, weight: .black))  // 24 * 1.1
-                    .foregroundColor(Color(hex: "#00C853"))
+                    .foregroundColor(scoreTextColor)
 
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
-                        Rectangle()
+                        RoundedRectangle(cornerRadius: 4.95, style: .continuous)
                             .fill(Color.gray.opacity(0.2))
-                            .frame(height: 3.3)  // 3 * 1.1
+                            .frame(height: 9.9)  // 3 * 1.1 * 3 = 9.9
 
-                        Rectangle()
-                            .fill(Color(hex: "#00C853"))
-                            .frame(width: geometry.size.width * CGFloat(score) / 100, height: 3.3)  // 3 * 1.1
+                        RoundedRectangle(cornerRadius: 4.95, style: .continuous)
+                            .fill(scoreGradient)
+                            .frame(width: geometry.size.width * CGFloat(score) / 100, height: 9.9)  // 3 * 1.1 * 3 = 9.9
                     }
                     }
-                    .frame(height: 3.3)  // 3 * 1.1
+                    .frame(height: 9.9)  // 3 * 1.1 * 3 = 9.9
                 }
                 .padding(VirgilSpacing.md * 1.1)  // padding 10%拡大
                 .virgilGlassCard()
