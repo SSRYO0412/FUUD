@@ -9,25 +9,44 @@ import SwiftUI
 
 struct StressDetailView: View {
     @Environment(\.dismiss) var dismiss
+    // [DUMMY] ストレス関連データはモック
 
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
                 // Header Score
-                VStack(spacing: VirgilSpacing.md) {
+                VStack(spacing: VirgilSpacing.sm) {
                     Text("🧘")
-                        .font(.system(size: 48))
+                        .font(.system(size: 24))
 
                     Text("82")  // [DUMMY] スコア、API連携後に実データ使用
-                        .font(.system(size: 64, weight: .black))
+                        .font(.system(size: 32, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
 
                     Text("STRESS MANAGEMENT")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(VirgilSpacing.xl)
+                .padding(VirgilSpacing.md)
+                .virgilGlassCard()
+
+                // Tuuning Intelligence
+                VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+                    HStack {
+                        Text("🧠")
+                            .font(.system(size: 16))
+                        Text("TUUNING INTELLIGENCE")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundColor(.virgilTextSecondary)
+                    }
+
+                    Text("あなたのストレス管理スコアは良好です。適切なリラクゼーションと運動が、ストレスの軽減に寄与しています。引き続き現在の習慣を維持することで、長期的な心身の健康維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundColor(.virgilTextPrimary)
+                        .lineSpacing(4)
+                }
+                .padding(VirgilSpacing.md)
                 .virgilGlassCard()
 
                 // Score Graph

@@ -60,14 +60,14 @@ struct SettingsView: View {
                     HStack {
                         Text("バージョン")
                         Spacer()
-                        Text("1.0.0")
+                        Text("1.0.0") // [DUMMY] 実際のアプリバージョンで更新予定
                             .foregroundStyle(.secondary)
                     }
                     
                     HStack {
                         Text("ビルド")
                         Spacer()
-                        Text("1")
+                        Text("1") // [DUMMY] 実ビルド番号に差し替え予定
                             .foregroundStyle(.secondary)
                     }
                 }

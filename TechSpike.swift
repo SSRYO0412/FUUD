@@ -104,9 +104,9 @@ struct BlurPerformanceTest: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
 
-                BulletPoint(text: "blur(100): 45fps (iPhone 11 Pro)")
-                BulletPoint(text: "blur(70): 60fps (iPhone 11 Pro) ✅")
-                BulletPoint(text: "blur(50): 60fps だが視覚効果不足")
+                BulletPoint(text: "blur(100): 45fps (iPhone 11 Pro)") // [DUMMY] 検証時の参考値
+                BulletPoint(text: "blur(70): 60fps (iPhone 11 Pro) ✅") // [DUMMY] 検証時の参考値
+                BulletPoint(text: "blur(50): 60fps だが視覚効果不足") // [DUMMY] 検証時の参考値
             }
             .padding()
             .background(Color.white.opacity(0.05))
@@ -125,6 +125,7 @@ struct BlurPerformanceTest: View {
 struct MaterialAPITest: View {
     @Binding var isActive: Bool
 
+    // [DUMMY] マテリアル比較用の検証データ
     private let materials: [(String, Material)] = [
         ("ultraThinMaterial ✅", .ultraThinMaterial),
         ("thinMaterial", .thinMaterial),
@@ -249,9 +250,9 @@ struct DrawingGroupTest: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
 
-                BulletPoint(text: "drawingGroup() なし: 30-40fps")
-                BulletPoint(text: "drawingGroup() あり: 55-60fps ✅")
-                BulletPoint(text: "バッテリー消費: 約30%削減")
+                BulletPoint(text: "drawingGroup() なし: 30-40fps") // [DUMMY] 検証時の参考値
+                BulletPoint(text: "drawingGroup() あり: 55-60fps ✅") // [DUMMY] 検証時の参考値
+                BulletPoint(text: "バッテリー消費: 約30%削減") // [DUMMY] 検証時の参考値
             }
             .padding()
             .background(Color.white.opacity(0.05))
@@ -346,9 +347,9 @@ struct AnimationPerformanceTest: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white)
 
-                BulletPoint(text: "CPU使用率: 40% → 25% (37.5%削減)")
-                BulletPoint(text: "視覚的な差異: ほぼなし")
-                BulletPoint(text: "推奨: 2ステップキーフレーム ✅")
+                BulletPoint(text: "CPU使用率: 40% → 25% (37.5%削減)") // [DUMMY] 検証時の参考値
+                BulletPoint(text: "視覚的な差異: ほぼなし") // [DUMMY] 検証時の参考値
+                BulletPoint(text: "推奨: 2ステップキーフレーム ✅") // [DUMMY] 検証時の参考値
             }
             .padding()
             .background(Color.white.opacity(0.05))

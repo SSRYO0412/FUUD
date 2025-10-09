@@ -176,7 +176,7 @@ struct SettingsView: View {
                         .font(.virgilBodyLarge)
                         .foregroundColor(.virgilTextPrimary)
                     Spacer()
-                    Text("1.0.0")
+                    Text("1.0.0") // [DUMMY] リリース時に実ビルド番号へ更新予定
                         .font(.virgilBodySmall)
                         .foregroundColor(.virgilTextSecondary)
                 }
@@ -190,7 +190,7 @@ struct SettingsView: View {
                         .font(.virgilBodyLarge)
                         .foregroundColor(.virgilTextPrimary)
                     Spacer()
-                    Text("1")
+                    Text("1") // [DUMMY] 実際のビルド番号に差し替え予定
                         .font(.virgilBodySmall)
                         .foregroundColor(.virgilTextSecondary)
                 }

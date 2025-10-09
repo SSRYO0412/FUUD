@@ -53,9 +53,9 @@ struct LoadingButton: View {
 struct LoadingButton_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
-            LoadingButton(title: "ログイン", action: {})
-            LoadingButton(title: "処理中...", isLoading: true, action: {})
-            LoadingButton(title: "無効", isDisabled: true, backgroundColor: .gray, action: {})
+            LoadingButton(title: "ログイン", action: {}) // [DUMMY] プレビュー用
+            LoadingButton(title: "処理中...", isLoading: true, action: {}) // [DUMMY] プレビュー用
+            LoadingButton(title: "無効", isDisabled: true, backgroundColor: .gray, action: {}) // [DUMMY] プレビュー用
         }
         .padding()
     }

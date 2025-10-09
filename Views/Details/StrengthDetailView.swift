@@ -9,25 +9,44 @@ import SwiftUI
 
 struct StrengthDetailView: View {
     @Environment(\.dismiss) var dismiss
+    // [DUMMY] 筋力指標と推奨事項はモックデータ
 
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
                 // Header Score
-                VStack(spacing: VirgilSpacing.md) {
+                VStack(spacing: VirgilSpacing.sm) {
                     Text("💪")
-                        .font(.system(size: 48))
+                        .font(.system(size: 24))
 
-                    Text("88")
-                        .font(.system(size: 64, weight: .black))
+                    Text("88") // [DUMMY] スコア、API連携後に実データ使用
+                        .font(.system(size: 32, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
 
                     Text("MUSCLE STRENGTH")
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(VirgilSpacing.xl)
+                .padding(VirgilSpacing.md)
+                .virgilGlassCard()
+
+                // Tuuning Intelligence
+                VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+                    HStack {
+                        Text("🧠")
+                            .font(.system(size: 16))
+                        Text("TUUNING INTELLIGENCE")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundColor(.virgilTextSecondary)
+                    }
+
+                    Text("あなたの筋力スコアは優秀です。適切な筋力トレーニングとタンパク質摂取が、筋肉量の維持と増強に寄与しています。引き続き現在の習慣を維持することで、長期的な筋力維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundColor(.virgilTextPrimary)
+                        .lineSpacing(4)
+                }
+                .padding(VirgilSpacing.md)
                 .virgilGlassCard()
 
                 // Related Genes
@@ -40,6 +59,7 @@ struct StrengthDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
+                    // [DUMMY] 遺伝子データはモック
                     VStack(spacing: VirgilSpacing.sm) {
                         GeneCard(
                             name: "ACTN3 R577X",
@@ -76,6 +96,7 @@ struct StrengthDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
+                    // [DUMMY] 血液マーカーはモック
                     VStack(spacing: VirgilSpacing.sm) {
                         BloodMarkerRow(name: "Testosterone", value: "650 ng/dL", status: "最適")
                         BloodMarkerRow(name: "Creatinine", value: "0.95 mg/dL", status: "良好")
@@ -92,6 +113,7 @@ struct StrengthDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
+                    // [DUMMY] 推奨アクションはモック
                     VStack(spacing: VirgilSpacing.sm) {
                         RecommendationCard(
                             icon: "🏋️",

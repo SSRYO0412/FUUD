@@ -98,27 +98,38 @@ struct ChatView: View {
         let userMessage = message
         message = ""
         errorMessage = nil
-        
+
         // ユーザーメッセージを追加
         chatHistory.append((role: "user", content: userMessage))
-        
+
         isLoading = true
-        
+
         Task {
             do {
-                let response = try await ChatService.shared.sendMessage(
+                let responses = try await ChatService.shared.sendMessage(
                     userMessage,
                     topic: selectedTopic
                 )
-                
+
+                // 複数のレスポンスを順番にゆっくり表示
+                for (index, response) in responses.enumerated() {
+                    // 最初のメッセージ以外は2秒待つ
+                    if index > 0 {
+                        try await Task.sleep(nanoseconds: 2_000_000_000) // 2秒 [DUMMY] メッセージ間の遅延
+                    }
+
+                    await MainActor.run {
+                        chatHistory.append((role: "assistant", content: response))
+                    }
+                }
+
                 await MainActor.run {
-                    chatHistory.append((role: "assistant", content: response))
                     isLoading = false
                 }
             } catch {
                 let appError = ErrorManager.shared.convertToAppError(error)
                 ErrorManager.shared.logError(appError, context: "ChatView.sendMessage")
-                
+
                 await MainActor.run {
                     errorMessage = ErrorManager.shared.userFriendlyMessage(for: appError)
                     isLoading = false

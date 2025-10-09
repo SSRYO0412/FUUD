@@ -266,7 +266,7 @@ struct BloodTestDetailView_Previews: PreviewProvider {
                     unit: "mg/dL",
                     status: "正常",
                     reference: "70-110"
-                )
+                ) // [DUMMY] プレビュー用の血液検査項目
             )
         }
     }

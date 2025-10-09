@@ -102,6 +102,7 @@ private struct TabButton: View {
 // MARK: - Blood Tab
 
 private struct BloodTab: View {
+    // [DUMMY] 血液スコア表示は暫定値。バックエンド連携後に動的化予定
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
             HStack {
@@ -109,7 +110,7 @@ private struct BloodTab: View {
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundColor(.gray)
                 Spacer()
-                Text("87")
+                Text("87") // [DUMMY] 仮スコア値
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(Color(hex: "#00C853"))
             }
@@ -123,11 +124,12 @@ private struct BloodTab: View {
 // MARK: - Microbiome Tab
 
 private struct MicrobiomeTab: View {
+    // [DUMMY] 多様性スコアと菌種リストはモックデータ
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.lg) {
             // Diversity Score
             VStack(spacing: VirgilSpacing.md) {
-                Text("85")
+                Text("85") // [DUMMY] モックの多様性スコア
                     .font(.system(size: 48, weight: .black))
                     .foregroundStyle(
                         LinearGradient(
@@ -147,9 +149,9 @@ private struct MicrobiomeTab: View {
 
             // Bacteria List
             VStack(spacing: VirgilSpacing.sm) {
-                BacteriaRow(name: "Faecalibacterium", percentage: "18.5%")
-                BacteriaRow(name: "Bifidobacterium", percentage: "15.2%")
-                BacteriaRow(name: "Akkermansia", percentage: "12.8%")
+                BacteriaRow(name: "Faecalibacterium", percentage: "18.5%") // [DUMMY] モックの菌種データ
+                BacteriaRow(name: "Bifidobacterium", percentage: "15.2%") // [DUMMY] モックの菌種データ
+                BacteriaRow(name: "Akkermansia", percentage: "12.8%") // [DUMMY] モックの菌種データ
             }
         }
     }
@@ -158,6 +160,7 @@ private struct MicrobiomeTab: View {
 private struct BacteriaRow: View {
     let name: String
     let percentage: String
+    // [DUMMY] 腸内細菌の構成比は仮の固定値
 
     var body: some View {
         HStack {
@@ -186,20 +189,20 @@ private struct LifestyleTab: View {
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: VirgilSpacing.sm) {
                 // [DUMMY] スコア値は仮データ、API連携後に実データ使用
-                LifeScoreCard(emoji: "🧠", title: "脳の認知機能", score: 92)
-                LifeScoreCard(emoji: "⚡️", title: "ダイエット", score: 85)
-                LifeScoreCard(emoji: "✨", title: "見た目の健康", score: 88)
-                LifeScoreCard(emoji: "😴", title: "睡眠", score: 90)
-                LifeScoreCard(emoji: "💪", title: "疲労回復", score: 87)
-                LifeScoreCard(emoji: "🌸", title: "肌", score: 86)
-                LifeScoreCard(emoji: "🛡️", title: "抗酸化", score: 84)
-                LifeScoreCard(emoji: "🧘", title: "ストレス", score: 82)
-                LifeScoreCard(emoji: "🏃", title: "運動能力", score: 89)
-                LifeScoreCard(emoji: "❤️", title: "性的な健康", score: 83)
-                LifeScoreCard(emoji: "⚡", title: "活力", score: 91)
-                LifeScoreCard(emoji: "❤️‍🩹", title: "心臓の健康", score: 88)
-                LifeScoreCard(emoji: "🫘", title: "肝機能", score: 85)
-                LifeScoreCard(emoji: "📊", title: "生活習慣", score: 87)
+                LifeScoreCard(emoji: "🧠", title: "脳の認知機能", score: 92) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "⚡️", title: "ダイエット", score: 85) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "✨", title: "見た目の健康", score: 88) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "😴", title: "睡眠", score: 90) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "💪", title: "疲労回復", score: 87) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "🌸", title: "肌", score: 86) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "🛡️", title: "抗酸化", score: 84) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "🧘", title: "ストレス", score: 82) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "🏃", title: "運動能力", score: 89) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "❤️", title: "性的な健康", score: 83) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "⚡", title: "活力", score: 91) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "❤️‍🩹", title: "心臓の健康", score: 88) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "🫘", title: "肝機能", score: 85) // [DUMMY] ライフスコアの仮値
+                LifeScoreCard(emoji: "📊", title: "生活習慣", score: 87) // [DUMMY] ライフスコアの仮値
             }
         }
     }

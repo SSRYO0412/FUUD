@@ -11,10 +11,11 @@ struct HomeView: View {
     @EnvironmentObject var cognitoService: SimpleCognitoService
     @State private var aiInsightIndex = 0
 
+    // [DUMMY] AIインサイト文面はUI試作用。API連携後に実データへ置き換え予定
     private let aiInsights = [
-        "睡眠効率が前週比12%向上。深睡眠時の成長ホルモン分泌が最適化されています...",
-        "腸内細菌の多様性スコアが85点に到達。酪酸産生菌が23%増加しました...",
-        "hrv朝測定値が68msに改善。自律神経バランスが最適範囲です..."
+        "睡眠効率が前週比12%向上。深睡眠時の成長ホルモン分泌が最適化されています...", // [DUMMY] 仮のAIインサイト
+        "腸内細菌の多様性スコアが85点に到達。酪酸産生菌が23%増加しました...", // [DUMMY] 仮のAIインサイト
+        "hrv朝測定値が68msに改善。自律神経バランスが最適範囲です..." // [DUMMY] 仮のAIインサイト
     ]
 
     var body: some View {
@@ -131,13 +132,14 @@ struct DataStreamView: View {
     @State private var animationOffset: CGFloat = 0
     @State private var wavePhase: CGFloat = 0
 
+    // [DUMMY] 指標データはモック表示用。実測データ取得後に差し替え予定
     private let dataPoints = [
-        "hba1c: 5.2%",
-        "crp: 0.3mg/l",
-        "ferritin: 95ng/ml",
-        "hrv: 68ms",
-        "vo2max: 42ml",
-        "tg: 85mg/dl"
+        "hba1c: 5.2%", // [DUMMY] 指標モック値
+        "crp: 0.3mg/l", // [DUMMY] 指標モック値
+        "ferritin: 95ng/ml", // [DUMMY] 指標モック値
+        "hrv: 68ms", // [DUMMY] 指標モック値
+        "vo2max: 42ml", // [DUMMY] 指標モック値
+        "tg: 85mg/dl" // [DUMMY] 指標モック値
     ]
 
     var body: some View {
@@ -237,6 +239,7 @@ struct ProcessingDots: View {
 // MARK: - Bio Age Card
 
 struct BioAgeCard: View {
+    // [DUMMY] バイオ年齢の数値・比較はAPI接続前のモック値
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
             HStack {
@@ -246,7 +249,7 @@ struct BioAgeCard: View {
 
                 Spacer()
 
-                Text("-6 YEARS")
+                Text("-6 YEARS") // [DUMMY] UI検証用のバイオ年齢差分
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(Color(hex: "00C853"))
             }
@@ -258,7 +261,7 @@ struct BioAgeCard: View {
                         .font(.system(size: 9, weight: .regular))
                         .foregroundColor(.virgilGray400)
 
-                    Text("35")
+                    Text("35") // [DUMMY] 仮の実年齢
                         .font(.system(size: 36, weight: .black))
                 }
 
@@ -273,7 +276,7 @@ struct BioAgeCard: View {
                         .font(.system(size: 9, weight: .regular))
                         .foregroundColor(.virgilGray400)
 
-                    Text("29")
+                    Text("29") // [DUMMY] 仮の生物学的年齢
                         .font(.system(size: 36, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
                 }
@@ -289,6 +292,7 @@ struct BioAgeCard: View {
 
 struct LongevityPaceCard: View {
     @State private var isExpanded = false
+    // [DUMMY] Longevity Pace のスコアと関連データは仮置き値
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -301,21 +305,21 @@ struct LongevityPaceCard: View {
 
                     Spacer()
 
-                    Text("0.82")
+                    Text("0.82") // [DUMMY] 仮のLongevity Paceスコア
                         .font(.system(size: 20, weight: .black))
                 }
 
                 Text("あなたの")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.virgilTextPrimary) +
-                Text("Longevity Pace 0.82")
+                Text("Longevity Pace 0.82") // [DUMMY] 仮スコアを強調表示
                     .font(.system(size: 13, weight: .bold))
                     .foregroundColor(.virgilTextPrimary)
 
                 Text("平均より")
                     .font(.system(size: 11, weight: .regular))
                     .foregroundColor(.virgilTextSecondary) +
-                Text("18%遅い")
+                Text("18%遅い") // [DUMMY] 仮の比較指標
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(.virgilTextSecondary) +
                 Text("老化速度")
@@ -351,6 +355,8 @@ struct LongevityPaceCard: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     // Genes Section
+                    // [DUMMY] 遺伝子データは仮の内容
+                    // [DUMMY] 遺伝子データリストはモック
                     DataSourceSection(
                         icon: "🧬",
                         title: "遺伝子",
@@ -362,6 +368,8 @@ struct LongevityPaceCard: View {
                     )
 
                     // Blood Markers Section with Gauge
+                    // [DUMMY] 血液マーカー値はダミー
+                    // [DUMMY] 血液マーカー情報は仮データ
                     VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
                         HStack(spacing: VirgilSpacing.xs) {
                             Text("💉")
@@ -409,6 +417,8 @@ struct LongevityPaceCard: View {
                     .padding(.top, VirgilSpacing.xs)
 
                     // Gut Microbiome Section
+                    // [DUMMY] 腸内細菌情報はモック
+                    // [DUMMY] 腸内細菌データはダミー値
                     DataSourceSection(
                         icon: "🦠",
                         title: "腸内細菌",
@@ -420,6 +430,8 @@ struct LongevityPaceCard: View {
                     )
 
                     // HealthKit Section
+                    // [DUMMY] HealthKitデータはテスト用
+                    // [DUMMY] HealthKitデータはテスト用の固定値
                     DataSourceSection(
                         icon: "📊",
                         title: "HealthKit",
@@ -464,6 +476,7 @@ struct LongevityPaceCard: View {
 
 struct MetabolicPowerCard: View {
     @State private var isExpanded = false
+    // [DUMMY] 代謝指標と関連データはテスト用の固定値
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -475,28 +488,28 @@ struct MetabolicPowerCard: View {
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
 
-                        Text("Maintenance cal 1850")
+                        Text("Maintenance cal 1850") // [DUMMY] 推定維持カロリーの仮値
                             .font(.system(size: 9, weight: .medium))
                             .foregroundColor(.virgilTextSecondary.opacity(0.7))
                     }
 
                     Spacer()
 
-                    Text("HIGH")
+                    Text("HIGH") // [DUMMY] モックの評価ラベル
                         .font(.system(size: 20, weight: .black))
                 }
 
                 Text("あなたの")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.virgilTextPrimary) +
-                Text("Metabolic Power HIGH")
+                Text("Metabolic Power HIGH") // [DUMMY] 仮のスコア表現
                     .font(.system(size: 13, weight: .bold))
                     .foregroundColor(.virgilTextPrimary)
 
                 Text("推定燃焼効率 ")
                     .font(.system(size: 11, weight: .regular))
                     .foregroundColor(.virgilTextSecondary) +
-                Text("+9%")
+                Text("+9%") // [DUMMY] 仮の燃焼効率差分
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(.virgilTextSecondary)
 
@@ -529,6 +542,7 @@ struct MetabolicPowerCard: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     // Genes Section
+                    // [DUMMY] 遺伝子項目はモック
                     DataSourceSection(
                         icon: "🧬",
                         title: "遺伝子",
@@ -541,6 +555,7 @@ struct MetabolicPowerCard: View {
                     )
 
                     // Blood Markers Section with Gauge
+                    // [DUMMY] 血液マーカー値は仮データ
                     VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
                         HStack(spacing: VirgilSpacing.xs) {
                             Text("💉")
@@ -596,6 +611,7 @@ struct MetabolicPowerCard: View {
                     .padding(.top, VirgilSpacing.xs)
 
                     // Gut Microbiome Section
+                    // [DUMMY] 腸内細菌の構成はダミー値
                     DataSourceSection(
                         icon: "🦠",
                         title: "腸内細菌",
@@ -607,6 +623,7 @@ struct MetabolicPowerCard: View {
                     )
 
                     // HealthKit Section
+                    // [DUMMY] HealthKit指標は固定値
                     DataSourceSection(
                         icon: "📊",
                         title: "HealthKit",
@@ -652,6 +669,7 @@ struct MetabolicPowerCard: View {
 
 struct RecoverySyncCard: View {
     @State private var isExpanded = false
+    // [DUMMY] 回復指標のスコアおよび参照データはモック値
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -664,7 +682,7 @@ struct RecoverySyncCard: View {
 
                     Spacer()
 
-                    Text("RISK")
+                    Text("RISK") // [DUMMY] モックのリスクラベル
                         .font(.system(size: 20, weight: .black))
                         .foregroundColor(Color(hex: "ED1C24"))
                 }
@@ -672,7 +690,7 @@ struct RecoverySyncCard: View {
                 Text("あなたの")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.virgilTextPrimary) +
-                Text("回復リズム：RISK")
+                Text("回復リズム：RISK") // [DUMMY] 仮の回復ステータス
                     .font(.system(size: 13, weight: .bold))
                     .foregroundColor(Color(hex: "ED1C24"))
 
@@ -1048,6 +1066,7 @@ private struct WeeklyPlanCardSizeKey: PreferenceKey {
 }
 
 struct WeeklyPlanSection: View {
+    // [DUMMY] 週間プランの栄養・トレーニング内容はモックデータ
     @State private var isExpanded = false
     @State private var cardSize: CGSize = .zero
 
@@ -1067,6 +1086,8 @@ struct WeeklyPlanSection: View {
                         .blur(radius: isExpanded ? 5 : 0)
                         .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.00 : 0.35), value: isExpanded)
 
+                    // [DUMMY] 日曜日プランの内容はモック
+                    // [DUMMY] 火曜日プランの内容はモック
                     WeeklyPlanCard(
                         day: "日曜日",
                         phase: "回復日",
@@ -1096,6 +1117,7 @@ struct WeeklyPlanSection: View {
                         .blur(radius: isExpanded ? 5 : 0)
                         .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.05 : 0.30), value: isExpanded)
 
+                    // [DUMMY] 土曜日プランの内容はモック
                     WeeklyPlanCard(
                         day: "土曜日",
                         phase: "ロングラン日②",
@@ -1125,6 +1147,7 @@ struct WeeklyPlanSection: View {
                         .blur(radius: isExpanded ? 5 : 0)
                         .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.10 : 0.25), value: isExpanded)
 
+                    // [DUMMY] 金曜日プランの内容はモック
                     WeeklyPlanCard(
                         day: "金曜日",
                         phase: "燃焼期③",
@@ -1154,6 +1177,7 @@ struct WeeklyPlanSection: View {
                         .blur(radius: isExpanded ? 5 : 0)
                         .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.15 : 0.20), value: isExpanded)
 
+                    // [DUMMY] 木曜日プランの内容はモック
                     WeeklyPlanCard(
                         day: "木曜日",
                         phase: "リフィード",
@@ -1183,6 +1207,7 @@ struct WeeklyPlanSection: View {
                         .blur(radius: isExpanded ? 5 : 0)
                         .animation(.spring(response: 0.55, dampingFraction: 0.825).delay(isExpanded ? 0.20 : 0.15), value: isExpanded)
 
+                    // [DUMMY] 水曜日プランの内容はモック
                     WeeklyPlanCard(
                         day: "水曜日",
                         phase: "燃焼期②",
@@ -1233,6 +1258,7 @@ struct WeeklyPlanSection: View {
                 .zIndex(5)
 
                 // 1. 月曜日（最前面・固定）
+                // [DUMMY] 月曜日プランの内容はモック
                 WeeklyPlanCard(
                     day: "月曜日",
                     phase: "燃焼期①",

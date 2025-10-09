@@ -88,7 +88,7 @@ struct CustomBottomNavBar_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             Spacer()
-            CustomBottomNavBar(selectedTab: .constant(.home))
+            CustomBottomNavBar(selectedTab: .constant(.home)) // [DUMMY] プレビュー用に固定タブを設定
         }
         .background(Color.virgilBackground)
     }
