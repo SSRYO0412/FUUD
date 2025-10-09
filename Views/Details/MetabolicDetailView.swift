@@ -12,6 +12,38 @@ struct MetabolicDetailView: View {
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 代謝スコアと各セクションは仮の固定値
 
+    // MARK: - Category Data
+    private let categoryName = "ダイエット"
+
+    // [DUMMY] カテゴリー関連遺伝子データ
+    private let metabolicGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "FTO rs9939609", variant: "rs9939609", risk: "標準", description: "肥満リスク：標準型"),
+        (name: "TCF7L2 rs7903146", variant: "rs7903146", risk: "保護型", description: "2型糖尿病リスク：低"),
+        (name: "UCP1 rs1800592", variant: "rs1800592", risk: "優秀", description: "脂肪燃焼効率：高"),
+        (name: "ADRB2 rs1042714", variant: "rs1042714", risk: "良好", description: "代謝応答性：良好")
+    ]
+
+    // [DUMMY] カテゴリー関連血液マーカーデータ
+    private let metabolicBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-6.0", status: "最適"),
+        (name: "GA", value: "14.5", unit: "%", range: "11-16", status: "良好"),
+        (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
+        (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
+        (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "良好"),
+        (name: "LDL", value: "95", unit: "mg/dL", range: "<120", status: "最適"),
+        (name: "TCHO", value: "180", unit: "mg/dL", range: "150-220", status: "正常範囲"),
+        (name: "ApoB", value: "75", unit: "mg/dL", range: "<90", status: "最適")
+    ]
+
+    // [DUMMY] カテゴリー関連HealthKitデータ
+    private let metabolicHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "体重", value: "68kg", status: "最適"),
+        (name: "BMI", value: "22.5", status: "最適"),
+        (name: "消費カロリー", value: "2,350kcal", status: "良好"),
+        (name: "歩数", value: "8,500歩", status: "良好"),
+        (name: "ワークアウト時間", value: "45分", status: "優秀")
+    ]
+
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
@@ -243,25 +275,11 @@ struct MetabolicDetailView: View {
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
-        let prompt = PromptGenerator.generateDetailViewPrompt(
-            category: "ダイエット",
-            score: 85,
-            relatedGenes: [
-                (name: "FTO rs9939609", variant: "rs9939609", risk: "標準", description: "肥満リスク：標準型"),
-                (name: "TCF7L2 rs7903146", variant: "rs7903146", risk: "保護型", description: "2型糖尿病リスク：低"),
-                (name: "UCP1 rs1800592", variant: "rs1800592", risk: "優秀", description: "脂肪燃焼効率：高"),
-                (name: "ADRB2 rs1042714", variant: "rs1042714", risk: "良好", description: "代謝応答性：良好")
-            ],
-            relatedBloodMarkers: [
-                (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-6.0", status: "最適"),
-                (name: "GA", value: "14.5", unit: "%", range: "11-16", status: "良好"),
-                (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
-                (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
-                (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "良好"),
-                (name: "LDL", value: "95", unit: "mg/dL", range: "<120", status: "最適"),
-                (name: "TCHO", value: "180", unit: "mg/dL", range: "150-220", status: "正常範囲"),
-                (name: "ApoB", value: "75", unit: "mg/dL", range: "<90", status: "最適")
-            ]
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: metabolicGenes,
+            relatedBloodMarkers: metabolicBloodMarkers,
+            relatedHealthKit: metabolicHealthKit
         )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
@@ -269,28 +287,24 @@ struct MetabolicDetailView: View {
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareGenes() {
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
-            (name: "FTO rs9939609", variant: "rs9939609", risk: "標準", description: "肥満リスク：標準型"),
-            (name: "TCF7L2 rs7903146", variant: "rs7903146", risk: "保護型", description: "2型糖尿病リスク：低"),
-            (name: "UCP1 rs1800592", variant: "rs1800592", risk: "優秀", description: "脂肪燃焼効率：高"),
-            (name: "ADRB2 rs1042714", variant: "rs1042714", risk: "良好", description: "代謝応答性：良好")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: metabolicGenes,
+            relatedBloodMarkers: metabolicBloodMarkers,
+            relatedHealthKit: metabolicHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareBloodMarkers() {
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
-            (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-6.0", status: "最適"),
-            (name: "GA", value: "14.5", unit: "%", range: "11-16", status: "良好"),
-            (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
-            (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
-            (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "良好"),
-            (name: "LDL", value: "95", unit: "mg/dL", range: "<120", status: "最適"),
-            (name: "TCHO", value: "180", unit: "mg/dL", range: "150-220", status: "正常範囲"),
-            (name: "ApoB", value: "75", unit: "mg/dL", range: "<90", status: "最適")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: metabolicGenes,
+            relatedBloodMarkers: metabolicBloodMarkers,
+            relatedHealthKit: metabolicHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }

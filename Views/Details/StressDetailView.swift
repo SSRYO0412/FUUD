@@ -12,6 +12,32 @@ struct StressDetailView: View {
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] ストレス関連データはモック
 
+    // MARK: - Category Data
+    private let categoryName = "ストレス"
+
+    // [DUMMY] カテゴリー関連遺伝子データ
+    private let stressGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "NR3C1", variant: "NR3C1", risk: "注意", description: "コルチゾール受容体・ストレス応答"),
+        (name: "COMT Val158Met", variant: "Val158Met", risk: "良好", description: "ドーパミン代謝・ストレス耐性"),
+        (name: "SLC6A4", variant: "SLC6A4", risk: "標準", description: "セロトニントランスポーター")
+    ]
+
+    // [DUMMY] カテゴリー関連血液マーカーデータ
+    private let stressBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "CRP", value: "0.3", unit: "mg/L", range: "0-5", status: "最適"),
+        (name: "LAC", value: "12", unit: "mg/dL", range: "4-16", status: "良好"),
+        (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
+        (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適")
+    ]
+
+    // [DUMMY] カテゴリー関連HealthKitデータ
+    private let stressHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "HRV", value: "68ms", status: "良好"),
+        (name: "安静時心拍", value: "58bpm", status: "最適"),
+        (name: "呼吸数", value: "14回/分", status: "最適"),
+        (name: "マインドフルネス時間", value: "10分/日", status: "良好")
+    ]
+
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
@@ -231,20 +257,11 @@ struct StressDetailView: View {
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
-        let prompt = PromptGenerator.generateDetailViewPrompt(
-            category: "ストレス",
-            score: 82,
-            relatedGenes: [
-                (name: "NR3C1", variant: "NR3C1", risk: "注意", description: "コルチゾール受容体・ストレス応答"),
-                (name: "COMT Val158Met", variant: "Val158Met", risk: "良好", description: "ドーパミン代謝・ストレス耐性"),
-                (name: "SLC6A4", variant: "SLC6A4", risk: "標準", description: "セロトニントランスポーター")
-            ],
-            relatedBloodMarkers: [
-                (name: "CRP", value: "0.3", unit: "mg/L", range: "0-5", status: "最適"),
-                (name: "LAC", value: "12", unit: "mg/dL", range: "4-16", status: "良好"),
-                (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
-                (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適")
-            ]
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: stressGenes,
+            relatedBloodMarkers: stressBloodMarkers,
+            relatedHealthKit: stressHealthKit
         )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
@@ -252,23 +269,24 @@ struct StressDetailView: View {
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareGenes() {
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
-            (name: "NR3C1", variant: "NR3C1", risk: "注意", description: "コルチゾール受容体・ストレス応答"),
-            (name: "COMT Val158Met", variant: "Val158Met", risk: "良好", description: "ドーパミン代謝・ストレス耐性"),
-            (name: "SLC6A4", variant: "SLC6A4", risk: "標準", description: "セロトニントランスポーター")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: stressGenes,
+            relatedBloodMarkers: stressBloodMarkers,
+            relatedHealthKit: stressHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareBloodMarkers() {
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
-            (name: "CRP", value: "0.3", unit: "mg/L", range: "0-5", status: "最適"),
-            (name: "LAC", value: "12", unit: "mg/dL", range: "4-16", status: "良好"),
-            (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
-            (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: stressGenes,
+            relatedBloodMarkers: stressBloodMarkers,
+            relatedHealthKit: stressHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }

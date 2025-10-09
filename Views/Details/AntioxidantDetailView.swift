@@ -12,6 +12,31 @@ struct AntioxidantDetailView: View {
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 抗酸化指標の数値・関連データはモック
 
+    // MARK: - Category Data
+    private let categoryName = "抗酸化"
+
+    // [DUMMY] カテゴリー関連遺伝子データ
+    private let antioxidantGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "スーパーオキシド分解酵素"),
+        (name: "GPX1 Pro198Leu", variant: "Pro198Leu", risk: "良好", description: "グルタチオンペルオキシダーゼ"),
+        (name: "CAT", variant: "-", risk: "最適", description: "カタラーゼ活性")
+    ]
+
+    // [DUMMY] カテゴリー関連血液マーカーデータ
+    private let antioxidantBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適"),
+        (name: "UA", value: "5.2", unit: "mg/dL", range: "3.0-7.0", status: "最適"),
+        (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
+        (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
+        (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "最適")
+    ]
+
+    // [DUMMY] カテゴリー関連HealthKitデータ
+    private let antioxidantHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "高強度運動時間", value: "週150分", status: "最適"),
+        (name: "睡眠時間", value: "7.5時間", status: "良好")
+    ]
+
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
@@ -239,21 +264,11 @@ struct AntioxidantDetailView: View {
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
-        let prompt = PromptGenerator.generateDetailViewPrompt(
-            category: "抗酸化",
-            score: 84,
-            relatedGenes: [
-                (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "スーパーオキシド分解酵素"),
-                (name: "GPX1 Pro198Leu", variant: "Pro198Leu", risk: "良好", description: "グルタチオンペルオキシダーゼ"),
-                (name: "CAT", variant: "-", risk: "最適", description: "カタラーゼ活性")
-            ],
-            relatedBloodMarkers: [
-                (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適"),
-                (name: "UA", value: "5.2", unit: "mg/dL", range: "3.0-7.0", status: "最適"),
-                (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
-                (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
-                (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "最適")
-            ]
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: antioxidantGenes,
+            relatedBloodMarkers: antioxidantBloodMarkers,
+            relatedHealthKit: antioxidantHealthKit
         )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
@@ -261,24 +276,24 @@ struct AntioxidantDetailView: View {
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareGenes() {
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
-            (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "スーパーオキシド分解酵素"),
-            (name: "GPX1 Pro198Leu", variant: "Pro198Leu", risk: "良好", description: "グルタチオンペルオキシダーゼ"),
-            (name: "CAT", variant: "-", risk: "最適", description: "カタラーゼ活性")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: antioxidantGenes,
+            relatedBloodMarkers: antioxidantBloodMarkers,
+            relatedHealthKit: antioxidantHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareBloodMarkers() {
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
-            (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適"),
-            (name: "UA", value: "5.2", unit: "mg/dL", range: "3.0-7.0", status: "最適"),
-            (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
-            (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
-            (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "最適")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: antioxidantGenes,
+            relatedBloodMarkers: antioxidantBloodMarkers,
+            relatedHealthKit: antioxidantHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }

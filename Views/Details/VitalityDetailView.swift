@@ -10,7 +10,35 @@ import SwiftUI
 struct VitalityDetailView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
-    // [DUMMY] 活力スコアおよび各指標は仮の固定値
+
+    // MARK: - Category Data
+    private let categoryName = "活力"
+
+    // [DUMMY] 活力関連遺伝子データ
+    private let vitalityGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "PPARGC1A", variant: "PPARGC1A", risk: "優秀", description: "ミトコンドリア生合成・エネルギー産生"),
+        (name: "NRF1", variant: "NRF1", risk: "優秀", description: "抗酸化・細胞エネルギー代謝"),
+        (name: "SIRT1", variant: "SIRT1", risk: "良好", description: "長寿遺伝子・代謝調節")
+    ]
+
+    // [DUMMY] 活力関連血液マーカーデータ
+    private let vitalityBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "Ferritin", value: "98", unit: "ng/mL", range: "30-400", status: "最適"),
+        (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.4-1.5", status: "良好"),
+        (name: "LAC", value: "11", unit: "mg/dL", range: "4-16", status: "最適"),
+        (name: "ALB", value: "4.6", unit: "g/dL", range: "4.1-5.1", status: "最適"),
+        (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "正常範囲"),
+        (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適")
+    ]
+
+    // [DUMMY] 活力関連HealthKitデータ
+    private let vitalityHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "HRV", value: "72ms", status: "優秀"),
+        (name: "安静時心拍", value: "58bpm", status: "最適"),
+        (name: "睡眠効率", value: "88%", status: "優秀"),
+        (name: "日中活動量", value: "450kcal", status: "良好"),
+        (name: "立ち上がり回数", value: "12回/日", status: "最適")
+    ]
 
     var body: some View {
         ScrollView {
@@ -239,51 +267,39 @@ struct VitalityDetailView: View {
 
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
-    private func shareDetailView() { // [DUMMY]
-        let prompt = PromptGenerator.generateDetailViewPrompt( // [DUMMY]
-            category: "活力", // [DUMMY]
-            score: 91, // [DUMMY]
-            relatedGenes: [ // [DUMMY]
-                (name: "PPARGC1A", variant: "PPARGC1A", risk: "優秀", description: "ミトコンドリア生合成・エネルギー産生"), // [DUMMY]
-                (name: "NRF1", variant: "NRF1", risk: "優秀", description: "抗酸化・細胞エネルギー代謝"), // [DUMMY]
-                (name: "SIRT1", variant: "SIRT1", risk: "良好", description: "長寿遺伝子・代謝調節") // [DUMMY]
-            ], // [DUMMY]
-            relatedBloodMarkers: [ // [DUMMY]
-                (name: "Ferritin", value: "98", unit: "ng/mL", range: "30-400", status: "最適"), // [DUMMY]
-                (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.4-1.5", status: "良好"), // [DUMMY]
-                (name: "LAC", value: "11", unit: "mg/dL", range: "4-16", status: "最適"), // [DUMMY]
-                (name: "ALB", value: "4.6", unit: "g/dL", range: "4.1-5.1", status: "最適"), // [DUMMY]
-                (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "正常範囲"), // [DUMMY]
-                (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適") // [DUMMY]
-            ] // [DUMMY]
-        ) // [DUMMY]
-        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
-    } // [DUMMY]
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: vitalityGenes,
+            relatedBloodMarkers: vitalityBloodMarkers,
+            relatedHealthKit: vitalityHealthKit
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
 
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
-    private func shareGenes() { // [DUMMY]
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [ // [DUMMY]
-            (name: "PPARGC1A", variant: "PPARGC1A", risk: "優秀", description: "ミトコンドリア生合成・エネルギー産生"), // [DUMMY]
-            (name: "NRF1", variant: "NRF1", risk: "優秀", description: "抗酸化・細胞エネルギー代謝"), // [DUMMY]
-            (name: "SIRT1", variant: "SIRT1", risk: "良好", description: "長寿遺伝子・代謝調節") // [DUMMY]
-        ]) // [DUMMY]
-        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
-    } // [DUMMY]
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: vitalityGenes,
+            relatedBloodMarkers: vitalityBloodMarkers,
+            relatedHealthKit: vitalityHealthKit
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
-    private func shareBloodMarkers() { // [DUMMY]
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [ // [DUMMY]
-            (name: "Ferritin", value: "98", unit: "ng/mL", range: "30-400", status: "最適"), // [DUMMY]
-            (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.4-1.5", status: "良好"), // [DUMMY]
-            (name: "LAC", value: "11", unit: "mg/dL", range: "4-16", status: "最適"), // [DUMMY]
-            (name: "ALB", value: "4.6", unit: "g/dL", range: "4.1-5.1", status: "最適"), // [DUMMY]
-            (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "正常範囲"), // [DUMMY]
-            (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適") // [DUMMY]
-        ]) // [DUMMY]
-        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
-    } // [DUMMY]
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: vitalityGenes,
+            relatedBloodMarkers: vitalityBloodMarkers,
+            relatedHealthKit: vitalityHealthKit
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
 }
 
 // MARK: - Preview

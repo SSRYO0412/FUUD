@@ -12,6 +12,33 @@ struct SleepDetailView: View {
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 睡眠指標や関連データはテスト用の固定値
 
+    // MARK: - Category Data
+    private let categoryName = "睡眠"
+
+    // [DUMMY] カテゴリー関連遺伝子データ
+    private let sleepGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "PER3 VNTR", variant: "VNTR", risk: "最適", description: "概日リズム：安定型"),
+        (name: "CLOCK 3111T/C", variant: "3111T/C", risk: "良好", description: "睡眠パターン：夜型傾向軽度"),
+        (name: "ADORA2A", variant: "ADORA2A", risk: "良好", description: "カフェイン感受性：中程度")
+    ]
+
+    // [DUMMY] カテゴリー関連血液マーカーデータ
+    private let sleepBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "Melatonin", value: "12", unit: "pg/mL", range: "10-15", status: "最適"),
+        (name: "Cortisol (朝)", value: "15", unit: "μg/dL", range: "10-20", status: "良好"),
+        (name: "Magnesium", value: "2.3", unit: "mg/dL", range: "1.8-2.6", status: "最適"),
+        (name: "Vitamin D", value: "45", unit: "ng/mL", range: "30-100", status: "最適")
+    ]
+
+    // [DUMMY] カテゴリー関連HealthKitデータ
+    private let sleepHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "睡眠時間", value: "7h 12m", status: "最適"),
+        (name: "深睡眠", value: "2h 30m", status: "優秀"),
+        (name: "レム睡眠", value: "1h 48m", status: "良好"),
+        (name: "睡眠効率", value: "89%", status: "優秀"),
+        (name: "HRV", value: "70ms", status: "優秀")
+    ]
+
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
@@ -257,20 +284,11 @@ struct SleepDetailView: View {
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
-        let prompt = PromptGenerator.generateDetailViewPrompt(
-            category: "睡眠",
-            score: 90,
-            relatedGenes: [
-                (name: "PER3 VNTR", variant: "VNTR", risk: "最適", description: "概日リズム：安定型"),
-                (name: "CLOCK 3111T/C", variant: "3111T/C", risk: "良好", description: "睡眠パターン：夜型傾向軽度"),
-                (name: "ADORA2A", variant: "ADORA2A", risk: "良好", description: "カフェイン感受性：中程度")
-            ],
-            relatedBloodMarkers: [
-                (name: "Melatonin", value: "12", unit: "pg/mL", range: "10-15", status: "最適"),
-                (name: "Cortisol (朝)", value: "15", unit: "μg/dL", range: "10-20", status: "良好"),
-                (name: "Magnesium", value: "2.3", unit: "mg/dL", range: "1.8-2.6", status: "最適"),
-                (name: "Vitamin D", value: "45", unit: "ng/mL", range: "30-100", status: "最適")
-            ]
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: sleepGenes,
+            relatedBloodMarkers: sleepBloodMarkers,
+            relatedHealthKit: sleepHealthKit
         )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
@@ -278,23 +296,24 @@ struct SleepDetailView: View {
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareGenes() {
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
-            (name: "PER3 VNTR", variant: "VNTR", risk: "最適", description: "概日リズム：安定型"),
-            (name: "CLOCK 3111T/C", variant: "3111T/C", risk: "良好", description: "睡眠パターン：夜型傾向軽度"),
-            (name: "ADORA2A", variant: "ADORA2A", risk: "良好", description: "カフェイン感受性：中程度")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: sleepGenes,
+            relatedBloodMarkers: sleepBloodMarkers,
+            relatedHealthKit: sleepHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareBloodMarkers() {
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
-            (name: "Melatonin", value: "12", unit: "pg/mL", range: "10-15", status: "最適"),
-            (name: "Cortisol (朝)", value: "15", unit: "μg/dL", range: "10-20", status: "良好"),
-            (name: "Magnesium", value: "2.3", unit: "mg/dL", range: "1.8-2.6", status: "最適"),
-            (name: "Vitamin D", value: "45", unit: "ng/mL", range: "30-100", status: "最適")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: sleepGenes,
+            relatedBloodMarkers: sleepBloodMarkers,
+            relatedHealthKit: sleepHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }

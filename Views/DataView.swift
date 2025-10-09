@@ -213,6 +213,8 @@ private struct LifeScoreCard: View {
     let title: String
     let score: Int
     @State private var showCopyToast = false // [DUMMY] コピー通知トースト表示状態
+    @State private var showActionDialog = false // [DUMMY] アクション選択ダイアログ表示状態
+    @State private var navigateToDetail = false // [DUMMY] DetailView遷移フラグ
 
     var body: some View {
         NavigationLink(destination: destinationView) {
@@ -247,20 +249,394 @@ private struct LifeScoreCard: View {
                 .padding(VirgilSpacing.md * 1.1)  // padding 10%拡大
                 .virgilGlassCard()
                 .onLongPressGesture(minimumDuration: 0.5) {
-                    // [DUMMY] ライフスコアカード長押し時にプロンプト生成＆コピー
-                    let prompt = PromptGenerator.generateLifeScorePrompt(
-                        category: title,
-                        score: score,
-                        emoji: emoji
-                    )
-                    CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+                    // [DUMMY] ライフスコアカード長押し時にハプティックフィードバック＆ダイアログ表示
+                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                    generator.impactOccurred()
+                    showActionDialog = true
                 }
 
                 LongPressHint(helpText: "\(title)のスコアです。タップすると詳細な分析が表示されます。")
                     .padding(8)
             }
         }
+        .background(
+            NavigationLink(isActive: $navigateToDetail, destination: { destinationView }) {
+                EmptyView()
+            }
+            .hidden()
+        )
+        .confirmationDialog("アクション選択", isPresented: $showActionDialog) {
+            Button("プロンプトを生成") {
+                // [DUMMY] カテゴリー完全データプロンプトを生成＆コピー
+                let categoryData = getCategoryData(for: title)
+                let prompt = PromptGenerator.generateCategoryPrompt(
+                    category: categoryData.name,
+                    relatedGenes: categoryData.genes,
+                    relatedBloodMarkers: categoryData.bloodMarkers,
+                    relatedHealthKit: categoryData.healthKit
+                )
+                CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+            }
+            Button("詳細を開く") {
+                navigateToDetail = true
+            }
+            Button("キャンセル", role: .cancel) { }
+        }
         .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast)
+    }
+
+    // MARK: - Category Data Mapping
+
+    /// カテゴリー名からデータを取得
+    /// [DUMMY] 全カテゴリーのモックデータ、DetailViewと同じ内容
+    private func getCategoryData(for category: String) -> (
+        name: String,
+        genes: [(name: String, variant: String, risk: String, description: String)],
+        bloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)],
+        healthKit: [(name: String, value: String, status: String)]
+    ) {
+        switch category {
+        case "脳の認知機能":
+            return (
+                name: "認知機能",
+                genes: [
+                    (name: "APOE ε3/ε3", variant: "ε3/ε3", risk: "低", description: "アルツハイマー病リスク：低"),
+                    (name: "BDNF Val66Met", variant: "Val66Met", risk: "良好", description: "学習・記憶能力：優良"),
+                    (name: "COMT Val158Met", variant: "Val158Met", risk: "最適", description: "ドーパミン代謝：バランス型")
+                ],
+                bloodMarkers: [
+                    (name: "Homocysteine", value: "8.2", unit: "μmol/L", range: "5-15", status: "最適"),
+                    (name: "Vitamin B12", value: "580", unit: "pg/mL", range: "200-900", status: "良好"),
+                    (name: "Folate", value: "12.5", unit: "ng/mL", range: "3-20", status: "最適"),
+                    (name: "Omega-3 Index", value: "8.2", unit: "%", range: ">8", status: "優秀")
+                ],
+                healthKit: [
+                    (name: "睡眠時間", value: "7.5時間", status: "最適"),
+                    (name: "深睡眠", value: "90分", status: "優秀"),
+                    (name: "HRV", value: "68ms", status: "良好"),
+                    (name: "安静時心拍", value: "58bpm", status: "最適")
+                ]
+            )
+        case "活力":
+            return (
+                name: "活力",
+                genes: [
+                    (name: "PPARGC1A", variant: "PPARGC1A", risk: "優秀", description: "ミトコンドリア生合成・エネルギー産生"),
+                    (name: "NRF1", variant: "NRF1", risk: "優秀", description: "抗酸化・細胞エネルギー代謝"),
+                    (name: "SIRT1", variant: "SIRT1", risk: "良好", description: "長寿遺伝子・代謝調節")
+                ],
+                bloodMarkers: [
+                    (name: "Ferritin", value: "98", unit: "ng/mL", range: "30-400", status: "最適"),
+                    (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.4-1.5", status: "良好"),
+                    (name: "LAC", value: "11", unit: "mg/dL", range: "4-16", status: "最適"),
+                    (name: "ALB", value: "4.6", unit: "g/dL", range: "4.1-5.1", status: "最適"),
+                    (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "正常範囲"),
+                    (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適")
+                ],
+                healthKit: [
+                    (name: "HRV", value: "72ms", status: "優秀"),
+                    (name: "安静時心拍", value: "58bpm", status: "最適"),
+                    (name: "睡眠効率", value: "88%", status: "優秀"),
+                    (name: "日中活動量", value: "450kcal", status: "良好"),
+                    (name: "立ち上がり回数", value: "12回/日", status: "最適")
+                ]
+            )
+        case "肝機能":
+            return (
+                name: "肝機能",
+                genes: [
+                    (name: "PNPLA3", variant: "PNPLA3", risk: "良好", description: "脂肪肝リスク・脂質代謝"),
+                    (name: "ALDH2", variant: "ALDH2", risk: "優秀", description: "アルコール代謝・アセトアルデヒド分解")
+                ],
+                bloodMarkers: [
+                    (name: "AST", value: "22", unit: "U/L", range: "10-40", status: "最適"),
+                    (name: "ALT", value: "18", unit: "U/L", range: "5-45", status: "最適"),
+                    (name: "GGT", value: "25", unit: "U/L", range: "0-50", status: "最適"),
+                    (name: "ALP", value: "195", unit: "U/L", range: "100-325", status: "正常範囲"),
+                    (name: "T-Bil", value: "0.9", unit: "mg/dL", range: "0.2-1.2", status: "最適"),
+                    (name: "D-Bil", value: "0.2", unit: "mg/dL", range: "0.0-0.4", status: "最適"),
+                    (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.3", status: "最適"),
+                    (name: "TG", value: "88", unit: "mg/dL", range: "30-150", status: "最適")
+                ],
+                healthKit: [
+                    (name: "飲酒ログ", value: "週2日", status: "良好"),
+                    (name: "体重推移", value: "-0.5kg/月", status: "最適"),
+                    (name: "睡眠タイミング", value: "22:30-6:00", status: "優秀"),
+                    (name: "歩数", value: "9500歩/日", status: "良好")
+                ]
+            )
+        case "生活習慣":
+            return (
+                name: "生活習慣",
+                genes: [
+                    (name: "FTO", variant: "FTO", risk: "良好", description: "食欲調節・肥満リスク"),
+                    (name: "APOE", variant: "APOE", risk: "優秀", description: "脂質代謝・認知機能"),
+                    (name: "ALDH2", variant: "ALDH2", risk: "優秀", description: "アルコール代謝")
+                ],
+                bloodMarkers: [
+                    (name: "HbA1c", value: "5.4", unit: "%", range: "4.6-6.2", status: "最適"),
+                    (name: "1,5-AG", value: "18", unit: "μg/mL", range: "14-26", status: "良好"),
+                    (name: "TG", value: "92", unit: "mg/dL", range: "<150", status: "最適"),
+                    (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "優秀"),
+                    (name: "LDL", value: "105", unit: "mg/dL", range: "<120", status: "良好"),
+                    (name: "ApoB", value: "88", unit: "mg/dL", range: "<90", status: "最適"),
+                    (name: "UA", value: "5.8", unit: "mg/dL", range: "3.0-7.0", status: "正常範囲"),
+                    (name: "GGT", value: "28", unit: "U/L", range: "<50", status: "最適"),
+                    (name: "CRP", value: "0.08", unit: "mg/dL", range: "<0.3", status: "最適"),
+                    (name: "ALB", value: "4.4", unit: "g/dL", range: "3.8-5.3", status: "最適"),
+                    (name: "TP", value: "7.1", unit: "g/dL", range: "6.5-8.0", status: "正常範囲"),
+                    (name: "Ferritin", value: "88", unit: "ng/mL", range: "30-400", status: "良好")
+                ],
+                healthKit: [
+                    (name: "歩数", value: "10200歩/日", status: "優秀"),
+                    (name: "立ち時間", value: "10h/日", status: "最適"),
+                    (name: "ワークアウト分", value: "45分/日", status: "優秀"),
+                    (name: "睡眠効率", value: "86%", status: "良好"),
+                    (name: "HRV", value: "65ms", status: "良好")
+                ]
+            )
+        case "ダイエット":
+            return (
+                name: "ダイエット",
+                genes: [
+                    (name: "FTO rs9939609", variant: "rs9939609", risk: "標準", description: "肥満リスク：標準型"),
+                    (name: "TCF7L2 rs7903146", variant: "rs7903146", risk: "保護型", description: "2型糖尿病リスク：低"),
+                    (name: "UCP1 rs1800592", variant: "rs1800592", risk: "優秀", description: "脂肪燃焼効率：高"),
+                    (name: "ADRB2 rs1042714", variant: "rs1042714", risk: "良好", description: "代謝応答性：良好")
+                ],
+                bloodMarkers: [
+                    (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-6.0", status: "最適"),
+                    (name: "GA", value: "14.5", unit: "%", range: "11-16", status: "良好"),
+                    (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
+                    (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
+                    (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "良好"),
+                    (name: "LDL", value: "95", unit: "mg/dL", range: "<120", status: "最適"),
+                    (name: "TCHO", value: "180", unit: "mg/dL", range: "150-220", status: "正常範囲"),
+                    (name: "ApoB", value: "75", unit: "mg/dL", range: "<90", status: "最適")
+                ],
+                healthKit: [
+                    (name: "体重", value: "68kg", status: "最適"),
+                    (name: "BMI", value: "22.5", status: "最適"),
+                    (name: "消費カロリー", value: "2,350kcal", status: "良好"),
+                    (name: "歩数", value: "8,500歩", status: "良好"),
+                    (name: "ワークアウト時間", value: "45分", status: "優秀")
+                ]
+            )
+        case "見た目の健康":
+            return (
+                name: "見た目の健康",
+                genes: [
+                    (name: "MTHFR C677T", variant: "C677T", risk: "良好", description: "葉酸代謝・肌質への影響"),
+                    (name: "VDR FokI", variant: "FokI", risk: "最適", description: "ビタミンD受容体・肌健康"),
+                    (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "抗酸化能力・アンチエイジング"),
+                    (name: "COL1A1", variant: "COL1A1", risk: "良好", description: "コラーゲン生成能力")
+                ],
+                bloodMarkers: [
+                    (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.2", status: "最適"),
+                    (name: "TP", value: "7.2", unit: "g/dL", range: "6.5-8.2", status: "最適"),
+                    (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-200", status: "良好"),
+                    (name: "Zn", value: "95", unit: "μg/dL", range: "80-120", status: "最適"),
+                    (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
+                    (name: "GGT", value: "22", unit: "U/L", range: "10-50", status: "最適"),
+                    (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-5.6", status: "最適")
+                ],
+                healthKit: [
+                    (name: "VO2max", value: "42 ml/kg/min", status: "良好"),
+                    (name: "睡眠効率", value: "89%", status: "優秀"),
+                    (name: "歩行速度", value: "5.2 km/h", status: "最適"),
+                    (name: "HRV", value: "68ms", status: "良好"),
+                    (name: "水分摂取", value: "2.2L", status: "最適")
+                ]
+            )
+        case "睡眠":
+            return (
+                name: "睡眠",
+                genes: [
+                    (name: "PER3 VNTR", variant: "VNTR", risk: "最適", description: "概日リズム：安定型"),
+                    (name: "CLOCK 3111T/C", variant: "3111T/C", risk: "良好", description: "睡眠パターン：夜型傾向軽度"),
+                    (name: "ADORA2A", variant: "ADORA2A", risk: "良好", description: "カフェイン感受性：中程度")
+                ],
+                bloodMarkers: [
+                    (name: "Melatonin", value: "12", unit: "pg/mL", range: "10-15", status: "最適"),
+                    (name: "Cortisol (朝)", value: "15", unit: "μg/dL", range: "10-20", status: "良好"),
+                    (name: "Magnesium", value: "2.3", unit: "mg/dL", range: "1.8-2.6", status: "最適"),
+                    (name: "Vitamin D", value: "45", unit: "ng/mL", range: "30-100", status: "最適")
+                ],
+                healthKit: [
+                    (name: "睡眠時間", value: "7h 12m", status: "最適"),
+                    (name: "深睡眠", value: "2h 30m", status: "優秀"),
+                    (name: "レム睡眠", value: "1h 48m", status: "良好"),
+                    (name: "睡眠効率", value: "89%", status: "優秀"),
+                    (name: "HRV", value: "70ms", status: "優秀")
+                ]
+            )
+        case "疲労回復":
+            return (
+                name: "疲労回復",
+                genes: [
+                    (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "筋肉回復能力・速筋型"),
+                    (name: "PPARGC1A Gly482Ser", variant: "Gly482Ser", risk: "良好", description: "ミトコンドリア機能・持久力")
+                ],
+                bloodMarkers: [
+                    (name: "CK", value: "120", unit: "U/L", range: "60-400", status: "最適"),
+                    (name: "Mb", value: "45", unit: "ng/mL", range: "28-72", status: "良好"),
+                    (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
+                    (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
+                    (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適"),
+                    (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.3", status: "最適"),
+                    (name: "Mg", value: "2.2", unit: "mg/dL", range: "1.8-2.6", status: "良好")
+                ],
+                healthKit: [
+                    (name: "心拍回復 (HRR)", value: "35bpm/1min", status: "優秀"),
+                    (name: "トレーニング負荷", value: "適正", status: "良好"),
+                    (name: "ワークアウト強度", value: "中", status: "最適"),
+                    (name: "HRV", value: "68ms", status: "良好")
+                ]
+            )
+        case "肌":
+            return (
+                name: "肌",
+                genes: [
+                    (name: "FLG", variant: "FLG", risk: "良好", description: "肌バリア機能遺伝子"),
+                    (name: "MMP1", variant: "MMP1", risk: "最適", description: "コラーゲン分解酵素"),
+                    (name: "SOD2", variant: "SOD2", risk: "優秀", description: "抗酸化能力")
+                ],
+                bloodMarkers: [
+                    (name: "Zn", value: "95", unit: "μg/dL", range: "60-130", status: "最適"),
+                    (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
+                    (name: "ALB", value: "4.5", unit: "g/dL", range: "4.0-5.0", status: "最適"),
+                    (name: "CRP", value: "0.3", unit: "mg/L", range: "<3.0", status: "最適"),
+                    (name: "GGT", value: "22", unit: "U/L", range: "0-73", status: "最適"),
+                    (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適"),
+                    (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "良好"),
+                    (name: "pAlb", value: "28", unit: "mg/dL", range: "25-30", status: "最適")
+                ],
+                healthKit: [
+                    (name: "深睡眠", value: "90分", status: "優秀"),
+                    (name: "HRV", value: "68ms", status: "良好"),
+                    (name: "安静時心拍", value: "58bpm", status: "最適"),
+                    (name: "水分摂取", value: "2.2L", status: "最適")
+                ]
+            )
+        case "抗酸化":
+            return (
+                name: "抗酸化",
+                genes: [
+                    (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "スーパーオキシド分解酵素"),
+                    (name: "GPX1 Pro198Leu", variant: "Pro198Leu", risk: "良好", description: "グルタチオンペルオキシダーゼ"),
+                    (name: "CAT", variant: "-", risk: "最適", description: "カタラーゼ活性")
+                ],
+                bloodMarkers: [
+                    (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適"),
+                    (name: "UA", value: "5.2", unit: "mg/dL", range: "3.0-7.0", status: "最適"),
+                    (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
+                    (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
+                    (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "最適")
+                ],
+                healthKit: [
+                    (name: "高強度運動時間", value: "週150分", status: "最適"),
+                    (name: "睡眠時間", value: "7.5時間", status: "良好")
+                ]
+            )
+        case "ストレス":
+            return (
+                name: "ストレス",
+                genes: [
+                    (name: "NR3C1", variant: "NR3C1", risk: "注意", description: "コルチゾール受容体・ストレス応答"),
+                    (name: "COMT Val158Met", variant: "Val158Met", risk: "良好", description: "ドーパミン代謝・ストレス耐性"),
+                    (name: "SLC6A4", variant: "SLC6A4", risk: "標準", description: "セロトニントランスポーター")
+                ],
+                bloodMarkers: [
+                    (name: "CRP", value: "0.3", unit: "mg/L", range: "0-5", status: "最適"),
+                    (name: "LAC", value: "12", unit: "mg/dL", range: "4-16", status: "良好"),
+                    (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
+                    (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適")
+                ],
+                healthKit: [
+                    (name: "HRV", value: "68ms", status: "良好"),
+                    (name: "安静時心拍", value: "58bpm", status: "最適"),
+                    (name: "呼吸数", value: "14回/分", status: "最適"),
+                    (name: "マインドフルネス時間", value: "10分/日", status: "良好")
+                ]
+            )
+        case "運動能力":
+            return (
+                name: "運動能力",
+                genes: [
+                    (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "速筋型・瞬発力優位"),
+                    (name: "ACE I/D", variant: "I/D", risk: "良好", description: "持久力型・有酸素能力")
+                ],
+                bloodMarkers: [
+                    (name: "CK", value: "120", unit: "U/L", range: "30-200", status: "最適"),
+                    (name: "Mb", value: "45", unit: "ng/mL", range: "20-80", status: "良好"),
+                    (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
+                    (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
+                    (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適")
+                ],
+                healthKit: [
+                    (name: "VO2max", value: "48 ml/kg/min", status: "優秀"),
+                    (name: "最高心拍", value: "185bpm", status: "最適"),
+                    (name: "心拍回復", value: "35bpm/1min", status: "優秀"),
+                    (name: "走行ペース", value: "5:20/km", status: "良好"),
+                    (name: "トレーニング負荷", value: "適正", status: "最適")
+                ]
+            )
+        case "性的な健康":
+            return (
+                name: "性的な健康",
+                genes: [
+                    (name: "AR", variant: "AR", risk: "良好", description: "アンドロゲン受容体・テストステロン感受性"),
+                    (name: "ESR1", variant: "ESR1", risk: "優秀", description: "エストロゲン受容体・ホルモンバランス"),
+                    (name: "NOS3", variant: "NOS3", risk: "優秀", description: "一酸化窒素合成・血流調節")
+                ],
+                bloodMarkers: [
+                    (name: "ApoB", value: "85", unit: "mg/dL", range: "<100", status: "最適"),
+                    (name: "Lp(a)", value: "18", unit: "mg/dL", range: "<30", status: "最適"),
+                    (name: "TG", value: "95", unit: "mg/dL", range: "<150", status: "最適"),
+                    (name: "HDL", value: "62", unit: "mg/dL", range: ">40", status: "良好"),
+                    (name: "LDL", value: "98", unit: "mg/dL", range: "<100", status: "最適"),
+                    (name: "HbA1c", value: "5.3", unit: "%", range: "<5.7", status: "最適"),
+                    (name: "CRP", value: "0.05", unit: "mg/dL", range: "<0.3", status: "最適"),
+                    (name: "Ferritin", value: "92", unit: "ng/mL", range: "30-400", status: "最適"),
+                    (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "良好")
+                ],
+                healthKit: [
+                    (name: "睡眠の質", value: "85%", status: "優秀"),
+                    (name: "深睡眠", value: "1h 45m", status: "良好"),
+                    (name: "HRV", value: "68ms", status: "優秀"),
+                    (name: "体重", value: "72.5kg", status: "最適"),
+                    (name: "月経周期", value: "28日", status: "正常範囲")
+                ]
+            )
+        case "心臓の健康":
+            return (
+                name: "心臓の健康",
+                genes: [
+                    (name: "APOE", variant: "APOE", risk: "良好", description: "コレステロール代謝・動脈硬化リスク"),
+                    (name: "ACE I/D", variant: "ACE I/D", risk: "良好", description: "血圧調節・心筋機能"),
+                    (name: "NOS3", variant: "NOS3", risk: "優秀", description: "血管内皮機能・一酸化窒素産生")
+                ],
+                bloodMarkers: [
+                    (name: "ApoB", value: "82", unit: "mg/dL", range: "<90", status: "最適"),
+                    (name: "Lp(a)", value: "15", unit: "mg/dL", range: "<30", status: "最適"),
+                    (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
+                    (name: "HDL", value: "68", unit: "mg/dL", range: ">40", status: "優秀"),
+                    (name: "LDL", value: "95", unit: "mg/dL", range: "<100", status: "最適"),
+                    (name: "HbA1c", value: "5.2", unit: "%", range: "<5.7", status: "最適"),
+                    (name: "CRP", value: "0.04", unit: "mg/dL", range: "<0.1", status: "最適")
+                ],
+                healthKit: [
+                    (name: "安静時心拍", value: "58bpm", status: "最適"),
+                    (name: "HRV", value: "68ms", status: "優秀"),
+                    (name: "血圧", value: "118/75", status: "最適"),
+                    (name: "VO2max", value: "42 ml/kg/min", status: "良好"),
+                    (name: "有酸素運動時間", value: "150分/週", status: "最適")
+                ]
+            )
+        default:
+            // [DUMMY] 他のカテゴリーは空データを返す（必要に応じて追加）
+            return (name: category, genes: [], bloodMarkers: [], healthKit: [])
+        }
     }
 
     @ViewBuilder

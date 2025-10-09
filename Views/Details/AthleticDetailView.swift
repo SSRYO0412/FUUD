@@ -12,6 +12,33 @@ struct AthleticDetailView: View {
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 表示スコアと関連データは仮の固定値
 
+    // MARK: - Category Data
+    private let categoryName = "運動能力"
+
+    // [DUMMY] カテゴリー関連遺伝子データ
+    private let athleticGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "速筋型・瞬発力優位"),
+        (name: "ACE I/D", variant: "I/D", risk: "良好", description: "持久力型・有酸素能力")
+    ]
+
+    // [DUMMY] カテゴリー関連血液マーカーデータ
+    private let athleticBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "CK", value: "120", unit: "U/L", range: "30-200", status: "最適"),
+        (name: "Mb", value: "45", unit: "ng/mL", range: "20-80", status: "良好"),
+        (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
+        (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
+        (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適")
+    ]
+
+    // [DUMMY] カテゴリー関連HealthKitデータ
+    private let athleticHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "VO2max", value: "48 ml/kg/min", status: "優秀"),
+        (name: "最高心拍", value: "185bpm", status: "最適"),
+        (name: "心拍回復", value: "35bpm/1min", status: "優秀"),
+        (name: "走行ペース", value: "5:20/km", status: "良好"),
+        (name: "トレーニング負荷", value: "適正", status: "最適")
+    ]
+
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
@@ -226,20 +253,11 @@ struct AthleticDetailView: View {
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
-        let prompt = PromptGenerator.generateDetailViewPrompt(
-            category: "運動能力",
-            score: 89,
-            relatedGenes: [
-                (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "速筋型・瞬発力優位"),
-                (name: "ACE I/D", variant: "I/D", risk: "良好", description: "持久力型・有酸素能力")
-            ],
-            relatedBloodMarkers: [
-                (name: "CK", value: "120", unit: "U/L", range: "30-200", status: "最適"),
-                (name: "Mb", value: "45", unit: "ng/mL", range: "20-80", status: "良好"),
-                (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
-                (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
-                (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適")
-            ]
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: athleticGenes,
+            relatedBloodMarkers: athleticBloodMarkers,
+            relatedHealthKit: athleticHealthKit
         )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
@@ -247,23 +265,24 @@ struct AthleticDetailView: View {
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareGenes() {
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
-            (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "速筋型・瞬発力優位"),
-            (name: "ACE I/D", variant: "I/D", risk: "良好", description: "持久力型・有酸素能力")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: athleticGenes,
+            relatedBloodMarkers: athleticBloodMarkers,
+            relatedHealthKit: athleticHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareBloodMarkers() {
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
-            (name: "CK", value: "120", unit: "U/L", range: "30-200", status: "最適"),
-            (name: "Mb", value: "45", unit: "ng/mL", range: "20-80", status: "良好"),
-            (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
-            (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
-            (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: athleticGenes,
+            relatedBloodMarkers: athleticBloodMarkers,
+            relatedHealthKit: athleticHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }

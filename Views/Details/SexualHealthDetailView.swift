@@ -12,6 +12,38 @@ struct SexualHealthDetailView: View {
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 性的健康に関するスコア・指標はモック
 
+    // MARK: - Category Data
+    private let categoryName = "性的な健康"
+
+    // [DUMMY] カテゴリー関連遺伝子データ
+    private let sexualHealthGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "AR", variant: "AR", risk: "良好", description: "アンドロゲン受容体・テストステロン感受性"),
+        (name: "ESR1", variant: "ESR1", risk: "優秀", description: "エストロゲン受容体・ホルモンバランス"),
+        (name: "NOS3", variant: "NOS3", risk: "優秀", description: "一酸化窒素合成・血流調節")
+    ]
+
+    // [DUMMY] カテゴリー関連血液マーカーデータ
+    private let sexualHealthBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "ApoB", value: "85", unit: "mg/dL", range: "<100", status: "最適"),
+        (name: "Lp(a)", value: "18", unit: "mg/dL", range: "<30", status: "最適"),
+        (name: "TG", value: "95", unit: "mg/dL", range: "<150", status: "最適"),
+        (name: "HDL", value: "62", unit: "mg/dL", range: ">40", status: "良好"),
+        (name: "LDL", value: "98", unit: "mg/dL", range: "<100", status: "最適"),
+        (name: "HbA1c", value: "5.3", unit: "%", range: "<5.7", status: "最適"),
+        (name: "CRP", value: "0.05", unit: "mg/dL", range: "<0.3", status: "最適"),
+        (name: "Ferritin", value: "92", unit: "ng/mL", range: "30-400", status: "最適"),
+        (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "良好")
+    ]
+
+    // [DUMMY] カテゴリー関連HealthKitデータ
+    private let sexualHealthHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "睡眠の質", value: "85%", status: "優秀"),
+        (name: "深睡眠", value: "1h 45m", status: "良好"),
+        (name: "HRV", value: "68ms", status: "優秀"),
+        (name: "体重", value: "72.5kg", status: "最適"),
+        (name: "月経周期", value: "28日", status: "正常範囲")
+    ]
+
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
@@ -242,57 +274,39 @@ struct SexualHealthDetailView: View {
 
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
-    private func shareDetailView() { // [DUMMY]
-        let prompt = PromptGenerator.generateDetailViewPrompt( // [DUMMY]
-            category: "性的な健康", // [DUMMY]
-            score: 83, // [DUMMY]
-            relatedGenes: [ // [DUMMY]
-                (name: "AR", variant: "AR", risk: "良好", description: "アンドロゲン受容体・テストステロン感受性"), // [DUMMY]
-                (name: "ESR1", variant: "ESR1", risk: "優秀", description: "エストロゲン受容体・ホルモンバランス"), // [DUMMY]
-                (name: "NOS3", variant: "NOS3", risk: "優秀", description: "一酸化窒素合成・血流調節") // [DUMMY]
-            ], // [DUMMY]
-            relatedBloodMarkers: [ // [DUMMY]
-                (name: "ApoB", value: "85", unit: "mg/dL", range: "<100", status: "最適"), // [DUMMY]
-                (name: "Lp(a)", value: "18", unit: "mg/dL", range: "<30", status: "最適"), // [DUMMY]
-                (name: "TG", value: "95", unit: "mg/dL", range: "<150", status: "最適"), // [DUMMY]
-                (name: "HDL", value: "62", unit: "mg/dL", range: ">40", status: "良好"), // [DUMMY]
-                (name: "LDL", value: "98", unit: "mg/dL", range: "<100", status: "最適"), // [DUMMY]
-                (name: "HbA1c", value: "5.3", unit: "%", range: "<5.7", status: "最適"), // [DUMMY]
-                (name: "CRP", value: "0.05", unit: "mg/dL", range: "<0.3", status: "最適"), // [DUMMY]
-                (name: "Ferritin", value: "92", unit: "ng/mL", range: "30-400", status: "最適"), // [DUMMY]
-                (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "良好") // [DUMMY]
-            ] // [DUMMY]
-        ) // [DUMMY]
-        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
-    } // [DUMMY]
+    private func shareDetailView() {
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: sexualHealthGenes,
+            relatedBloodMarkers: sexualHealthBloodMarkers,
+            relatedHealthKit: sexualHealthHealthKit
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
 
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
-    private func shareGenes() { // [DUMMY]
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [ // [DUMMY]
-            (name: "AR", variant: "AR", risk: "良好", description: "アンドロゲン受容体・テストステロン感受性"), // [DUMMY]
-            (name: "ESR1", variant: "ESR1", risk: "優秀", description: "エストロゲン受容体・ホルモンバランス"), // [DUMMY]
-            (name: "NOS3", variant: "NOS3", risk: "優秀", description: "一酸化窒素合成・血流調節") // [DUMMY]
-        ]) // [DUMMY]
-        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
-    } // [DUMMY]
+    private func shareGenes() {
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: sexualHealthGenes,
+            relatedBloodMarkers: sexualHealthBloodMarkers,
+            relatedHealthKit: sexualHealthHealthKit
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
-    private func shareBloodMarkers() { // [DUMMY]
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [ // [DUMMY]
-            (name: "ApoB", value: "85", unit: "mg/dL", range: "<100", status: "最適"), // [DUMMY]
-            (name: "Lp(a)", value: "18", unit: "mg/dL", range: "<30", status: "最適"), // [DUMMY]
-            (name: "TG", value: "95", unit: "mg/dL", range: "<150", status: "最適"), // [DUMMY]
-            (name: "HDL", value: "62", unit: "mg/dL", range: ">40", status: "良好"), // [DUMMY]
-            (name: "LDL", value: "98", unit: "mg/dL", range: "<100", status: "最適"), // [DUMMY]
-            (name: "HbA1c", value: "5.3", unit: "%", range: "<5.7", status: "最適"), // [DUMMY]
-            (name: "CRP", value: "0.05", unit: "mg/dL", range: "<0.3", status: "最適"), // [DUMMY]
-            (name: "Ferritin", value: "92", unit: "ng/mL", range: "30-400", status: "最適"), // [DUMMY]
-            (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "良好") // [DUMMY]
-        ]) // [DUMMY]
-        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast) // [DUMMY]
-    } // [DUMMY]
+    private func shareBloodMarkers() {
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: sexualHealthGenes,
+            relatedBloodMarkers: sexualHealthBloodMarkers,
+            relatedHealthKit: sexualHealthHealthKit
+        )
+        CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
+    }
 }
 
 // MARK: - Preview

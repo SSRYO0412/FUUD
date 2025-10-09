@@ -12,7 +12,35 @@ struct RecoveryDetailView: View {
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 回復指標データはUI検証用の固定値
 
-    var body: some View {
+    // MARK: - Category Data
+    private let categoryName = "疲労回復"
+
+    // [DUMMY] カテゴリー関連遺伝子データ
+    private let recoveryGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "筋肉回復能力・速筋型"),
+        (name: "PPARGC1A Gly482Ser", variant: "Gly482Ser", risk: "良好", description: "ミトコンドリア機能・持久力")
+    ]
+
+    // [DUMMY] カテゴリー関連血液マーカーデータ
+    private let recoveryBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "CK", value: "120", unit: "U/L", range: "60-400", status: "最適"),
+        (name: "Mb", value: "45", unit: "ng/mL", range: "28-72", status: "良好"),
+        (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
+        (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
+        (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適"),
+        (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.3", status: "最適"),
+        (name: "Mg", value: "2.2", unit: "mg/dL", range: "1.8-2.6", status: "良好")
+    ]
+
+    // [DUMMY] カテゴリー関連HealthKitデータ
+    private let recoveryHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "心拍回復 (HRR)", value: "35bpm/1min", status: "優秀"),
+        (name: "トレーニング負荷", value: "適正", status: "良好"),
+        (name: "ワークアウト強度", value: "中", status: "最適"),
+        (name: "HRV", value: "68ms", status: "良好")
+    ]
+
+    var body: some View{
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
                 // Header Score
@@ -227,22 +255,11 @@ struct RecoveryDetailView: View {
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
-        let prompt = PromptGenerator.generateDetailViewPrompt(
-            category: "疲労回復",
-            score: 87,
-            relatedGenes: [
-                (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "筋肉回復能力・速筋型"),
-                (name: "PPARGC1A Gly482Ser", variant: "Gly482Ser", risk: "良好", description: "ミトコンドリア機能・持久力")
-            ],
-            relatedBloodMarkers: [
-                (name: "CK", value: "120", unit: "U/L", range: "60-400", status: "最適"),
-                (name: "Mb", value: "45", unit: "ng/mL", range: "28-72", status: "良好"),
-                (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
-                (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
-                (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適"),
-                (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.3", status: "最適"),
-                (name: "Mg", value: "2.2", unit: "mg/dL", range: "1.8-2.6", status: "良好")
-            ]
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: recoveryGenes,
+            relatedBloodMarkers: recoveryBloodMarkers,
+            relatedHealthKit: recoveryHealthKit
         )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
@@ -250,25 +267,24 @@ struct RecoveryDetailView: View {
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareGenes() {
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
-            (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "筋肉回復能力・速筋型"),
-            (name: "PPARGC1A Gly482Ser", variant: "Gly482Ser", risk: "良好", description: "ミトコンドリア機能・持久力")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: recoveryGenes,
+            relatedBloodMarkers: recoveryBloodMarkers,
+            relatedHealthKit: recoveryHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareBloodMarkers() {
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
-            (name: "CK", value: "120", unit: "U/L", range: "60-400", status: "最適"),
-            (name: "Mb", value: "45", unit: "ng/mL", range: "28-72", status: "良好"),
-            (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
-            (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
-            (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適"),
-            (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.3", status: "最適"),
-            (name: "Mg", value: "2.2", unit: "mg/dL", range: "1.8-2.6", status: "良好")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: recoveryGenes,
+            relatedBloodMarkers: recoveryBloodMarkers,
+            relatedHealthKit: recoveryHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }

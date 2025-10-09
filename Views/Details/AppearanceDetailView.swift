@@ -12,6 +12,37 @@ struct AppearanceDetailView: View {
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 見た目の健康データはUI検証用の固定値
 
+    // MARK: - Category Data
+    private let categoryName = "見た目の健康"
+
+    // [DUMMY] カテゴリー関連遺伝子データ
+    private let appearanceGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "MTHFR C677T", variant: "C677T", risk: "良好", description: "葉酸代謝・肌質への影響"),
+        (name: "VDR FokI", variant: "FokI", risk: "最適", description: "ビタミンD受容体・肌健康"),
+        (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "抗酸化能力・アンチエイジング"),
+        (name: "COL1A1", variant: "COL1A1", risk: "良好", description: "コラーゲン生成能力")
+    ]
+
+    // [DUMMY] カテゴリー関連血液マーカーデータ
+    private let appearanceBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.2", status: "最適"),
+        (name: "TP", value: "7.2", unit: "g/dL", range: "6.5-8.2", status: "最適"),
+        (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-200", status: "良好"),
+        (name: "Zn", value: "95", unit: "μg/dL", range: "80-120", status: "最適"),
+        (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
+        (name: "GGT", value: "22", unit: "U/L", range: "10-50", status: "最適"),
+        (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-5.6", status: "最適")
+    ]
+
+    // [DUMMY] カテゴリー関連HealthKitデータ
+    private let appearanceHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "VO2max", value: "42 ml/kg/min", status: "良好"),
+        (name: "睡眠効率", value: "89%", status: "優秀"),
+        (name: "歩行速度", value: "5.2 km/h", status: "最適"),
+        (name: "HRV", value: "68ms", status: "良好"),
+        (name: "水分摂取", value: "2.2L", status: "最適")
+    ]
+
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
@@ -248,24 +279,11 @@ struct AppearanceDetailView: View {
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
-        let prompt = PromptGenerator.generateDetailViewPrompt(
-            category: "見た目の健康",
-            score: 88,
-            relatedGenes: [
-                (name: "MTHFR C677T", variant: "C677T", risk: "良好", description: "葉酸代謝・肌質への影響"),
-                (name: "VDR FokI", variant: "FokI", risk: "最適", description: "ビタミンD受容体・肌健康"),
-                (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "抗酸化能力・アンチエイジング"),
-                (name: "COL1A1", variant: "COL1A1", risk: "良好", description: "コラーゲン生成能力")
-            ],
-            relatedBloodMarkers: [
-                (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.2", status: "最適"),
-                (name: "TP", value: "7.2", unit: "g/dL", range: "6.5-8.2", status: "最適"),
-                (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-200", status: "良好"),
-                (name: "Zn", value: "95", unit: "μg/dL", range: "80-120", status: "最適"),
-                (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
-                (name: "GGT", value: "22", unit: "U/L", range: "10-50", status: "最適"),
-                (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-5.6", status: "最適")
-            ]
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: appearanceGenes,
+            relatedBloodMarkers: appearanceBloodMarkers,
+            relatedHealthKit: appearanceHealthKit
         )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
@@ -273,27 +291,24 @@ struct AppearanceDetailView: View {
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareGenes() {
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
-            (name: "MTHFR C677T", variant: "C677T", risk: "良好", description: "葉酸代謝・肌質への影響"),
-            (name: "VDR FokI", variant: "FokI", risk: "最適", description: "ビタミンD受容体・肌健康"),
-            (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "抗酸化能力・アンチエイジング"),
-            (name: "COL1A1", variant: "COL1A1", risk: "良好", description: "コラーゲン生成能力")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: appearanceGenes,
+            relatedBloodMarkers: appearanceBloodMarkers,
+            relatedHealthKit: appearanceHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareBloodMarkers() {
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
-            (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.2", status: "最適"),
-            (name: "TP", value: "7.2", unit: "g/dL", range: "6.5-8.2", status: "最適"),
-            (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-200", status: "良好"),
-            (name: "Zn", value: "95", unit: "μg/dL", range: "80-120", status: "最適"),
-            (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
-            (name: "GGT", value: "22", unit: "U/L", range: "10-50", status: "最適"),
-            (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-5.6", status: "最適")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: appearanceGenes,
+            relatedBloodMarkers: appearanceBloodMarkers,
+            relatedHealthKit: appearanceHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }

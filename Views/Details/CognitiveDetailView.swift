@@ -12,6 +12,32 @@ struct CognitiveDetailView: View {
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] スコア・遺伝子・血液・推奨事項はモックデータ
 
+    // MARK: - Category Data
+    private let categoryName = "認知機能"
+
+    // [DUMMY] カテゴリー関連遺伝子データ
+    private let cognitiveGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "APOE ε3/ε3", variant: "ε3/ε3", risk: "低", description: "アルツハイマー病リスク：低"),
+        (name: "BDNF Val66Met", variant: "Val66Met", risk: "良好", description: "学習・記憶能力：優良"),
+        (name: "COMT Val158Met", variant: "Val158Met", risk: "最適", description: "ドーパミン代謝：バランス型")
+    ]
+
+    // [DUMMY] カテゴリー関連血液マーカーデータ
+    private let cognitiveBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "Homocysteine", value: "8.2", unit: "μmol/L", range: "5-15", status: "最適"),
+        (name: "Vitamin B12", value: "580", unit: "pg/mL", range: "200-900", status: "良好"),
+        (name: "Folate", value: "12.5", unit: "ng/mL", range: "3-20", status: "最適"),
+        (name: "Omega-3 Index", value: "8.2", unit: "%", range: ">8", status: "優秀")
+    ]
+
+    // [DUMMY] カテゴリー関連HealthKitデータ
+    private let cognitiveHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "睡眠時間", value: "7.5時間", status: "最適"),
+        (name: "深睡眠", value: "90分", status: "優秀"),
+        (name: "HRV", value: "68ms", status: "良好"),
+        (name: "安静時心拍", value: "58bpm", status: "最適")
+    ]
+
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
@@ -243,20 +269,11 @@ struct CognitiveDetailView: View {
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
-        let prompt = PromptGenerator.generateDetailViewPrompt(
-            category: "認知機能",
-            score: 92,
-            relatedGenes: [
-                (name: "APOE ε3/ε3", variant: "ε3/ε3", risk: "低", description: "アルツハイマー病リスク：低"),
-                (name: "BDNF Val66Met", variant: "Val66Met", risk: "良好", description: "学習・記憶能力：優良"),
-                (name: "COMT Val158Met", variant: "Val158Met", risk: "最適", description: "ドーパミン代謝：バランス型")
-            ],
-            relatedBloodMarkers: [
-                (name: "Homocysteine", value: "8.2", unit: "μmol/L", range: "5-15", status: "最適"),
-                (name: "Vitamin B12", value: "580", unit: "pg/mL", range: "200-900", status: "良好"),
-                (name: "Folate", value: "12.5", unit: "ng/mL", range: "3-20", status: "最適"),
-                (name: "Omega-3 Index", value: "8.2", unit: "%", range: ">8", status: "優秀")
-            ]
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: cognitiveGenes,
+            relatedBloodMarkers: cognitiveBloodMarkers,
+            relatedHealthKit: cognitiveHealthKit
         )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
@@ -264,23 +281,24 @@ struct CognitiveDetailView: View {
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareGenes() {
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
-            (name: "APOE ε3/ε3", variant: "ε3/ε3", risk: "低", description: "アルツハイマー病リスク：低"),
-            (name: "BDNF Val66Met", variant: "Val66Met", risk: "良好", description: "学習・記憶能力：優良"),
-            (name: "COMT Val158Met", variant: "Val158Met", risk: "最適", description: "ドーパミン代謝：バランス型")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: cognitiveGenes,
+            relatedBloodMarkers: cognitiveBloodMarkers,
+            relatedHealthKit: cognitiveHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareBloodMarkers() {
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
-            (name: "Homocysteine", value: "8.2", unit: "μmol/L", range: "5-15", status: "最適"),
-            (name: "Vitamin B12", value: "580", unit: "pg/mL", range: "200-900", status: "良好"),
-            (name: "Folate", value: "12.5", unit: "ng/mL", range: "3-20", status: "最適"),
-            (name: "Omega-3 Index", value: "8.2", unit: "%", range: ">8", status: "優秀")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: cognitiveGenes,
+            relatedBloodMarkers: cognitiveBloodMarkers,
+            relatedHealthKit: cognitiveHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
@@ -320,7 +338,10 @@ struct GeneCard: View {
         .background(Color.black.opacity(0.02))
         .cornerRadius(8)
         .onLongPressGesture(minimumDuration: 0.5) {
-            // [DUMMY] 遺伝子カード長押し時にプロンプト生成＆コピー
+            // [DUMMY] 遺伝子カード長押し時にハプティックフィードバック＆プロンプト生成
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
+
             let prompt = PromptGenerator.generateGenePrompt(
                 geneName: name,
                 variant: name, // [DUMMY] バリアント情報が分離されていないため名前を使用
@@ -379,7 +400,10 @@ struct BloodMarkerRow: View {
         .background(Color.black.opacity(0.02))
         .cornerRadius(6)
         .onLongPressGesture(minimumDuration: 0.5) {
-            // [DUMMY] 血液マーカー長押し時にプロンプト生成＆コピー
+            // [DUMMY] 血液マーカー長押し時にハプティックフィードバック＆プロンプト生成
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
+
             let prompt = PromptGenerator.generateBloodMarkerPrompt(
                 markerName: name,
                 value: value.components(separatedBy: " ").first ?? value,

@@ -12,6 +12,36 @@ struct CardioDetailView: View {
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
     // [DUMMY] 心血管関連の数値と指標はモック
 
+    // MARK: - Category Data
+    private let categoryName = "心臓の健康"
+
+    // [DUMMY] カテゴリー関連遺伝子データ
+    private let cardioGenes: [(name: String, variant: String, risk: String, description: String)] = [
+        (name: "APOE", variant: "APOE", risk: "良好", description: "コレステロール代謝・動脈硬化リスク"),
+        (name: "ACE I/D", variant: "ACE I/D", risk: "良好", description: "血圧調節・心筋機能"),
+        (name: "NOS3", variant: "NOS3", risk: "優秀", description: "血管内皮機能・一酸化窒素産生")
+    ]
+
+    // [DUMMY] カテゴリー関連血液マーカーデータ
+    private let cardioBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
+        (name: "ApoB", value: "82", unit: "mg/dL", range: "<90", status: "最適"),
+        (name: "Lp(a)", value: "15", unit: "mg/dL", range: "<30", status: "最適"),
+        (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
+        (name: "HDL", value: "68", unit: "mg/dL", range: ">40", status: "優秀"),
+        (name: "LDL", value: "95", unit: "mg/dL", range: "<100", status: "最適"),
+        (name: "HbA1c", value: "5.2", unit: "%", range: "<5.7", status: "最適"),
+        (name: "CRP", value: "0.04", unit: "mg/dL", range: "<0.1", status: "最適")
+    ]
+
+    // [DUMMY] カテゴリー関連HealthKitデータ
+    private let cardioHealthKit: [(name: String, value: String, status: String)] = [
+        (name: "安静時心拍", value: "58bpm", status: "最適"),
+        (name: "HRV", value: "68ms", status: "優秀"),
+        (name: "血圧", value: "118/75", status: "最適"),
+        (name: "VO2max", value: "42 ml/kg/min", status: "良好"),
+        (name: "有酸素運動時間", value: "150分/週", status: "最適")
+    ]
+
     var body: some View {
         ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
@@ -244,23 +274,11 @@ struct CardioDetailView: View {
     /// DetailView全体のデータをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
-        let prompt = PromptGenerator.generateDetailViewPrompt(
-            category: "心臓の健康",
-            score: 85,
-            relatedGenes: [
-                (name: "APOE", variant: "APOE", risk: "良好", description: "コレステロール代謝・動脈硬化リスク"),
-                (name: "ACE I/D", variant: "ACE I/D", risk: "良好", description: "血圧調節・心筋機能"),
-                (name: "NOS3", variant: "NOS3", risk: "優秀", description: "血管内皮機能・一酸化窒素産生")
-            ],
-            relatedBloodMarkers: [
-                (name: "ApoB", value: "82", unit: "mg/dL", range: "<90", status: "最適"),
-                (name: "Lp(a)", value: "15", unit: "mg/dL", range: "<30", status: "最適"),
-                (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
-                (name: "HDL", value: "68", unit: "mg/dL", range: ">40", status: "優秀"),
-                (name: "LDL", value: "95", unit: "mg/dL", range: "<100", status: "最適"),
-                (name: "HbA1c", value: "5.2", unit: "%", range: "<5.7", status: "最適"),
-                (name: "CRP", value: "0.04", unit: "mg/dL", range: "<0.1", status: "最適")
-            ]
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: cardioGenes,
+            relatedBloodMarkers: cardioBloodMarkers,
+            relatedHealthKit: cardioHealthKit
         )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
@@ -268,26 +286,24 @@ struct CardioDetailView: View {
     /// 遺伝子セクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareGenes() {
-        let prompt = PromptGenerator.generateGenesSectionPrompt(genes: [
-            (name: "APOE", variant: "APOE", risk: "良好", description: "コレステロール代謝・動脈硬化リスク"),
-            (name: "ACE I/D", variant: "ACE I/D", risk: "良好", description: "血圧調節・心筋機能"),
-            (name: "NOS3", variant: "NOS3", risk: "優秀", description: "血管内皮機能・一酸化窒素産生")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: cardioGenes,
+            relatedBloodMarkers: cardioBloodMarkers,
+            relatedHealthKit: cardioHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
     /// [DUMMY] 現状はモックデータ
     private func shareBloodMarkers() {
-        let prompt = PromptGenerator.generateBloodMarkersSectionPrompt(markers: [
-            (name: "ApoB", value: "82", unit: "mg/dL", range: "<90", status: "最適"),
-            (name: "Lp(a)", value: "15", unit: "mg/dL", range: "<30", status: "最適"),
-            (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
-            (name: "HDL", value: "68", unit: "mg/dL", range: ">40", status: "優秀"),
-            (name: "LDL", value: "95", unit: "mg/dL", range: "<100", status: "最適"),
-            (name: "HbA1c", value: "5.2", unit: "%", range: "<5.7", status: "最適"),
-            (name: "CRP", value: "0.04", unit: "mg/dL", range: "<0.1", status: "最適")
-        ])
+        let prompt = PromptGenerator.generateCategoryPrompt(
+            category: categoryName,
+            relatedGenes: cardioGenes,
+            relatedBloodMarkers: cardioBloodMarkers,
+            relatedHealthKit: cardioHealthKit
+        )
         CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)
     }
 }
