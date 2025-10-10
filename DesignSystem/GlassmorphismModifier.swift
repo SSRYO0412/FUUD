@@ -8,96 +8,20 @@
 
 import SwiftUI
 
-// MARK: - iOS 26 Liquid Glass Modifier
+// MARK: - iOS 26 Liquid Glass Modifier (Apple公式準拠)
 
 @available(iOS 26.0, *)
 struct LiquidGlassModifier: ViewModifier {
-    var intensity: LiquidGlassIntensity
-    var borderRadius: CGFloat
+    var cornerRadius: CGFloat
     var isInteractive: Bool
 
     func body(content: Content) -> some View {
-        content
-            .glassEffect(
-                intensity.glassStyle
-                    .tint(.white.opacity(intensity.tintOpacity)),
-                in: .rect(cornerRadius: borderRadius, style: .continuous)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: borderRadius, style: .continuous)
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(intensity.borderOpacityTop),
-                                Color.white.opacity(intensity.borderOpacityBottom)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: intensity.borderWidth
-                    )
-            )
-            .shadow(
-                color: Color.black.opacity(0.04),
-                radius: 4,
-                x: 0,
-                y: 4
-            )
-    }
-}
+        let glass: Glass = isInteractive ? .regular.interactive() : .regular
 
-// MARK: - iOS 26 Liquid Glass Intensity
-
-@available(iOS 26.0, *)
-enum LiquidGlassIntensity {
-    case ultraThin  // カード用（HTML仕様準拠）
-    case light
-    case medium
-    case strong
-
-    var glassStyle: Glass {
-        switch self {
-        case .ultraThin: return .clear    // 最も透明
-        case .light: return .clear
-        case .medium: return .regular
-        case .strong: return .regular
-        }
-    }
-
-    var tintOpacity: Double {
-        switch self {
-        case .ultraThin: return 0.08  // HTML: rgba(255,255,255,0.08)
-        case .light: return 0.12
-        case .medium: return 0.18
-        case .strong: return 0.30
-        }
-    }
-
-    var borderOpacityTop: Double {
-        switch self {
-        case .ultraThin: return 0.20  // HTML: rgba(255,255,255,0.2)
-        case .light: return 0.30
-        case .medium: return 0.40
-        case .strong: return 0.50
-        }
-    }
-
-    var borderOpacityBottom: Double {
-        switch self {
-        case .ultraThin: return 0.15
-        case .light: return 0.20
-        case .medium: return 0.25
-        case .strong: return 0.35
-        }
-    }
-
-    var borderWidth: CGFloat {
-        switch self {
-        case .ultraThin: return 1.0  // HTML: 1px
-        case .light: return 1.0
-        case .medium: return 1.0
-        case .strong: return 1.5
-        }
+        content.glassEffect(
+            glass,
+            in: .rect(cornerRadius: cornerRadius, style: .continuous)
+        )
     }
 }
 
@@ -192,16 +116,14 @@ enum GlassmorphismIntensity {
 // MARK: - View Extension
 
 extension View {
-    /// iOS 26+ Liquid Glass効果を適用
+    /// iOS 26+ Liquid Glass効果を適用（Apple公式準拠）
     @available(iOS 26.0, *)
     func virgilLiquidGlass(
-        intensity: LiquidGlassIntensity = .ultraThin,
         radius: CGFloat = 28,
         interactive: Bool = false
     ) -> some View {
         self.modifier(LiquidGlassModifier(
-            intensity: intensity,
-            borderRadius: radius,
+            cornerRadius: radius,
             isInteractive: interactive
         ))
     }
@@ -216,9 +138,9 @@ extension View {
     }
 
     /// カード用ガラス効果（iOS 26でLiquid Glass、それ以前は従来の実装）
-    func virgilGlassCard() -> some View {
+    func virgilGlassCard(interactive: Bool = false) -> some View {
         if #available(iOS 26.0, *) {
-            return AnyView(self.virgilLiquidGlass(intensity: .ultraThin, radius: 28, interactive: false))
+            return AnyView(self.virgilLiquidGlass(radius: 28, interactive: interactive))
         } else {
             return AnyView(self.virgilGlassmorphism(intensity: .ultraThin, radius: 28))
         }

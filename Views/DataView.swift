@@ -286,7 +286,7 @@ private struct LifeScoreCard: View {
                     .frame(height: 9.9)  // 3 * 1.1 * 3 = 9.9
                 }
                 .padding(VirgilSpacing.md * 1.1)  // padding 10%拡大
-                .virgilGlassCard()
+                .virgilGlassCard(interactive: true)  // iOS 26 Liquid Glass: タップ可能なカードのためinteractive有効化
                 .onLongPressGesture(minimumDuration: 0.5) {
                     // [DUMMY] ライフスコアカード長押し時にハプティックフィードバック＆ダイアログ表示
                     let generator = UIImpactFeedbackGenerator(style: .medium)
