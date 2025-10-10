@@ -275,7 +275,7 @@ private struct LifeScoreCard: View {
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 4.95, style: .continuous)
-                            .fill(Color.gray.opacity(0.2))
+                            .fill(Color.clear)  // iOS 26 Liquid Glass透明度を活かすため透明化
                             .frame(height: 9.9)  // 3 * 1.1 * 3 = 9.9
 
                         RoundedRectangle(cornerRadius: 4.95, style: .continuous)
@@ -297,6 +297,9 @@ private struct LifeScoreCard: View {
                 LongPressHint(helpText: "\(title)のスコアです。タップすると詳細な分析が表示されます。")
                     .padding(8)
             }
+            .background(Color.clear)  // NavigationLink内部を完全透明に
+        }
+        .buttonStyle(.plain)  // NavigationLinkのデフォルト背景を削除
         }
         .background(
             NavigationLink(isActive: $navigateToDetail, destination: { destinationView }) {

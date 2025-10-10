@@ -3,12 +3,107 @@
 //  AWStest
 //
 //  Virgilデザインシステム - グラスモーフィズム効果
+//  iOS 26: Liquid Glass公式API実装
 //
 
 import SwiftUI
 
-// MARK: - Glassmorphism View Modifier
+// MARK: - iOS 26 Liquid Glass Modifier
 
+@available(iOS 26.0, *)
+struct LiquidGlassModifier: ViewModifier {
+    var intensity: LiquidGlassIntensity
+    var borderRadius: CGFloat
+    var isInteractive: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .glassEffect(
+                intensity.glassStyle
+                    .tint(.white.opacity(intensity.tintOpacity)),
+                in: .rect(cornerRadius: borderRadius, style: .continuous)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: borderRadius, style: .continuous)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(intensity.borderOpacityTop),
+                                Color.white.opacity(intensity.borderOpacityBottom)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: intensity.borderWidth
+                    )
+            )
+            .shadow(
+                color: Color.black.opacity(0.04),
+                radius: 4,
+                x: 0,
+                y: 4
+            )
+    }
+}
+
+// MARK: - iOS 26 Liquid Glass Intensity
+
+@available(iOS 26.0, *)
+enum LiquidGlassIntensity {
+    case ultraThin  // カード用（HTML仕様準拠）
+    case light
+    case medium
+    case strong
+
+    var glassStyle: Glass {
+        switch self {
+        case .ultraThin: return .clear    // 最も透明
+        case .light: return .clear
+        case .medium: return .regular
+        case .strong: return .regular
+        }
+    }
+
+    var tintOpacity: Double {
+        switch self {
+        case .ultraThin: return 0.08  // HTML: rgba(255,255,255,0.08)
+        case .light: return 0.12
+        case .medium: return 0.18
+        case .strong: return 0.30
+        }
+    }
+
+    var borderOpacityTop: Double {
+        switch self {
+        case .ultraThin: return 0.20  // HTML: rgba(255,255,255,0.2)
+        case .light: return 0.30
+        case .medium: return 0.40
+        case .strong: return 0.50
+        }
+    }
+
+    var borderOpacityBottom: Double {
+        switch self {
+        case .ultraThin: return 0.15
+        case .light: return 0.20
+        case .medium: return 0.25
+        case .strong: return 0.35
+        }
+    }
+
+    var borderWidth: CGFloat {
+        switch self {
+        case .ultraThin: return 1.0  // HTML: 1px
+        case .light: return 1.0
+        case .medium: return 1.0
+        case .strong: return 1.5
+        }
+    }
+}
+
+// MARK: - Legacy Glassmorphism View Modifier (iOS 15-25)
+
+@available(iOS, introduced: 15, deprecated: 26, message: "Use LiquidGlassModifier with .glassEffect() on iOS 26+")
 struct GlassmorphismModifier: ViewModifier {
     var intensity: GlassmorphismIntensity
     var borderRadius: CGFloat
@@ -97,10 +192,22 @@ enum GlassmorphismIntensity {
 // MARK: - View Extension
 
 extension View {
-    /// Virgilデザインシステムのグラスモーフィズム効果を適用
-    /// - Parameters:
-    ///   - intensity: エフェクトの強度 (.light, .medium, .strong)
-    ///   - radius: border radius (デフォルト: 16pt)
+    /// iOS 26+ Liquid Glass効果を適用
+    @available(iOS 26.0, *)
+    func virgilLiquidGlass(
+        intensity: LiquidGlassIntensity = .ultraThin,
+        radius: CGFloat = 28,
+        interactive: Bool = false
+    ) -> some View {
+        self.modifier(LiquidGlassModifier(
+            intensity: intensity,
+            borderRadius: radius,
+            isInteractive: interactive
+        ))
+    }
+
+    /// iOS 15-25 レガシーグラスモーフィズム効果を適用
+    @available(iOS, introduced: 15, deprecated: 26, message: "Use virgilLiquidGlass() on iOS 26+")
     func virgilGlassmorphism(
         intensity: GlassmorphismIntensity = .medium,
         radius: CGFloat = VirgilSpacing.radiusLarge
@@ -108,9 +215,13 @@ extension View {
         self.modifier(GlassmorphismModifier(intensity: intensity, borderRadius: radius))
     }
 
-    /// カード用グラスモーフィズム (iOS 18通知カード風: ultra thin + radius 28px)
+    /// カード用ガラス効果（iOS 26でLiquid Glass、それ以前は従来の実装）
     func virgilGlassCard() -> some View {
-        self.virgilGlassmorphism(intensity: .ultraThin, radius: 28)
+        if #available(iOS 26.0, *) {
+            return AnyView(self.virgilLiquidGlass(intensity: .ultraThin, radius: 28, interactive: false))
+        } else {
+            return AnyView(self.virgilGlassmorphism(intensity: .ultraThin, radius: 28))
+        }
     }
 
     /// ナビゲーションバー用グラスモーフィズム (strong intensity, no radius)

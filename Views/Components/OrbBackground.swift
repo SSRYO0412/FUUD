@@ -31,7 +31,7 @@ struct OrbBackground: View {
                     )
                     .frame(width: geometry.size.width * 1.2, height: geometry.size.width * 1.2)
                     .blur(radius: 100)
-                    .blendMode(.plusLighter)
+                    .blendMode(.normal)  // iOS 26 Liquid Glass: 透明度を保つため.normalに変更
                     .offset(
                         x: animate1 ? -geometry.size.width * 0.2 : -geometry.size.width * 0.35,
                         y: animate1 ? -geometry.size.height * 0.1 : -geometry.size.height * 0.25
@@ -53,7 +53,7 @@ struct OrbBackground: View {
                     )
                     .frame(width: geometry.size.width * 1.0, height: geometry.size.width * 1.0)
                     .blur(radius: 90)
-                    .blendMode(.plusLighter)
+                    .blendMode(.normal)  // iOS 26 Liquid Glass: 透明度を保つため.normalに変更
                     .offset(
                         x: animate2 ? geometry.size.width * 0.4 : geometry.size.width * 0.5,
                         y: animate2 ? geometry.size.height * 0.5 : geometry.size.height * 0.6
@@ -75,7 +75,7 @@ struct OrbBackground: View {
                     )
                     .frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.9)
                     .blur(radius: 80)
-                    .blendMode(.plusLighter)
+                    .blendMode(.normal)  // iOS 26 Liquid Glass: 透明度を保つため.normalに変更
                     .offset(
                         x: animate3 ? geometry.size.width * 0.3 : geometry.size.width * 0.4,
                         y: animate3 ? geometry.size.height * 0.25 : geometry.size.height * 0.35
@@ -97,7 +97,7 @@ struct OrbBackground: View {
                     )
                     .frame(width: geometry.size.width * 0.7, height: geometry.size.width * 0.7)
                     .blur(radius: 70)
-                    .blendMode(.plusLighter)
+                    .blendMode(.normal)  // iOS 26 Liquid Glass: 透明度を保つため.normalに変更
                     .offset(
                         x: animate1 ? -geometry.size.width * 0.25 : -geometry.size.width * 0.35,
                         y: animate1 ? geometry.size.height * 0.6 : geometry.size.height * 0.7
