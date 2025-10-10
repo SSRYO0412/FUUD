@@ -3,27 +3,11 @@
 //  AWStest
 //
 //  Virgilデザインシステム - グラスモーフィズム効果
-//  iOS 26: Liquid Glass公式API実装
+//  iOS 26: Liquid Glass - 直接.glassEffect()を使用（抽象化レイヤー削除）
+//  iOS 15-25: レガシー実装（UIDesignRequiresCompatibility制御）
 //
 
 import SwiftUI
-
-// MARK: - iOS 26 Liquid Glass Modifier (Apple公式準拠)
-
-@available(iOS 26.0, *)
-struct LiquidGlassModifier: ViewModifier {
-    var cornerRadius: CGFloat
-    var isInteractive: Bool
-
-    func body(content: Content) -> some View {
-        let glass: Glass = isInteractive ? .regular.interactive() : .regular
-
-        content.glassEffect(
-            glass,
-            in: .rect(cornerRadius: cornerRadius, style: .continuous)
-        )
-    }
-}
 
 // MARK: - Legacy Glassmorphism View Modifier (iOS 15-25)
 
@@ -116,20 +100,9 @@ enum GlassmorphismIntensity {
 // MARK: - View Extension
 
 extension View {
-    /// iOS 26+ Liquid Glass効果を適用（Apple公式準拠）
-    @available(iOS 26.0, *)
-    func virgilLiquidGlass(
-        radius: CGFloat = 28,
-        interactive: Bool = false
-    ) -> some View {
-        self.modifier(LiquidGlassModifier(
-            cornerRadius: radius,
-            isInteractive: interactive
-        ))
-    }
-
     /// iOS 15-25 レガシーグラスモーフィズム効果を適用
-    @available(iOS, introduced: 15, deprecated: 26, message: "Use virgilLiquidGlass() on iOS 26+")
+    /// iOS 26+では.glassEffect()を直接使用してください
+    @available(iOS, introduced: 15, deprecated: 26, message: "Use .glassEffect() directly on iOS 26+")
     func virgilGlassmorphism(
         intensity: GlassmorphismIntensity = .medium,
         radius: CGFloat = VirgilSpacing.radiusLarge
@@ -137,12 +110,22 @@ extension View {
         self.modifier(GlassmorphismModifier(intensity: intensity, borderRadius: radius))
     }
 
-    /// カード用ガラス効果（iOS 26でLiquid Glass、それ以前は従来の実装）
+    /// カード用ガラス効果（iOS 26+でLiquid Glass、iOS 15-25でレガシー実装）
     func virgilGlassCard(interactive: Bool = false) -> some View {
         if #available(iOS 26.0, *) {
-            return AnyView(self.virgilLiquidGlass(radius: 28, interactive: interactive))
+            if interactive {
+                return AnyView(
+                    self.glassEffect(.regular.interactive(), in: .rect(cornerRadius: 28, style: .continuous))
+                )
+            } else {
+                return AnyView(
+                    self.glassEffect(.regular, in: .rect(cornerRadius: 28, style: .continuous))
+                )
+            }
         } else {
-            return AnyView(self.virgilGlassmorphism(intensity: .ultraThin, radius: 28))
+            return AnyView(
+                self.virgilGlassmorphism(intensity: .ultraThin, radius: 28)
+            )
         }
     }
 
