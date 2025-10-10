@@ -300,7 +300,6 @@ private struct LifeScoreCard: View {
             .background(Color.clear)  // NavigationLink内部を完全透明に
         }
         .buttonStyle(.plain)  // NavigationLinkのデフォルト背景を削除
-        }
         .background(
             NavigationLink(isActive: $navigateToDetail, destination: { destinationView }) {
                 EmptyView()
