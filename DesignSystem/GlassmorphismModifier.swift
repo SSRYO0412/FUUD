@@ -111,21 +111,24 @@ extension View {
     }
 
     /// カード用ガラス効果（iOS 26+でLiquid Glass、iOS 15-25でレガシー実装）
+    @ViewBuilder
     func virgilGlassCard(interactive: Bool = false) -> some View {
         if #available(iOS 26.0, *) {
+            // Apple公式パターン: コンテンツに直接.glassEffect()を適用
+            // tint追加で視認性向上（iOS 26通知カード・ウィジェットのパターン）
             if interactive {
-                return AnyView(
-                    self.glassEffect(.regular.interactive(), in: .rect(cornerRadius: 28, style: .continuous))
+                self.glassEffect(
+                    .regular.tint(.white.opacity(0.15)).interactive(),
+                    in: .rect(cornerRadius: 28, style: .continuous)
                 )
             } else {
-                return AnyView(
-                    self.glassEffect(.regular, in: .rect(cornerRadius: 28, style: .continuous))
+                self.glassEffect(
+                    .regular.tint(.white.opacity(0.15)),
+                    in: .rect(cornerRadius: 28, style: .continuous)
                 )
             }
         } else {
-            return AnyView(
-                self.virgilGlassmorphism(intensity: .ultraThin, radius: 28)
-            )
+            self.virgilGlassmorphism(intensity: .ultraThin, radius: 28)
         }
     }
 
