@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Data Model
 
-struct HealthKitMetric {
+struct HealthKitSectionMetric {
     let name: String
     let value: String
     let status: String
@@ -18,7 +18,7 @@ struct HealthKitMetric {
 // MARK: - HealthKit Section
 
 struct HealthKitSection: View {
-    let metrics: [HealthKitMetric]  // [DUMMY] HealthKitデータ、API連携後に実データ使用
+    let metrics: [HealthKitSectionMetric]  // [DUMMY] HealthKitデータ、API連携後に実データ使用
 
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -44,7 +44,7 @@ struct HealthKitSection: View {
 // MARK: - HealthKit Metric Row
 
 private struct HealthKitMetricRow: View {
-    let metric: HealthKitMetric
+    let metric: HealthKitSectionMetric
 
     // ステータスに応じた色分け (Optimal/最適=緑, Reference/正常範囲=黄, Risk/注意=赤)
     private var statusColor: Color {
@@ -93,9 +93,9 @@ struct HealthKitSection_Previews: PreviewProvider {
     static var previews: some View {
         HealthKitSection(metrics: [
             // [DUMMY] プレビュー用データ
-            HealthKitMetric(name: "睡眠時間", value: "7.5時間", status: "最適"),
-            HealthKitMetric(name: "HRV", value: "68ms", status: "優秀"),
-            HealthKitMetric(name: "歩数", value: "8,500歩", status: "良好")
+            HealthKitSectionMetric(name: "睡眠時間", value: "7.5時間", status: "最適"),
+            HealthKitSectionMetric(name: "HRV", value: "68ms", status: "優秀"),
+            HealthKitSectionMetric(name: "歩数", value: "8,500歩", status: "良好")
         ])
         .padding()
         .background(Color.white)

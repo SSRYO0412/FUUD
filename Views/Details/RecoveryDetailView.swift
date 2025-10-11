@@ -179,10 +179,10 @@ struct RecoveryDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "心拍回復 (HRR)", value: "35bpm/1min", status: "優秀"),
-                    HealthKitMetric(name: "トレーニング負荷", value: "適正", status: "良好"),
-                    HealthKitMetric(name: "ワークアウト強度", value: "中", status: "最適"),
-                    HealthKitMetric(name: "HRV", value: "68ms", status: "良好")
+                    HealthKitSectionMetric(name: "心拍回復 (HRR)", value: "35bpm/1min", status: "優秀"),
+                    HealthKitSectionMetric(name: "トレーニング負荷", value: "適正", status: "良好"),
+                    HealthKitSectionMetric(name: "ワークアウト強度", value: "中", status: "最適"),
+                    HealthKitSectionMetric(name: "HRV", value: "68ms", status: "良好")
                 ])
 
                 // Recommendations

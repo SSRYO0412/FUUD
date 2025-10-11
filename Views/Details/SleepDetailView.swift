@@ -190,11 +190,11 @@ struct SleepDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "睡眠時間", value: "7h 12m", status: "最適"),
-                    HealthKitMetric(name: "深睡眠", value: "2h 30m", status: "優秀"),
-                    HealthKitMetric(name: "レム睡眠", value: "1h 48m", status: "良好"),
-                    HealthKitMetric(name: "睡眠効率", value: "89%", status: "優秀"),
-                    HealthKitMetric(name: "HRV", value: "70ms", status: "優秀")
+                    HealthKitSectionMetric(name: "睡眠時間", value: "7h 12m", status: "最適"),
+                    HealthKitSectionMetric(name: "深睡眠", value: "2h 30m", status: "優秀"),
+                    HealthKitSectionMetric(name: "レム睡眠", value: "1h 48m", status: "良好"),
+                    HealthKitSectionMetric(name: "睡眠効率", value: "89%", status: "優秀"),
+                    HealthKitSectionMetric(name: "HRV", value: "70ms", status: "優秀")
                 ])
 
                 // Sleep Stages

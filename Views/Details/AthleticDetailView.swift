@@ -176,11 +176,11 @@ struct AthleticDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "VO2max", value: "48 ml/kg/min", status: "優秀"),
-                    HealthKitMetric(name: "最高心拍", value: "185bpm", status: "最適"),
-                    HealthKitMetric(name: "心拍回復", value: "35bpm/1min", status: "優秀"),
-                    HealthKitMetric(name: "走行ペース", value: "5:20/km", status: "良好"),
-                    HealthKitMetric(name: "トレーニング負荷", value: "適正", status: "最適")
+                    HealthKitSectionMetric(name: "VO2max", value: "48 ml/kg/min", status: "優秀"),
+                    HealthKitSectionMetric(name: "最高心拍", value: "185bpm", status: "最適"),
+                    HealthKitSectionMetric(name: "心拍回復", value: "35bpm/1min", status: "優秀"),
+                    HealthKitSectionMetric(name: "走行ペース", value: "5:20/km", status: "良好"),
+                    HealthKitSectionMetric(name: "トレーニング負荷", value: "適正", status: "最適")
                 ])
 
                 // Recommendations

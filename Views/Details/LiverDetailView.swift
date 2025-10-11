@@ -186,10 +186,10 @@ struct LiverDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "飲酒ログ", value: "週2日", status: "良好"),
-                    HealthKitMetric(name: "体重推移", value: "-0.5kg/月", status: "最適"),
-                    HealthKitMetric(name: "睡眠タイミング", value: "22:30-6:00", status: "優秀"),
-                    HealthKitMetric(name: "歩数", value: "9500歩/日", status: "良好")
+                    HealthKitSectionMetric(name: "飲酒ログ", value: "週2日", status: "良好"),
+                    HealthKitSectionMetric(name: "体重推移", value: "-0.5kg/月", status: "最適"),
+                    HealthKitSectionMetric(name: "睡眠タイミング", value: "22:30-6:00", status: "優秀"),
+                    HealthKitSectionMetric(name: "歩数", value: "9500歩/日", status: "良好")
                 ])
 
                 // Recommendations

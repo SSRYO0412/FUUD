@@ -191,11 +191,11 @@ struct VitalityDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "HRV", value: "72ms", status: "優秀"),
-                    HealthKitMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
-                    HealthKitMetric(name: "睡眠効率", value: "88%", status: "優秀"),
-                    HealthKitMetric(name: "日中活動量", value: "450kcal", status: "良好"),
-                    HealthKitMetric(name: "立ち上がり回数", value: "12回/日", status: "最適")
+                    HealthKitSectionMetric(name: "HRV", value: "72ms", status: "優秀"),
+                    HealthKitSectionMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
+                    HealthKitSectionMetric(name: "睡眠効率", value: "88%", status: "優秀"),
+                    HealthKitSectionMetric(name: "日中活動量", value: "450kcal", status: "良好"),
+                    HealthKitSectionMetric(name: "立ち上がり回数", value: "12回/日", status: "最適")
                 ])
 
                 // Recommendations

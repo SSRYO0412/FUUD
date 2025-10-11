@@ -20,8 +20,8 @@ struct OrbBackground: View {
                     .fill(
                         RadialGradient(
                             colors: [
-                                Color(hex: "00A0FF").opacity(0.9),
-                                Color(hex: "00E5FF").opacity(0.7),
+                                Color(hex: "00A0FF").opacity(0.5),
+                                Color(hex: "00E5FF").opacity(0.35),
                                 Color.clear
                             ],
                             center: .center,
@@ -42,8 +42,8 @@ struct OrbBackground: View {
                     .fill(
                         RadialGradient(
                             colors: [
-                                Color(hex: "00E676").opacity(0.85),
-                                Color(hex: "76FF03").opacity(0.65),
+                                Color(hex: "00E676").opacity(0.45),
+                                Color(hex: "76FF03").opacity(0.3),
                                 Color.clear
                             ],
                             center: .center,
@@ -64,8 +64,8 @@ struct OrbBackground: View {
                     .fill(
                         RadialGradient(
                             colors: [
-                                Color(hex: "FFD700").opacity(0.8),
-                                Color(hex: "FFA000").opacity(0.6),
+                                Color(hex: "FFD700").opacity(0.4),
+                                Color(hex: "FFA000").opacity(0.25),
                                 Color.clear
                             ],
                             center: .center,
@@ -79,28 +79,6 @@ struct OrbBackground: View {
                     .offset(
                         x: animate3 ? geometry.size.width * 0.3 : geometry.size.width * 0.4,
                         y: animate3 ? geometry.size.height * 0.25 : geometry.size.height * 0.35
-                    )
-
-                // Orb 4 (紫) - 左下
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                Color(hex: "AB47BC").opacity(0.75),
-                                Color(hex: "CE93D8").opacity(0.55),
-                                Color.clear
-                            ],
-                            center: .center,
-                            startRadius: 0,
-                            endRadius: geometry.size.width * 0.55
-                        )
-                    )
-                    .frame(width: geometry.size.width * 0.7, height: geometry.size.width * 0.7)
-                    .blur(radius: 70)
-                    .blendMode(.normal)  // iOS 26 Liquid Glass: 透明度を保つため.normalに変更
-                    .offset(
-                        x: animate1 ? -geometry.size.width * 0.25 : -geometry.size.width * 0.35,
-                        y: animate1 ? geometry.size.height * 0.6 : geometry.size.height * 0.7
                     )
             }
         }

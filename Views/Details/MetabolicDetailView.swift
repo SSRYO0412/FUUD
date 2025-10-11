@@ -198,11 +198,11 @@ struct MetabolicDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "体重", value: "68kg", status: "最適"),
-                    HealthKitMetric(name: "BMI", value: "22.5", status: "最適"),
-                    HealthKitMetric(name: "消費カロリー", value: "2,350kcal", status: "良好"),
-                    HealthKitMetric(name: "歩数", value: "8,500歩", status: "良好"),
-                    HealthKitMetric(name: "ワークアウト時間", value: "45分", status: "優秀")
+                    HealthKitSectionMetric(name: "体重", value: "68kg", status: "最適"),
+                    HealthKitSectionMetric(name: "BMI", value: "22.5", status: "最適"),
+                    HealthKitSectionMetric(name: "消費カロリー", value: "2,350kcal", status: "良好"),
+                    HealthKitSectionMetric(name: "歩数", value: "8,500歩", status: "良好"),
+                    HealthKitSectionMetric(name: "ワークアウト時間", value: "45分", status: "優秀")
                 ])
 
                 // Recommendations

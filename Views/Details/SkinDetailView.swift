@@ -195,10 +195,10 @@ struct SkinDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "深睡眠", value: "90分", status: "優秀"),
-                    HealthKitMetric(name: "HRV", value: "68ms", status: "良好"),
-                    HealthKitMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
-                    HealthKitMetric(name: "水分摂取", value: "2.2L", status: "最適")
+                    HealthKitSectionMetric(name: "深睡眠", value: "90分", status: "優秀"),
+                    HealthKitSectionMetric(name: "HRV", value: "68ms", status: "良好"),
+                    HealthKitSectionMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
+                    HealthKitSectionMetric(name: "水分摂取", value: "2.2L", status: "最適")
                 ])
 
                 // Recommendations

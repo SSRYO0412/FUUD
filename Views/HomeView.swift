@@ -32,6 +32,13 @@ struct HomeView: View {
                 // Background Orbs
                 OrbBackground()
 
+                // Blur sheet between Orbs and Cards
+                Rectangle()
+                    .fill(Color.clear)
+                    .background(.ultraThinMaterial)
+                    .blur(radius: 120)
+                    .ignoresSafeArea()
+
                 ScrollView {
                     VStack(spacing: VirgilSpacing.lg) {
                         // Header
@@ -44,6 +51,12 @@ struct HomeView: View {
                                 .foregroundColor(.virgilTextSecondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                        // HealthKit LIVE Section
+                        HealthKitLiveSection()
+
+                        // Today's Performance Section
+                        TodaysPerformanceSection()
 
                         // AI Core Section
                         AICoreSection(currentInsight: aiInsights[aiInsightIndex])

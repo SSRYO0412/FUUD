@@ -181,10 +181,10 @@ struct StressDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "HRV", value: "68ms", status: "良好"),
-                    HealthKitMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
-                    HealthKitMetric(name: "呼吸数", value: "14回/分", status: "最適"),
-                    HealthKitMetric(name: "マインドフルネス時間", value: "10分/日", status: "良好")
+                    HealthKitSectionMetric(name: "HRV", value: "68ms", status: "良好"),
+                    HealthKitSectionMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
+                    HealthKitSectionMetric(name: "呼吸数", value: "14回/分", status: "最適"),
+                    HealthKitSectionMetric(name: "マインドフルネス時間", value: "10分/日", status: "良好")
                 ])
 
                 // Recommendations

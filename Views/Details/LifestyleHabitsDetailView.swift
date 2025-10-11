@@ -203,11 +203,11 @@ struct LifestyleHabitsDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "歩数", value: "10200歩/日", status: "優秀"),
-                    HealthKitMetric(name: "立ち時間", value: "10h/日", status: "最適"),
-                    HealthKitMetric(name: "ワークアウト分", value: "45分/日", status: "優秀"),
-                    HealthKitMetric(name: "睡眠効率", value: "86%", status: "良好"),
-                    HealthKitMetric(name: "HRV", value: "65ms", status: "良好")
+                    HealthKitSectionMetric(name: "歩数", value: "10200歩/日", status: "優秀"),
+                    HealthKitSectionMetric(name: "立ち時間", value: "10h/日", status: "最適"),
+                    HealthKitSectionMetric(name: "ワークアウト分", value: "45分/日", status: "優秀"),
+                    HealthKitSectionMetric(name: "睡眠効率", value: "86%", status: "良好"),
+                    HealthKitSectionMetric(name: "HRV", value: "65ms", status: "良好")
                 ])
 
                 // Recommendations

@@ -189,8 +189,8 @@ struct AntioxidantDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "高強度運動時間", value: "週150分", status: "最適"),
-                    HealthKitMetric(name: "睡眠時間", value: "7.5時間", status: "良好")
+                    HealthKitSectionMetric(name: "高強度運動時間", value: "週150分", status: "最適"),
+                    HealthKitSectionMetric(name: "睡眠時間", value: "7.5時間", status: "良好")
                 ])
 
                 // Recommendations

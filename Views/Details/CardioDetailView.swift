@@ -196,11 +196,11 @@ struct CardioDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
-                    HealthKitMetric(name: "HRV", value: "68ms", status: "優秀"),
-                    HealthKitMetric(name: "血圧", value: "118/75", status: "最適"),
-                    HealthKitMetric(name: "VO2max", value: "42 ml/kg/min", status: "良好"),
-                    HealthKitMetric(name: "有酸素運動時間", value: "150分/週", status: "最適")
+                    HealthKitSectionMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
+                    HealthKitSectionMetric(name: "HRV", value: "68ms", status: "優秀"),
+                    HealthKitSectionMetric(name: "血圧", value: "118/75", status: "最適"),
+                    HealthKitSectionMetric(name: "VO2max", value: "42 ml/kg/min", status: "良好"),
+                    HealthKitSectionMetric(name: "有酸素運動時間", value: "150分/週", status: "最適")
                 ])
 
                 // Recommendations

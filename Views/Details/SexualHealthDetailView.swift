@@ -198,11 +198,11 @@ struct SexualHealthDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "睡眠の質", value: "85%", status: "優秀"),
-                    HealthKitMetric(name: "深睡眠", value: "1h 45m", status: "良好"),
-                    HealthKitMetric(name: "HRV", value: "68ms", status: "優秀"),
-                    HealthKitMetric(name: "体重", value: "72.5kg", status: "最適"),
-                    HealthKitMetric(name: "月経周期", value: "28日", status: "正常範囲")
+                    HealthKitSectionMetric(name: "睡眠の質", value: "85%", status: "優秀"),
+                    HealthKitSectionMetric(name: "深睡眠", value: "1h 45m", status: "良好"),
+                    HealthKitSectionMetric(name: "HRV", value: "68ms", status: "優秀"),
+                    HealthKitSectionMetric(name: "体重", value: "72.5kg", status: "最適"),
+                    HealthKitSectionMetric(name: "月経周期", value: "28日", status: "正常範囲")
                 ])
 
                 // Recommendations

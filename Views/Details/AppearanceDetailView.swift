@@ -202,11 +202,11 @@ struct AppearanceDetailView: View {
                 // Related HealthKit
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
-                    HealthKitMetric(name: "VO2max", value: "42 ml/kg/min", status: "良好"),
-                    HealthKitMetric(name: "睡眠効率", value: "89%", status: "優秀"),
-                    HealthKitMetric(name: "歩行速度", value: "5.2 km/h", status: "最適"),
-                    HealthKitMetric(name: "HRV", value: "68ms", status: "良好"),
-                    HealthKitMetric(name: "水分摂取", value: "2.2L", status: "最適")
+                    HealthKitSectionMetric(name: "VO2max", value: "42 ml/kg/min", status: "良好"),
+                    HealthKitSectionMetric(name: "睡眠効率", value: "89%", status: "優秀"),
+                    HealthKitSectionMetric(name: "歩行速度", value: "5.2 km/h", status: "最適"),
+                    HealthKitSectionMetric(name: "HRV", value: "68ms", status: "良好"),
+                    HealthKitSectionMetric(name: "水分摂取", value: "2.2L", status: "最適")
                 ])
 
                 // Recommendations
