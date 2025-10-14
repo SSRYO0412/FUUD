@@ -28,7 +28,7 @@ struct WaveformView: View {
     // [DUMMY] 実際のHealthKitデータに応じて動的に調整予定
     private let layer1Config = WaveLayerConfig(
         frequency: 1.2,
-        amplitude: 8.0,
+        amplitude: 16.0, // 8.0 → 16.0（2倍）
         speed: 0.3,
         offset: 0.0,
         colors: [Color(hex: "0088CC"), Color(hex: "00C853")],
@@ -37,7 +37,7 @@ struct WaveformView: View {
 
     private let layer2Config = WaveLayerConfig(
         frequency: 1.8,
-        amplitude: 6.0,
+        amplitude: 12.0, // 6.0 → 12.0（2倍）
         speed: 0.5,
         offset: 2.0,
         colors: [Color(hex: "00DDFF"), Color(hex: "FFCB05")],
@@ -46,7 +46,7 @@ struct WaveformView: View {
 
     private let layer3Config = WaveLayerConfig(
         frequency: 0.9,
-        amplitude: 10.0,
+        amplitude: 20.0, // 10.0 → 20.0（2倍）
         speed: 0.4,
         offset: 4.0,
         colors: [Color(hex: "E91E63"), Color(hex: "9C27B0")],
@@ -55,24 +55,24 @@ struct WaveformView: View {
 
     var body: some View {
         Canvas { context, size in
-            // Layer 1: 青-緑グラデーション（ゆったりとした大きな波）
-            drawWaveLayer(
+            // Layer 1: 青-緑グラデーション（ゆったりとした大きな波）- 上下対称
+            drawSymmetricWaveLayer(
                 context: context,
                 size: size,
                 config: layer1Config,
                 time: time
             )
 
-            // Layer 2: シアン-黄グラデーション（細かく速い波）
-            drawWaveLayer(
+            // Layer 2: シアン-黄グラデーション（細かく速い波）- 上下対称
+            drawSymmetricWaveLayer(
                 context: context,
                 size: size,
                 config: layer2Config,
                 time: time
             )
 
-            // Layer 3: 赤-紫グラデーション（最も大きくゆっくりな波）
-            drawWaveLayer(
+            // Layer 3: 赤-紫グラデーション（最も大きくゆっくりな波）- 上下対称
+            drawSymmetricWaveLayer(
                 context: context,
                 size: size,
                 config: layer3Config,
@@ -101,6 +101,54 @@ struct WaveformView: View {
 
     // MARK: - Wave Drawing
 
+    // 上下対称の波形を描画
+    private func drawSymmetricWaveLayer(
+        context: GraphicsContext,
+        size: CGSize,
+        config: WaveLayerConfig,
+        time: Double
+    ) {
+        // 上半分のパス（中心から上方向）
+        let upperPath = generateSymmetricWavePath(
+            size: size,
+            config: config,
+            time: time,
+            isUpper: true
+        )
+
+        // 下半分のパス（中心から下方向）
+        let lowerPath = generateSymmetricWavePath(
+            size: size,
+            config: config,
+            time: time,
+            isUpper: false
+        )
+
+        // グラデーション作成（透明度を考慮）
+        let adjustedColors = config.colors.map { $0.opacity(config.opacity) }
+        let gradient = Gradient(colors: adjustedColors)
+
+        // 上半分を描画
+        context.fill(
+            upperPath,
+            with: .linearGradient(
+                gradient,
+                startPoint: CGPoint(x: 0, y: size.height / 2),
+                endPoint: CGPoint(x: size.width, y: size.height / 2)
+            )
+        )
+
+        // 下半分を描画
+        context.fill(
+            lowerPath,
+            with: .linearGradient(
+                gradient,
+                startPoint: CGPoint(x: 0, y: size.height / 2),
+                endPoint: CGPoint(x: size.width, y: size.height / 2)
+            )
+        )
+    }
+
     private func drawWaveLayer(
         context: GraphicsContext,
         size: CGSize,
@@ -124,6 +172,57 @@ struct WaveformView: View {
     }
 
     // MARK: - Wave Path Generation
+
+    // 上下対称の波形パスを生成
+    private func generateSymmetricWavePath(
+        size: CGSize,
+        config: WaveLayerConfig,
+        time: Double,
+        isUpper: Bool
+    ) -> Path {
+        var path = Path()
+        let points = 100  // 滑らかな曲線のため多数のポイント
+        let centerY = size.height / 2
+
+        // 波形の各ポイントを計算
+        var wavePoints: [CGPoint] = []
+        for i in 0...points {
+            let x = CGFloat(i) * size.width / CGFloat(points)
+            let normalizedX = Double(i) / Double(points)
+
+            // 波の振幅を計算
+            let waveAmplitude = calculateWaveAmplitude(
+                normalizedX: normalizedX,
+                config: config,
+                time: time
+            )
+
+            // 上半分か下半分かで方向を変える
+            let y: CGFloat
+            if isUpper {
+                y = centerY - abs(waveAmplitude) * config.amplitude
+            } else {
+                y = centerY + abs(waveAmplitude) * config.amplitude
+            }
+
+            wavePoints.append(CGPoint(x: x, y: y))
+        }
+
+        // パスを構築
+        if let firstPoint = wavePoints.first {
+            path.move(to: firstPoint)
+            for point in wavePoints.dropFirst() {
+                path.addLine(to: point)
+            }
+        }
+
+        // 塗りつぶしパスを完成させる（中心線で閉じる）
+        path.addLine(to: CGPoint(x: size.width, y: centerY))
+        path.addLine(to: CGPoint(x: 0, y: centerY))
+        path.closeSubpath()
+
+        return path
+    }
 
     private func generateWavePath(
         size: CGSize,
@@ -166,6 +265,33 @@ struct WaveformView: View {
     }
 
     // MARK: - Wave Y Calculation
+
+    // 波の振幅を計算（-1.0 ~ 1.0の範囲）
+    private func calculateWaveAmplitude(
+        normalizedX: Double,
+        config: WaveLayerConfig,
+        time: Double
+    ) -> CGFloat {
+        // 3つの正弦波を合成して有機的な動きを作る
+        // 異なる周波数比（1.0, 1.7, 2.3）で不規則な動きを実現
+
+        let wave1 = sin(
+            (normalizedX * config.frequency + time * config.speed + config.offset) * .pi * 2
+        )
+
+        let wave2 = sin(
+            (normalizedX * config.frequency * 1.7 + time * config.speed * 0.8) * .pi * 2
+        ) * 0.5
+
+        let wave3 = sin(
+            (normalizedX * config.frequency * 2.3 + time * config.speed * 1.2) * .pi * 2
+        ) * 0.3
+
+        // 合成波（加重平均）
+        let combined = (wave1 + wave2 + wave3) / 1.8
+
+        return combined
+    }
 
     private func calculateWaveY(
         normalizedX: Double,

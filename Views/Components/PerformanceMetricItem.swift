@@ -68,7 +68,7 @@ struct PerformanceMetricItem: View {
             Circle()
                 .fill(Color(hex: indicator.color))
                 .frame(width: 8, height: 8)
-                .modifier(PulsingModifier())
+                .modifier(PulsingIndicatorModifier())
                 .padding(.trailing, 16)
         }
         .padding(.vertical, 12)
@@ -94,6 +94,7 @@ struct PulsingIndicatorModifier: ViewModifier {
         content
             .scaleEffect(isPulsing ? 1.2 : 1.0)
             .opacity(isPulsing ? 0.6 : 1.0)
+            .offset(x: isPulsing ? 3 : -3, y: 0)
             .animation(
                 Animation.easeInOut(duration: 2.0).repeatForever(autoreverses: true),
                 value: isPulsing

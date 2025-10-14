@@ -13,45 +13,49 @@ struct HealthKitLiveSection: View {
     @State private var timeSinceUpdate: TimeInterval = 2
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Header & Metrics Grid - 左右にpadding適用
+        TimelineView(.animation) { context in
             VStack(spacing: 0) {
-                // Header
-                HStack {
+                // Header & Metrics Grid - 左右にpadding適用
+                VStack(spacing: 0) {
+                    // Header
+                    HStack {
+                        HStack(spacing: 8) {
+                            // Pulsing dot
+                            Circle()
+                                .fill(Color(hex: "00C853"))
+                                .frame(width: 6, height: 6)
+                                .modifier(PulsingModifier())
+
+                            Text("HEALTHKIT LIVE")
+                                .font(.system(size: 12.88, weight: .bold)) // 9.2 × 1.4 = 12.88
+                                .foregroundColor(.virgilTextSecondary)
+                        }
+
+                        Spacer()
+
+                        Text("Updated \(formattedUpdateTime)")
+                            .font(.system(size: 12.88, weight: .regular)) // 9.2 × 1.4 = 12.88
+                            .foregroundColor(.virgilGray400)
+                    }
+                    .padding(.bottom, 12)
+
+                    // Metrics Grid - 波形と同期して点滅
                     HStack(spacing: 8) {
-                        // Pulsing dot
-                        Circle()
-                            .fill(Color(hex: "00C853"))
-                            .frame(width: 6, height: 6)
-                            .modifier(PulsingModifier())
-
-                        Text("HEALTHKIT LIVE")
-                            .font(.system(size: 8, weight: .bold))
-                            .foregroundColor(.virgilTextSecondary)
+                        ForEach(metrics.indices, id: \.self) { index in
+                            HealthKitMetricItem(metric: metrics[index])
+                                .modifier(WaveSyncPulsingModifier(date: context.date))
+                        }
                     }
-
-                    Spacer()
-
-                    Text("Updated \(formattedUpdateTime)")
-                        .font(.system(size: 8, weight: .regular))
-                        .foregroundColor(.virgilGray400)
+                    .padding(.bottom, 8)
                 }
-                .padding(.bottom, 12)
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
 
-                // Metrics Grid
-                HStack(spacing: 8) {
-                    ForEach(metrics.indices, id: \.self) { index in
-                        HealthKitMetricItem(metric: metrics[index])
-                    }
-                }
-                .padding(.bottom, 8)
+                // Waveform Animation - 画面幅いっぱいに表示、文字に少し重なるように配置
+                WaveformView()
+                    .padding(.top, -14)
+                    .padding(.bottom, 20)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-
-            // Waveform Animation - 画面幅いっぱいに表示
-            WaveformView()
-                .padding(.bottom, 20)
         }
         .onAppear {
             startUpdatingTime()
@@ -88,15 +92,15 @@ struct HealthKitMetricItem: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(metric.label.uppercased())
-                .font(.system(size: 7, weight: .semibold))
+                .font(.system(size: 11.27, weight: .semibold)) // 8.05 × 1.4 = 11.27
                 .foregroundColor(.virgilGray400)
 
             Text(metric.value + metric.unit)
-                .font(.system(size: 11, weight: .bold))
+                .font(.system(size: 17.71, weight: .bold)) // 12.65 × 1.4 = 17.71
                 .foregroundColor(.virgilTextPrimary)
 
             Text(metric.trend.rawValue)
-                .font(.system(size: 10, weight: .semibold))
+                .font(.system(size: 16.1, weight: .semibold)) // 11.5 × 1.4 = 16.1
                 .foregroundColor(Color(hex: metric.trend.color))
         }
         .frame(maxWidth: .infinity)
@@ -121,6 +125,24 @@ struct PulsingModifier: ViewModifier {
             .onAppear {
                 isPulsing = true
             }
+    }
+}
+
+// MARK: - Wave Sync Pulsing Modifier
+
+struct WaveSyncPulsingModifier: ViewModifier {
+    let date: Date
+
+    // 波形の動きに合わせて透明度を計算（0.5〜1.0の範囲でより明確な点滅）
+    private var calculatedOpacity: Double {
+        let time = date.timeIntervalSinceReferenceDate
+        // sin波で滑らかな点滅効果（周波数3.0で波形と同期）
+        return 0.5 + 0.5 * (1 + sin(time * 3.0)) / 2
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(calculatedOpacity)
     }
 }
 

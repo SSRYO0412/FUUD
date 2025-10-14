@@ -28,6 +28,21 @@ struct TodaysPerformanceSection: View {
                     onTap: { toggleMetric("predictedCalories") }
                 )
 
+                // 詳細展開エリア - 予想消費カロリー
+                if expandedMetric == "predictedCalories" {
+                    VStack(spacing: 12) {
+                        MetricDetailView(
+                            metric: "predictedCalories",
+                            data: detailData(for: "predictedCalories"),
+                            onClose: { expandedMetric = nil }
+                        )
+
+                        TuuningIntelligenceView(selectedMetric: expandedMetric)
+                    }
+                    .padding(.top, 12)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
+
                 Divider()
                     .background(Color.white.opacity(0.1))
                     .padding(.vertical, 4)
@@ -44,6 +59,21 @@ struct TodaysPerformanceSection: View {
                     isExpanded: expandedMetric == "recovery",
                     onTap: { toggleMetric("recovery") }
                 )
+
+                // 詳細展開エリア - 回復スピード
+                if expandedMetric == "recovery" {
+                    VStack(spacing: 12) {
+                        MetricDetailView(
+                            metric: "recovery",
+                            data: detailData(for: "recovery"),
+                            onClose: { expandedMetric = nil }
+                        )
+
+                        TuuningIntelligenceView(selectedMetric: expandedMetric)
+                    }
+                    .padding(.top, 12)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
 
                 Divider()
                     .background(Color.white.opacity(0.1))
@@ -62,6 +92,21 @@ struct TodaysPerformanceSection: View {
                     onTap: { toggleMetric("metabolic") }
                 )
 
+                // 詳細展開エリア - 代謝力
+                if expandedMetric == "metabolic" {
+                    VStack(spacing: 12) {
+                        MetricDetailView(
+                            metric: "metabolic",
+                            data: detailData(for: "metabolic"),
+                            onClose: { expandedMetric = nil }
+                        )
+
+                        TuuningIntelligenceView(selectedMetric: expandedMetric)
+                    }
+                    .padding(.top, 12)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
+
                 Divider()
                     .background(Color.white.opacity(0.1))
                     .padding(.vertical, 4)
@@ -78,6 +123,21 @@ struct TodaysPerformanceSection: View {
                     isExpanded: expandedMetric == "inflammation",
                     onTap: { toggleMetric("inflammation") }
                 )
+
+                // 詳細展開エリア - 炎症レベル
+                if expandedMetric == "inflammation" {
+                    VStack(spacing: 12) {
+                        MetricDetailView(
+                            metric: "inflammation",
+                            data: detailData(for: "inflammation"),
+                            onClose: { expandedMetric = nil }
+                        )
+
+                        TuuningIntelligenceView(selectedMetric: expandedMetric)
+                    }
+                    .padding(.top, 12)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
 
                 Divider()
                     .background(Color.white.opacity(0.1))
@@ -96,6 +156,21 @@ struct TodaysPerformanceSection: View {
                     onTap: { toggleMetric("longevity") }
                 )
 
+                // 詳細展開エリア - 老化速度
+                if expandedMetric == "longevity" {
+                    VStack(spacing: 12) {
+                        MetricDetailView(
+                            metric: "longevity",
+                            data: detailData(for: "longevity"),
+                            onClose: { expandedMetric = nil }
+                        )
+
+                        TuuningIntelligenceView(selectedMetric: expandedMetric)
+                    }
+                    .padding(.top, 12)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
+
                 Divider()
                     .background(Color.white.opacity(0.1))
                     .padding(.vertical, 4)
@@ -112,30 +187,26 @@ struct TodaysPerformanceSection: View {
                     isExpanded: expandedMetric == "performance",
                     onTap: { toggleMetric("performance") }
                 )
+
+                // 詳細展開エリア - 総合パフォーマンス
+                if expandedMetric == "performance" {
+                    VStack(spacing: 12) {
+                        MetricDetailView(
+                            metric: "performance",
+                            data: detailData(for: "performance"),
+                            onClose: { expandedMetric = nil }
+                        )
+
+                        TuuningIntelligenceView(selectedMetric: expandedMetric)
+                    }
+                    .padding(.top, 12)
+                    .padding(.bottom, 8)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
             }
             .padding(.horizontal, 20)
-            .padding(.top, 20)
-
-            // 詳細展開エリア
-            if let metric = expandedMetric {
-                MetricDetailView(
-                    metric: metric,
-                    data: detailData(for: metric),
-                    onClose: { expandedMetric = nil }
-                )
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-                .transition(.asymmetric(
-                    insertion: .move(edge: .top).combined(with: .opacity),
-                    removal: .move(edge: .top).combined(with: .opacity)
-                ))
-            }
-
-            // Tuuning Intelligence - 選択中メトリックに応じたインサイト表示
-            TuuningIntelligenceView(selectedMetric: expandedMetric) // [DUMMY] 選択中メトリックを渡す、本番ではAPI連携時に使用
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-                .padding(.bottom, 20)
+            .padding(.top, 0)
+            .padding(.bottom, 20)
         }
         .background(Color.white.opacity(0.001)) // Hit testing用
         .virgilGlassCard()
