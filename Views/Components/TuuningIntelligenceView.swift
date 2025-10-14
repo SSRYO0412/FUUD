@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct TuuningIntelligenceView: View {
+    let selectedMetric: String? // [DUMMY] 選択中のメトリック、本番ではAPI連携時に使用
     @State private var currentMessageIndex = 0
     @State private var isRefreshing = false
 
@@ -84,7 +85,32 @@ struct TuuningIntelligenceView: View {
     }
 
     private var currentMessage: String {
-        TuuningIntelligence.messages[currentMessageIndex] // [DUMMY] 実際のAI分析結果に置き換え
+        let messages = messagesForSelectedMetric // [DUMMY] 本番ではAI APIから取得した分析結果に置き換え
+        return messages[currentMessageIndex % messages.count]
+    }
+
+    // [DUMMY] 選択中メトリックに応じたメッセージ配列を返す、本番ではAPI経由で取得
+    private var messagesForSelectedMetric: [String] {
+        guard let metric = selectedMetric else {
+            return TuuningIntelligence.defaultMessages
+        }
+
+        switch metric {
+        case "recovery":
+            return TuuningIntelligence.recoveryMessages
+        case "metabolic":
+            return TuuningIntelligence.metabolicMessages
+        case "inflammation":
+            return TuuningIntelligence.inflammationMessages
+        case "longevity":
+            return TuuningIntelligence.longevityMessages
+        case "performance":
+            return TuuningIntelligence.performanceMessages
+        case "predictedCalories":
+            return TuuningIntelligence.predictedCaloriesMessages
+        default:
+            return TuuningIntelligence.defaultMessages
+        }
     }
 
     private func refreshIntelligence() {
@@ -95,8 +121,8 @@ struct TuuningIntelligenceView: View {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            // [DUMMY] 実際のAI APIコールに置き換え
-            currentMessageIndex = (currentMessageIndex + 1) % TuuningIntelligence.messages.count
+            // [DUMMY] 実際のAI APIコールに置き換え、選択中メトリックのインサイトを再生成
+            currentMessageIndex = (currentMessageIndex + 1) % messagesForSelectedMetric.count
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
@@ -105,10 +131,10 @@ struct TuuningIntelligenceView: View {
     }
 
     private func startAutoRefresh() {
-        // [DUMMY] 30秒ごとの自動更新、実際はAPI更新タイミングに合わせる
+        // [DUMMY] 30秒ごとの自動更新、本番ではAPI更新タイミングに合わせる
         Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { _ in
             withAnimation(.easeInOut(duration: 0.5)) {
-                currentMessageIndex = (currentMessageIndex + 1) % TuuningIntelligence.messages.count
+                currentMessageIndex = (currentMessageIndex + 1) % messagesForSelectedMetric.count
             }
         }
     }
@@ -117,7 +143,7 @@ struct TuuningIntelligenceView: View {
 #if DEBUG
 struct TuuningIntelligenceView_Previews: PreviewProvider {
     static var previews: some View {
-        TuuningIntelligenceView()
+        TuuningIntelligenceView(selectedMetric: nil) // [DUMMY] Preview用、デフォルトメッセージ表示
             .padding()
             .background(Color.white)
     }

@@ -15,7 +15,7 @@ struct TodaysPerformanceSection: View {
         VStack(spacing: 0) {
             // Header with date
             HStack {
-                Text("TODAY'S PERFORMANCE")
+                Text("REAL-TIME PERFORMANCE")
                     .font(.system(size: 9, weight: .bold))
                     .foregroundColor(.virgilTextSecondary)
                     
@@ -75,10 +75,10 @@ struct TodaysPerformanceSection: View {
                     onTap: { toggleMetric("inflammation") }
                 )
 
-                // Longevity
+                // Aging pace
                 PerformanceMetricItem(
                     icon: "🧬",
-                    name: "Longevity",
+                    name: "Aging pace",
                     score: String(format: "%.2f", metrics.longevity),
                     delta: "−18%", // [DUMMY] 実際の計算値に置き換え
                     deltaType: .positive,
@@ -98,6 +98,18 @@ struct TodaysPerformanceSection: View {
                     isExpanded: expandedMetric == "performance",
                     onTap: { toggleMetric("performance") }
                 )
+
+                // Predicted Calories
+                PerformanceMetricItem(
+                    icon: "🔥",
+                    name: "Pred. Cal",
+                    score: "\(metrics.predictedCalories)",
+                    delta: "+8%", // [DUMMY] 実際の計算値に置き換え
+                    deltaType: .positive,
+                    indicator: .high,
+                    isExpanded: expandedMetric == "predictedCalories",
+                    onTap: { toggleMetric("predictedCalories") }
+                )
             }
             .padding(.horizontal, 20)
 
@@ -116,8 +128,8 @@ struct TodaysPerformanceSection: View {
                 ))
             }
 
-            // Tuuning Intelligence
-            TuuningIntelligenceView()
+            // Tuuning Intelligence - 選択中メトリックに応じたインサイト表示
+            TuuningIntelligenceView(selectedMetric: expandedMetric) // [DUMMY] 選択中メトリックを渡す、本番ではAPI連携時に使用
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
                 .padding(.bottom, 20)
@@ -165,6 +177,8 @@ struct TodaysPerformanceSection: View {
             return sampleData.longevity
         case "performance":
             return sampleData.performance
+        case "predictedCalories":
+            return sampleData.predictedCalories
         default:
             return [:]
         }

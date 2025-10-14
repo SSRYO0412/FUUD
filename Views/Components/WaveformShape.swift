@@ -81,7 +81,7 @@ struct WaveformView: View {
         }
         .frame(height: 40)
         .background(Color.black.opacity(0.01))
-        .cornerRadius(4)
+        // [DUMMY] cornerRadius削除 - 画面幅いっぱいに波形を表示するため
         .onAppear {
             startAnimation()
         }

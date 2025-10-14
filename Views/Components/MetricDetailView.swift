@@ -49,6 +49,7 @@ struct MetricDetailView: View {
         .cornerRadius(12)
     }
 
+    // [DUMMY] メトリック名の表示変換、本番ではローカライズ対応
     private var metricDisplayName: String {
         switch metric {
         case "recovery":
@@ -58,9 +59,11 @@ struct MetricDetailView: View {
         case "inflammation":
             return "Inflammation"
         case "longevity":
-            return "Longevity"
+            return "Aging pace"
         case "performance":
             return "Performance"
+        case "predictedCalories":
+            return "Predicted Calories"
         default:
             return metric.capitalized
         }
@@ -101,7 +104,7 @@ struct MetricDetailView_Previews: PreviewProvider {
     static var previews: some View {
         MetricDetailView(
             metric: "recovery",
-            data: [
+            data: [ // [DUMMY] Preview用のサンプルデータ
                 "HRV (RMSSD)": "68ms ↑",
                 "安静時心拍": "52bpm ↓",
                 "深睡眠": "22% ↑",

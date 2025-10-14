@@ -77,8 +77,8 @@ struct HealthKitMetric {
             updateInterval: 30.0
         ),
         HealthKitMetric(
-            label: "M.Cal",
-            value: "1,850", // [DUMMY] 実際の基礎代謝計算値に置き換え
+            label: "Burn Cal",
+            value: "1,850", // [DUMMY] 実際の消費カロリー計算値に置き換え
             unit: "",
             trend: .neutral,
             updateInterval: 60.0

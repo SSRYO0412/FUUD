@@ -14,40 +14,45 @@ struct HealthKitLiveSection: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            HStack {
+            // Header & Metrics Grid - 左右にpadding適用
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    HStack(spacing: 8) {
+                        // Pulsing dot
+                        Circle()
+                            .fill(Color(hex: "00C853"))
+                            .frame(width: 6, height: 6)
+                            .modifier(PulsingModifier())
+
+                        Text("HEALTHKIT LIVE")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundColor(.virgilTextSecondary)
+                    }
+
+                    Spacer()
+
+                    Text("Updated \(formattedUpdateTime)")
+                        .font(.system(size: 8, weight: .regular))
+                        .foregroundColor(.virgilGray400)
+                }
+                .padding(.bottom, 12)
+
+                // Metrics Grid
                 HStack(spacing: 8) {
-                    // Pulsing dot
-                    Circle()
-                        .fill(Color(hex: "00C853"))
-                        .frame(width: 6, height: 6)
-                        .modifier(PulsingModifier())
-
-                    Text("HEALTHKIT LIVE")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(.virgilTextSecondary)
+                    ForEach(metrics.indices, id: \.self) { index in
+                        HealthKitMetricItem(metric: metrics[index])
+                    }
                 }
-
-                Spacer()
-
-                Text("Updated \(formattedUpdateTime)")
-                    .font(.system(size: 8, weight: .regular))
-                    .foregroundColor(.virgilGray400)
+                .padding(.bottom, 8)
             }
-            .padding(.bottom, 12)
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
 
-            // Metrics Grid
-            HStack(spacing: 8) {
-                ForEach(metrics.indices, id: \.self) { index in
-                    HealthKitMetricItem(metric: metrics[index])
-                }
-            }
-            .padding(.bottom, 8)
-
-            // Waveform Animation
+            // Waveform Animation - 画面幅いっぱいに表示
             WaveformView()
+                .padding(.bottom, 20)
         }
-        .padding(20)
         .onAppear {
             startUpdatingTime()
         }
@@ -121,6 +126,7 @@ struct PulsingModifier: ViewModifier {
 
 // MARK: - Waveform Placeholder
 
+// [DUMMY] 旧プレースホルダー、現在はWaveformViewに置き換え済み、削除予定
 struct WaveformPlaceholder: View {
     var body: some View {
         Rectangle()
@@ -128,7 +134,7 @@ struct WaveformPlaceholder: View {
             .frame(height: 40)
             .cornerRadius(4)
             .overlay(
-                Text("波形アニメーション") // [DUMMY] Phase 5で実装予定
+                Text("波形アニメーション")
                     .font(.system(size: 8))
                     .foregroundColor(.virgilGray400)
             )

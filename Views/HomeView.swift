@@ -41,7 +41,7 @@ struct HomeView: View {
 
                 ScrollView {
                     VStack(spacing: VirgilSpacing.lg) {
-                        // Header
+                        // Header - 左右paddingあり
                         VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
                             Text("TUUN")
                                 .font(.system(size: 36, weight: .black))
@@ -51,32 +51,36 @@ struct HomeView: View {
                                 .foregroundColor(.virgilTextSecondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, VirgilSpacing.md)
 
-                        // HealthKit LIVE Section
+                        // HealthKit LIVE Section - 画面幅いっぱい（paddingなし）
                         HealthKitLiveSection()
 
-                        // Today's Performance Section
-                        TodaysPerformanceSection()
+                        // 以降のカード - 左右paddingあり
+                        VStack(spacing: VirgilSpacing.lg) {
+                            // Real-Time Performance Section
+                            TodaysPerformanceSection()
 
-                        // AI Core Section
-                        AICoreSection(currentInsight: aiInsights[aiInsightIndex])
+                            // AI Core Section - 一時的に非表示
+                            // AICoreSection(currentInsight: aiInsights[aiInsightIndex])
 
-                        // Bio Age Card
-                        BioAgeCard()
+                            // Bio Age Card - 一時的に非表示
+                            // BioAgeCard()
 
-                        // Longevity Pace Card
-                        LongevityPaceCard()
+                            // Longevity Pace Card - 一時的に非表示
+                            // LongevityPaceCard()
 
-                        // Metabolic Power Card
-                        MetabolicPowerCard()
+                            // Metabolic Power Card - 一時的に非表示
+                            // MetabolicPowerCard()
 
-                        // Recovery Sync Card
-                        RecoverySyncCard()
+                            // Recovery Sync Card - 一時的に非表示
+                            // RecoverySyncCard()
 
-                        // Weekly Plan Section
-                        WeeklyPlanSection()
+                            // Weekly Plan Section
+                            WeeklyPlanSection()
+                        }
+                        .padding(.horizontal, VirgilSpacing.md)
                     }
-                    .padding(.horizontal, VirgilSpacing.md)
                     .padding(.top, VirgilSpacing.lg)
                     .padding(.bottom, 100)
                 }
