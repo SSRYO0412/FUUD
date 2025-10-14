@@ -13,37 +13,31 @@ struct TodaysPerformanceSection: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header with date
-            HStack {
-                Text("REAL-TIME PERFORMANCE")
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundColor(.virgilTextSecondary)
-                    
+            // メトリクス一覧（縦並び）- 予想消費カロリーを最上位に配置
+            VStack(spacing: 0) {
+                // Predicted Calories
+                PerformanceMetricItem(
+                    icon: "🔥",
+                    name: "予想消費カロリー",
+                    score: "\(metrics.predictedCalories)",
+                    unit: "kcal",
+                    delta: "+8%", // [DUMMY] 実際の計算値に置き換え
+                    deltaType: .positive,
+                    indicator: .high,
+                    isExpanded: expandedMetric == "predictedCalories",
+                    onTap: { toggleMetric("predictedCalories") }
+                )
 
-                Spacer()
+                Divider()
+                    .background(Color.white.opacity(0.1))
+                    .padding(.vertical, 4)
 
-                Text(formattedDate)
-                    .font(.system(size: 8, weight: .regular))
-                    .foregroundColor(.virgilGray400)
-            }
-            .padding(.top, 8)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 16)
-
-            // 5つのメトリクスグリッド
-            LazyVGrid(
-                columns: [
-                    GridItem(.flexible()),
-                    GridItem(.flexible()),
-                    GridItem(.flexible())
-                ],
-                spacing: 12
-            ) {
                 // Recovery
                 PerformanceMetricItem(
                     icon: "⚡",
-                    name: "Recovery",
+                    name: "回復スピード",
                     score: "\(metrics.recovery.score)",
+                    unit: "%",
                     delta: metrics.recovery.delta,
                     deltaType: deltaType(for: metrics.recovery.delta),
                     indicator: metrics.recovery.indicator,
@@ -51,11 +45,16 @@ struct TodaysPerformanceSection: View {
                     onTap: { toggleMetric("recovery") }
                 )
 
+                Divider()
+                    .background(Color.white.opacity(0.1))
+                    .padding(.vertical, 4)
+
                 // Metabolic
                 PerformanceMetricItem(
                     icon: "🔥",
-                    name: "Metabolic",
+                    name: "代謝力",
                     score: metrics.metabolic.level.rawValue.uppercased(),
+                    unit: nil,
                     delta: metrics.metabolic.delta,
                     deltaType: deltaType(for: metrics.metabolic.delta),
                     indicator: metrics.metabolic.indicator,
@@ -63,11 +62,16 @@ struct TodaysPerformanceSection: View {
                     onTap: { toggleMetric("metabolic") }
                 )
 
+                Divider()
+                    .background(Color.white.opacity(0.1))
+                    .padding(.vertical, 4)
+
                 // Inflammation
                 PerformanceMetricItem(
                     icon: "🛡",
-                    name: "Inflammation",
+                    name: "炎症レベル",
                     score: metrics.inflammation.level.rawValue.uppercased(),
+                    unit: nil,
                     delta: metrics.inflammation.delta,
                     deltaType: deltaType(for: metrics.inflammation.delta),
                     indicator: metrics.inflammation.indicator,
@@ -75,11 +79,16 @@ struct TodaysPerformanceSection: View {
                     onTap: { toggleMetric("inflammation") }
                 )
 
+                Divider()
+                    .background(Color.white.opacity(0.1))
+                    .padding(.vertical, 4)
+
                 // Aging pace
                 PerformanceMetricItem(
                     icon: "🧬",
-                    name: "Aging pace",
+                    name: "老化速度",
                     score: String(format: "%.2f", metrics.longevity),
+                    unit: "age/year",
                     delta: "−18%", // [DUMMY] 実際の計算値に置き換え
                     deltaType: .positive,
                     indicator: .excellent,
@@ -87,31 +96,25 @@ struct TodaysPerformanceSection: View {
                     onTap: { toggleMetric("longevity") }
                 )
 
+                Divider()
+                    .background(Color.white.opacity(0.1))
+                    .padding(.vertical, 4)
+
                 // Performance
                 PerformanceMetricItem(
                     icon: "🎯",
-                    name: "Performance",
+                    name: "総合パフォーマンス",
                     score: "\(metrics.performance)",
+                    unit: nil,
                     delta: "+12%", // [DUMMY] 実際の計算値に置き換え
                     deltaType: .positive,
                     indicator: .high,
                     isExpanded: expandedMetric == "performance",
                     onTap: { toggleMetric("performance") }
                 )
-
-                // Predicted Calories
-                PerformanceMetricItem(
-                    icon: "🔥",
-                    name: "Pred. Cal",
-                    score: "\(metrics.predictedCalories)",
-                    delta: "+8%", // [DUMMY] 実際の計算値に置き換え
-                    deltaType: .positive,
-                    indicator: .high,
-                    isExpanded: expandedMetric == "predictedCalories",
-                    onTap: { toggleMetric("predictedCalories") }
-                )
             }
             .padding(.horizontal, 20)
+            .padding(.top, 20)
 
             // 詳細展開エリア
             if let metric = expandedMetric {

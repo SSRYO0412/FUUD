@@ -19,11 +19,12 @@ struct TuuningIntelligenceView: View {
                 HStack(spacing: 12) {
                     Text("✨")
                         .font(.system(size: 16))
+                        .frame(width: 32, height: 32)
 
                     Text("TUUNING INTELLIGENCE")
                         .font(.system(size: 9, weight: .bold))
                         .foregroundColor(.virgilTextSecondary)
-                        
+
                 }
 
                 Spacer()

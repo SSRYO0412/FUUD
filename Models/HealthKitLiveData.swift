@@ -56,14 +56,14 @@ struct HealthKitMetric {
     // [DUMMY] テスト用のサンプルメトリクス
     static let samples: [HealthKitMetric] = [
         HealthKitMetric(
-            label: "HRV",
+            label: "心拍変動",
             value: "68", // [DUMMY] 実際のHealthKitデータに置き換え
             unit: "ms",
             trend: .up,
             updateInterval: 3.0
         ),
         HealthKitMetric(
-            label: "RHR",
+            label: "安静時心拍数",
             value: "52", // [DUMMY] 実際のHealthKitデータに置き換え
             unit: "bpm",
             trend: .down,

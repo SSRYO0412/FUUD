@@ -11,6 +11,7 @@ struct PerformanceMetricItem: View {
     let icon: String
     let name: String
     let score: String
+    let unit: String? // 単位（オプショナル）
     let delta: String
     let deltaType: DeltaType
     let indicator: IndicatorType
@@ -24,41 +25,54 @@ struct PerformanceMetricItem: View {
     }
 
     var body: some View {
-        VStack(spacing: 2) {
-            // Icon
+        HStack(spacing: 0) {
+            // Icon (カード左端から16pt)
             Text(icon)
-                .font(.system(size: 16))
-                .padding(.bottom, 8)
+                .font(.system(size: 20))
+                .frame(width: 32, height: 32)
+                .padding(.leading, 16)
+
+            Spacer()
+                .frame(width: 12)
 
             // Content
-            VStack(spacing: 2) {
+            VStack(alignment: .leading, spacing: 2) {
                 // Name
                 Text(name.uppercased())
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundColor(.virgilTextSecondary)
-                    
 
-                // Score
-                Text(score)
-                    .font(.system(size: 18, weight: .black))
-                    .foregroundColor(.virgilTextPrimary)
+                // Score + Unit + Delta
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    // Score
+                    Text(score)
+                        .font(.system(size: 24, weight: .black)) // 20pt→24pt（20%アップ）
+                        .foregroundColor(.virgilTextPrimary)
 
-                // Delta
-                Text(delta)
-                    .font(.system(size: 9, weight: .semibold))
-                    .foregroundColor(deltaColor)
+                    // Unit
+                    if let unit = unit {
+                        Text(unit)
+                            .font(.system(size: 18, weight: .semibold)) // 20pt→18pt（10%ダウン）
+                            .foregroundColor(.virgilTextPrimary)
+                    }
+
+                    Text(delta)
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(deltaColor)
+                }
             }
 
-            // Indicator dot (top-right)
+            Spacer()
+
+            // Indicator dot
             Circle()
                 .fill(Color(hex: indicator.color))
-                .frame(width: 6, height: 6)
+                .frame(width: 8, height: 8)
                 .modifier(PulsingModifier())
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                .padding([.top, .trailing], 8)
+                .padding(.trailing, 16)
         }
+        .padding(.vertical, 12)
         .frame(maxWidth: .infinity)
-        .padding(12)
         .background(Color.white.opacity(0.08))
         .cornerRadius(12)
         .onTapGesture(perform: onTap)
@@ -97,6 +111,7 @@ struct PerformanceMetricItem_Previews: PreviewProvider {
             icon: "⚡",
             name: "Recovery",
             score: "87",
+            unit: "%",
             delta: "+5%",
             deltaType: .positive,
             indicator: .excellent,
