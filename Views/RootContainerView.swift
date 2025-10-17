@@ -2,47 +2,33 @@
 //  RootContainerView.swift
 //  AWStest
 //
-//  Virgilデザインのルートコンテナ - カスタムボトムナビゲーション
+//  iOS標準TabView - Liquid Glassデザイン
 //
 
 import SwiftUI
 
 struct RootContainerView: View {
-    @State private var selectedTab: NavigationTab = .home
+    @EnvironmentObject var cognitoService: SimpleCognitoService
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // Background
-            Color.virgilBackground
-                .ignoresSafeArea()
+        TabView {
+            HomeView()
+                .environmentObject(cognitoService)
+                .tabItem {
+                    Label("HOME", systemImage: "house")
+                }
 
-            // Content
-            TabContentView(selectedTab: selectedTab)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            DataView()
+                .tabItem {
+                    Label("DATA", systemImage: "chart.bar")
+                }
 
-            // Custom Bottom Navigation Bar
-            CustomBottomNavBar(selectedTab: $selectedTab)
+            ProfileView()
+                .environmentObject(cognitoService)
+                .tabItem {
+                    Label("PROFILE", systemImage: "person")
+                }
         }
-    }
-}
-
-// MARK: - Tab Content View
-
-private struct TabContentView: View {
-    let selectedTab: NavigationTab
-
-    var body: some View {
-        Group {
-            switch selectedTab {
-            case .home:
-                HomeView()
-            case .data:
-                DataView()
-            case .profile:
-                ProfileView()
-            }
-        }
-        .transition(.opacity)
     }
 }
 

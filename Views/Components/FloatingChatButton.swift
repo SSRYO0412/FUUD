@@ -55,7 +55,7 @@ struct FloatingChatButtonModifier: ViewModifier {
                         showChat = true
                     }
                     .padding(.trailing, 20)
-                    .padding(.bottom, 100) // タブバーの上
+                    .padding(.bottom, 10) // TabViewの少し上
                 }
             }
         }
