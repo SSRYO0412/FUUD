@@ -189,15 +189,15 @@ private struct LifestyleTab: View {
 
             VStack(spacing: VirgilSpacing.sm) {
                 // [DUMMY] スコア値は仮データ、API連携後に実データ使用
-                LifeScoreCard(emoji: "🧠", title: "脳の認知機能", score: 92) // [DUMMY] 緑グラデ
                 LifeScoreCard(emoji: "⚡️", title: "ダイエット", score: 68) // [DUMMY] 黄グラデ
-                LifeScoreCard(emoji: "✨", title: "見た目の健康", score: 45) // [DUMMY] 赤グラデ
                 LifeScoreCard(emoji: "😴", title: "睡眠", score: 88) // [DUMMY] 緑グラデ
                 LifeScoreCard(emoji: "💪", title: "疲労回復", score: 58) // [DUMMY] 黄グラデ
-                LifeScoreCard(emoji: "🌸", title: "肌", score: 82) // [DUMMY] 緑グラデ
-                LifeScoreCard(emoji: "🛡️", title: "抗酸化", score: 72) // [DUMMY] 黄グラデ
-                LifeScoreCard(emoji: "🧘", title: "ストレス", score: 38) // [DUMMY] 赤グラデ
                 LifeScoreCard(emoji: "🏃", title: "運動能力", score: 95) // [DUMMY] 緑グラデ
+                LifeScoreCard(emoji: "🧘", title: "ストレス", score: 38) // [DUMMY] 赤グラデ
+                LifeScoreCard(emoji: "🛡️", title: "抗酸化", score: 72) // [DUMMY] 黄グラデ
+                LifeScoreCard(emoji: "🧠", title: "脳の認知機能", score: 92) // [DUMMY] 緑グラデ
+                LifeScoreCard(emoji: "✨", title: "見た目の健康", score: 45) // [DUMMY] 赤グラデ
+                LifeScoreCard(emoji: "🌸", title: "肌", score: 82) // [DUMMY] 緑グラデ
                 LifeScoreCard(emoji: "❤️", title: "性的な健康", score: 65) // [DUMMY] 黄グラデ
                 LifeScoreCard(emoji: "⚡", title: "活力", score: 42) // [DUMMY] 赤グラデ
                 LifeScoreCard(emoji: "❤️‍🩹", title: "心臓の健康", score: 86) // [DUMMY] 緑グラデ
