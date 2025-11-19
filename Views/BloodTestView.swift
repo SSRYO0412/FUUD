@@ -13,57 +13,30 @@ struct BloodTestView: View {
     @State private var searchText = ""
 
     var body: some View {
-        NavigationView {
-            Group {
-                if bloodTestService.isLoading {
-                    loadingView
-                } else if !bloodTestService.errorMessage.isEmpty {
-                    errorView
-                } else if let bloodData = bloodTestService.bloodData {
-                    bloodTestScrollView(bloodData: bloodData)
-                } else {
-                    emptyStateView
-                }
+        Group {
+            if bloodTestService.isLoading {
+                loadingView
+            } else if !bloodTestService.errorMessage.isEmpty {
+                errorView
+            } else if let bloodData = bloodTestService.bloodData {
+                bloodTestScrollView(bloodData: bloodData)
+            } else {
+                emptyStateView
             }
-            .background(
-                ZStack {
-                    LinearGradient(
-                        colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .ignoresSafeArea()
-
-                    OrbBackground()
-                }
-            )
-            .navigationTitle("血液検査結果")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("更新", systemImage: "arrow.clockwise") {
-                        Task {
-                            await bloodTestService.refreshData()
-                        }
-                    }
-                    .disabled(bloodTestService.isLoading)
-                }
-
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu("フィルター", systemImage: "line.3.horizontal.decrease.circle") {
-                        Button {
-                            showingAbnormalOnly.toggle()
-                        } label: {
-                            Label(
-                                showingAbnormalOnly ? "すべて表示" : "異常値のみ表示",
-                                systemImage: showingAbnormalOnly ? "eye" : "exclamationmark.triangle"
-                            )
-                        }
-                    }
-                }
-            }
-            .searchable(text: $searchText, prompt: "検査項目を検索")
         }
+        .background(
+            ZStack {
+                LinearGradient(
+                    colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
+                OrbBackground()
+                GridOverlay()
+            }
+        )
         .task {
             if bloodTestService.bloodData == nil {
                 await bloodTestService.fetchBloodTestData()

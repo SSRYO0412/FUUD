@@ -26,10 +26,12 @@ struct MainTabView: View {
                 }
             */
 
-            BloodTestView()
-                .tabItem {
-                    Label("血液検査", systemImage: "heart.text.square")
-                }
+            NavigationView {
+                BloodTestView()
+            }
+            .tabItem {
+                Label("血液検査", systemImage: "heart.text.square")
+            }
 
             ChatView()
                 .environmentObject(cognitoService)
