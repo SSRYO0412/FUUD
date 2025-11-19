@@ -337,11 +337,7 @@ private struct LifeScoreCard: View {
         case "脳の認知機能":
             return (
                 name: "認知機能",
-                genes: [
-                    (name: "APOE ε3/ε3", variant: "ε3/ε3", risk: "低", description: "アルツハイマー病リスク：低"),
-                    (name: "BDNF Val66Met", variant: "Val66Met", risk: "良好", description: "学習・記憶能力：優良"),
-                    (name: "COMT Val158Met", variant: "Val158Met", risk: "最適", description: "ドーパミン代謝：バランス型")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "Homocysteine", value: "8.2", unit: "μmol/L", range: "5-15", status: "最適"),
                     (name: "Vitamin B12", value: "580", unit: "pg/mL", range: "200-900", status: "良好"),
@@ -358,11 +354,7 @@ private struct LifeScoreCard: View {
         case "活力":
             return (
                 name: "活力",
-                genes: [
-                    (name: "PPARGC1A", variant: "PPARGC1A", risk: "優秀", description: "ミトコンドリア生合成・エネルギー産生"),
-                    (name: "NRF1", variant: "NRF1", risk: "優秀", description: "抗酸化・細胞エネルギー代謝"),
-                    (name: "SIRT1", variant: "SIRT1", risk: "良好", description: "長寿遺伝子・代謝調節")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "Ferritin", value: "98", unit: "ng/mL", range: "30-400", status: "最適"),
                     (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.4-1.5", status: "良好"),
@@ -382,10 +374,7 @@ private struct LifeScoreCard: View {
         case "肝機能":
             return (
                 name: "肝機能",
-                genes: [
-                    (name: "PNPLA3", variant: "PNPLA3", risk: "良好", description: "脂肪肝リスク・脂質代謝"),
-                    (name: "ALDH2", variant: "ALDH2", risk: "優秀", description: "アルコール代謝・アセトアルデヒド分解")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "AST", value: "22", unit: "U/L", range: "10-40", status: "最適"),
                     (name: "ALT", value: "18", unit: "U/L", range: "5-45", status: "最適"),
@@ -406,11 +395,7 @@ private struct LifeScoreCard: View {
         case "生活習慣":
             return (
                 name: "生活習慣",
-                genes: [
-                    (name: "FTO", variant: "FTO", risk: "良好", description: "食欲調節・肥満リスク"),
-                    (name: "APOE", variant: "APOE", risk: "優秀", description: "脂質代謝・認知機能"),
-                    (name: "ALDH2", variant: "ALDH2", risk: "優秀", description: "アルコール代謝")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "HbA1c", value: "5.4", unit: "%", range: "4.6-6.2", status: "最適"),
                     (name: "1,5-AG", value: "18", unit: "μg/mL", range: "14-26", status: "良好"),
@@ -436,12 +421,7 @@ private struct LifeScoreCard: View {
         case "ダイエット":
             return (
                 name: "ダイエット",
-                genes: [
-                    (name: "FTO rs9939609", variant: "rs9939609", risk: "標準", description: "肥満リスク：標準型"),
-                    (name: "TCF7L2 rs7903146", variant: "rs7903146", risk: "保護型", description: "2型糖尿病リスク：低"),
-                    (name: "UCP1 rs1800592", variant: "rs1800592", risk: "優秀", description: "脂肪燃焼効率：高"),
-                    (name: "ADRB2 rs1042714", variant: "rs1042714", risk: "良好", description: "代謝応答性：良好")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-6.0", status: "最適"),
                     (name: "GA", value: "14.5", unit: "%", range: "11-16", status: "良好"),
@@ -463,12 +443,7 @@ private struct LifeScoreCard: View {
         case "見た目の健康":
             return (
                 name: "見た目の健康",
-                genes: [
-                    (name: "MTHFR C677T", variant: "C677T", risk: "良好", description: "葉酸代謝・肌質への影響"),
-                    (name: "VDR FokI", variant: "FokI", risk: "最適", description: "ビタミンD受容体・肌健康"),
-                    (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "抗酸化能力・アンチエイジング"),
-                    (name: "COL1A1", variant: "COL1A1", risk: "良好", description: "コラーゲン生成能力")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.2", status: "最適"),
                     (name: "TP", value: "7.2", unit: "g/dL", range: "6.5-8.2", status: "最適"),
@@ -489,11 +464,7 @@ private struct LifeScoreCard: View {
         case "睡眠":
             return (
                 name: "睡眠",
-                genes: [
-                    (name: "PER3 VNTR", variant: "VNTR", risk: "最適", description: "概日リズム：安定型"),
-                    (name: "CLOCK 3111T/C", variant: "3111T/C", risk: "良好", description: "睡眠パターン：夜型傾向軽度"),
-                    (name: "ADORA2A", variant: "ADORA2A", risk: "良好", description: "カフェイン感受性：中程度")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "Melatonin", value: "12", unit: "pg/mL", range: "10-15", status: "最適"),
                     (name: "Cortisol (朝)", value: "15", unit: "μg/dL", range: "10-20", status: "良好"),
@@ -511,10 +482,7 @@ private struct LifeScoreCard: View {
         case "疲労回復":
             return (
                 name: "疲労回復",
-                genes: [
-                    (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "筋肉回復能力・速筋型"),
-                    (name: "PPARGC1A Gly482Ser", variant: "Gly482Ser", risk: "良好", description: "ミトコンドリア機能・持久力")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "CK", value: "120", unit: "U/L", range: "60-400", status: "最適"),
                     (name: "Mb", value: "45", unit: "ng/mL", range: "28-72", status: "良好"),
@@ -534,11 +502,7 @@ private struct LifeScoreCard: View {
         case "肌":
             return (
                 name: "肌",
-                genes: [
-                    (name: "FLG", variant: "FLG", risk: "良好", description: "肌バリア機能遺伝子"),
-                    (name: "MMP1", variant: "MMP1", risk: "最適", description: "コラーゲン分解酵素"),
-                    (name: "SOD2", variant: "SOD2", risk: "優秀", description: "抗酸化能力")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "Zn", value: "95", unit: "μg/dL", range: "60-130", status: "最適"),
                     (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
@@ -559,11 +523,7 @@ private struct LifeScoreCard: View {
         case "抗酸化":
             return (
                 name: "抗酸化",
-                genes: [
-                    (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "スーパーオキシド分解酵素"),
-                    (name: "GPX1 Pro198Leu", variant: "Pro198Leu", risk: "良好", description: "グルタチオンペルオキシダーゼ"),
-                    (name: "CAT", variant: "-", risk: "最適", description: "カタラーゼ活性")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適"),
                     (name: "UA", value: "5.2", unit: "mg/dL", range: "3.0-7.0", status: "最適"),
@@ -579,11 +539,7 @@ private struct LifeScoreCard: View {
         case "ストレス":
             return (
                 name: "ストレス",
-                genes: [
-                    (name: "NR3C1", variant: "NR3C1", risk: "注意", description: "コルチゾール受容体・ストレス応答"),
-                    (name: "COMT Val158Met", variant: "Val158Met", risk: "良好", description: "ドーパミン代謝・ストレス耐性"),
-                    (name: "SLC6A4", variant: "SLC6A4", risk: "標準", description: "セロトニントランスポーター")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "CRP", value: "0.3", unit: "mg/L", range: "0-5", status: "最適"),
                     (name: "LAC", value: "12", unit: "mg/dL", range: "4-16", status: "良好"),
@@ -600,10 +556,7 @@ private struct LifeScoreCard: View {
         case "運動能力":
             return (
                 name: "運動能力",
-                genes: [
-                    (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "速筋型・瞬発力優位"),
-                    (name: "ACE I/D", variant: "I/D", risk: "良好", description: "持久力型・有酸素能力")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "CK", value: "120", unit: "U/L", range: "30-200", status: "最適"),
                     (name: "Mb", value: "45", unit: "ng/mL", range: "20-80", status: "良好"),
@@ -622,11 +575,7 @@ private struct LifeScoreCard: View {
         case "性的な健康":
             return (
                 name: "性的な健康",
-                genes: [
-                    (name: "AR", variant: "AR", risk: "良好", description: "アンドロゲン受容体・テストステロン感受性"),
-                    (name: "ESR1", variant: "ESR1", risk: "優秀", description: "エストロゲン受容体・ホルモンバランス"),
-                    (name: "NOS3", variant: "NOS3", risk: "優秀", description: "一酸化窒素合成・血流調節")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "ApoB", value: "85", unit: "mg/dL", range: "<100", status: "最適"),
                     (name: "Lp(a)", value: "18", unit: "mg/dL", range: "<30", status: "最適"),
@@ -649,11 +598,7 @@ private struct LifeScoreCard: View {
         case "心臓の健康":
             return (
                 name: "心臓の健康",
-                genes: [
-                    (name: "APOE", variant: "APOE", risk: "良好", description: "コレステロール代謝・動脈硬化リスク"),
-                    (name: "ACE I/D", variant: "ACE I/D", risk: "良好", description: "血圧調節・心筋機能"),
-                    (name: "NOS3", variant: "NOS3", risk: "優秀", description: "血管内皮機能・一酸化窒素産生")
-                ],
+                genes: [], // MVP: 遺伝子情報を非表示
                 bloodMarkers: [
                     (name: "ApoB", value: "82", unit: "mg/dL", range: "<90", status: "最適"),
                     (name: "Lp(a)", value: "15", unit: "mg/dL", range: "<30", status: "最適"),

@@ -181,22 +181,23 @@ struct PromptGenerator {
 --- データ開始 ---
 【分析カテゴリー: \(category)】
 
-【関連遺伝子】
 """
 
-        for gene in relatedGenes {
-            dataSection += """
+        // MVP: 遺伝子データがある場合のみ遺伝子セクションを出力
+        if !relatedGenes.isEmpty {
+            dataSection += "【関連遺伝子】\n"
+            for gene in relatedGenes {
+                dataSection += """
 ・\(gene.name): \(gene.variant)
   リスク: \(gene.risk)
   説明: \(gene.description)
 
 """
+            }
+            dataSection += "\n"
         }
 
-        dataSection += """
-
-【関連血液バイオマーカー】
-"""
+        dataSection += "【関連血液バイオマーカー】\n"
 
         for marker in relatedBloodMarkers {
             dataSection += """

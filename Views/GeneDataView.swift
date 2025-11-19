@@ -3,10 +3,13 @@
 //  AWStest
 //
 //  遺伝子データ表示画面
+//  MVP: 遺伝子機能を非表示化
 //
 
 import SwiftUI
 
+// MVP: 遺伝子データ表示画面を全体コメントアウト
+/*
 struct GeneDataView: View {
     @StateObject private var geneDataService = GeneDataService.shared
     
@@ -319,3 +322,4 @@ struct GeneDataView_Previews: PreviewProvider {
         GeneDataView()
     }
 }
+*/

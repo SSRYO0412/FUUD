@@ -92,7 +92,8 @@ struct AppearanceDetailView: View {
                 .padding(VirgilSpacing.md)
                 .virgilGlassCard()
 
-                // Related Genes
+                // Related Genes - MVP: 遺伝子情報を非表示
+                /*
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
                     HStack {
                         Text("🧬")
@@ -143,6 +144,7 @@ struct AppearanceDetailView: View {
                 }
                 .padding(VirgilSpacing.md)
                 .virgilGlassCard()
+                */
 
                 // Related Blood Markers
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -176,7 +178,8 @@ struct AppearanceDetailView: View {
                 .padding(VirgilSpacing.md)
                 .virgilGlassCard()
 
-                // Related Microbiome
+                // Related Microbiome - MVP: 腸内細菌情報を非表示
+                /*
                 MicrobiomeSection(bacteria: [
                     // [DUMMY] 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
@@ -198,6 +201,7 @@ struct AppearanceDetailView: View {
                         color: Color(hex: "00C853")
                     )
                 ])
+                */
 
                 // Related HealthKit
                 HealthKitSection(metrics: [

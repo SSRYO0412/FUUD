@@ -18,10 +18,13 @@ struct MainTabView: View {
                     Label("ホーム", systemImage: "house")
                 }
 
+            // MVP: 遺伝子タブを非表示
+            /*
             GeneDataView()
                 .tabItem {
                     Label("遺伝子", systemImage: "dna")
                 }
+            */
 
             BloodTestView()
                 .tabItem {

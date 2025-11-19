@@ -70,7 +70,8 @@ struct StrengthDetailView: View {
                 .padding(VirgilSpacing.md)
                 .virgilGlassCard()
 
-                // Related Genes
+                // Related Genes - MVP: 遺伝子情報を非表示
+                /*
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
                     HStack {
                         Text("🧬")
@@ -114,6 +115,7 @@ struct StrengthDetailView: View {
                 }
                 .padding(VirgilSpacing.md)
                 .virgilGlassCard()
+                */
 
                 // Related Blood Markers
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
