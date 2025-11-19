@@ -51,8 +51,6 @@ struct DataView: View {
                         switch selectedTab {
                         case .blood:
                             BloodTab()
-                        case .microbiome:
-                            MicrobiomeTab()
                         case .lifestyle:
                             LifestyleTab()
                         }
@@ -74,7 +72,7 @@ struct DataView: View {
 enum DataTab: String, CaseIterable, Identifiable {
     case lifestyle = "LIFESTYLE"
     case blood = "BLOOD"
-    case microbiome = "MICROBIOME"
+    // case microbiome = "MICROBIOME" - 一時的に非表示
 
     var id: String { rawValue }
 }

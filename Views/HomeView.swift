@@ -76,8 +76,8 @@ struct HomeView: View {
                             // Recovery Sync Card - 一時的に非表示
                             // RecoverySyncCard()
 
-                            // Weekly Plan Section
-                            WeeklyPlanSection()
+                            // Weekly Plan Section - 一時的に非表示
+                            // WeeklyPlanSection()
                         }
                         .padding(.horizontal, VirgilSpacing.md)
                     }
