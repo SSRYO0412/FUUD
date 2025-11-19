@@ -20,7 +20,6 @@
 		90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */; };
 		90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */; };
 		90A1B0042E6A000000000004 /* Managers/ErrorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0412E6A00000000004 /* Managers/ErrorManager.swift */; };
-		90A1B0052E6A000000000005 /* Helpers/KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0512E6A00000000005 /* Helpers/KeychainHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +74,22 @@
 			);
 			target = 35A15C412E31EA8200678A42 /* AWStestUITests */;
 		};
+		60A4B3192EB1E914002DF43D /* Exceptions for "Managers" folder in "AWStest" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ConfigurationManager.swift,
+				ErrorManager.swift,
+				NetworkManager.swift,
+			);
+			target = 35A15C2A2E31EA8100678A42 /* AWStest */;
+		};
+		60A4B31A2EB1E914002DF43D /* Exceptions for "Services" folder in "AWStest" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SimpleCognitoService.swift,
+			);
+			target = 35A15C2A2E31EA8100678A42 /* AWStest */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -90,11 +105,17 @@
 		};
 		607C5CCE2E68287800E33ED1 /* Managers */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				60A4B3192EB1E914002DF43D /* Exceptions for "Managers" folder in "AWStest" target */,
+			);
 			path = Managers;
 			sourceTree = "<group>";
 		};
 		607C5CD42E68287800E33ED1 /* Services */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				60A4B31A2EB1E914002DF43D /* Exceptions for "Services" folder in "AWStest" target */,
+			);
 			path = Services;
 			sourceTree = "<group>";
 		};
@@ -285,7 +306,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 1630;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					35A15C2A2E31EA8100678A42 = {
 						CreatedOnToolsVersion = 16.3;
@@ -365,7 +386,6 @@
 				90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */,
 				90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */,
 				90A1B0042E6A000000000004 /* Managers/ErrorManager.swift in Sources */,
-				90A1B0052E6A000000000005 /* Helpers/KeychainHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,6 +477,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -513,6 +534,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -526,7 +548,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 485ZGX387T;
+				DEVELOPMENT_TEAM = HS2LQPZSCX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = TUUN;
@@ -558,7 +580,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 485ZGX387T;
+				DEVELOPMENT_TEAM = HS2LQPZSCX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = TUUN;
