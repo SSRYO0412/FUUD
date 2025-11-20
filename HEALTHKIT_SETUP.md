@@ -2,7 +2,31 @@
 
 HealthKit連携を有効にするために、Xcodeプロジェクトに以下の設定を追加する必要があります。
 
-## 1. HealthKit Capability の追加
+## ✅ 設定完了状況 (2025-11-20)
+
+このプロジェクトは **既にHealthKit接続が有効化済み** です！
+
+### 完了した設定:
+
+1. ✅ **ビルド設定に権限説明を追加済み**
+   - `project.pbxproj` の Debug/Release 設定に追加
+   - `INFOPLIST_KEY_NSHealthShareUsageDescription`
+   - `INFOPLIST_KEY_NSHealthUpdateUsageDescription`
+   - プロジェクトはInfo.plistを自動生成 (`GENERATE_INFOPLIST_FILE = YES`)
+
+2. ✅ **HomeViewでHealthKit接続を実装済み**
+   - `Views/HomeView.swift:96` で `setupHealthKit()` を呼び出し
+   - アプリ起動時に自動的にHealthKit認証をリクエスト
+
+3. ✅ **ビルド成功 & 動作確認済み**
+   - アプリがクラッシュせずに正常起動
+   - HealthKit権限ダイアログが表示可能
+
+---
+
+## 1. HealthKit Capability の追加 (⚠️ 未完了 - 次のステップ)
+
+Xcodeでの手動設定が必要:
 
 1. Xcodeで `TUUN.xcodeproj` を開く
 2. プロジェクトナビゲーターで **TUUN** プロジェクトを選択
@@ -11,32 +35,22 @@ HealthKit連携を有効にするために、Xcodeプロジェクトに以下の
 5. **+ Capability** ボタンをクリック
 6. **HealthKit** を選択して追加
 
-## 2. Info.plist に権限説明を追加
+> **注意:** Capability追加なしでも基本的なHealthKit認証は動作しますが、App Store提出時には必須です。
 
-Xcodeの **Info** タブ (または Info.plist ファイル) に以下のキーと値を追加してください:
+## 2. Info.plist 権限説明 (✅ 完了済み)
 
-### 追加する権限説明
+このプロジェクトでは **ビルド設定で自動的にInfo.plistを生成** しているため、手動での追加は不要です。
+
+### 現在の設定内容:
 
 | Key | Value |
 |-----|-------|
 | `NSHealthShareUsageDescription` | TUUNはあなたの健康データを読み取り、代謝力・炎症レベル・回復スピード・老化速度などの健康指標を分析します。 |
 | `NSHealthUpdateUsageDescription` | TUUNはHealthKitにデータを書き込みません。読み取り専用です。 |
 
-### Info.plist への追加方法
-
-#### 方法1: Xcode UI から追加
-1. プロジェクトナビゲーターで **Info.plist** を開く (または TARGETS > Info タブ)
-2. 任意の行で右クリック → **Add Row** をクリック
-3. **Key** に `Privacy - Health Share Usage Description` を選択
-4. **Value** に `TUUNはあなたの健康データを読み取り、代謝力・炎症レベル・回復スピード・老化速度などの健康指標を分析します。` を入力
-
-#### 方法2: Info.plist をテキストエディタで編集
-```xml
-<key>NSHealthShareUsageDescription</key>
-<string>TUUNはあなたの健康データを読み取り、代謝力・炎症レベル・回復スピード・老化速度などの健康指標を分析します。</string>
-<key>NSHealthUpdateUsageDescription</key>
-<string>TUUNはHealthKitにデータを書き込みません。読み取り専用です。</string>
-```
+これらは `TUUN.xcodeproj/project.pbxproj` の以下の箇所で設定されています:
+- Debug設定: 543-576行目
+- Release設定: 577-610行目
 
 ## 3. 取得するHealthKitデータ一覧
 
