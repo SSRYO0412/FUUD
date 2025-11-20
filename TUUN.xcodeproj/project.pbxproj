@@ -16,6 +16,11 @@
 		607C5CF72E68287800E33ED1 /* HealthProfileModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */; };
 		607C5CFB2E68287800E33ED1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC12E68287800E33ED1 /* Assets.xcassets */; };
 		607C5CFC2E68287800E33ED1 /* CognitoService.swift.backup in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC52E68287800E33ED1 /* CognitoService.swift.backup */; };
+		60F9221B2ECF1D5000008108 /* MetricConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922182ECF1D5000008108 /* MetricConfigs.swift */; };
+		60F9221C2ECF1D5000008108 /* MetricConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922172ECF1D5000008108 /* MetricConfig.swift */; };
+		60F9221D2ECF1D5000008108 /* HealthKitBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922152ECF1D5000008108 /* HealthKitBridge.swift */; };
+		60F9221E2ECF1D5000008108 /* ScoreEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922192ECF1D5000008108 /* ScoreEngine.swift */; };
+		60F9221F2ECF1D5000008108 /* HealthScoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922162ECF1D5000008108 /* HealthScoreService.swift */; };
 		90A1B0012E6A000000000001 /* Services/SimpleCognitoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0112E6A00000000001 /* Services/SimpleCognitoService.swift */; };
 		90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */; };
 		90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */; };
@@ -52,6 +57,11 @@
 		607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileModels.swift; sourceTree = "<group>"; };
 		607C5CC82E68287800E33ED1 /* HealthProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileService.swift; sourceTree = "<group>"; };
 		607C5CCF2E68287800E33ED1 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		60F922152ECF1D5000008108 /* HealthKitBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBridge.swift; sourceTree = "<group>"; };
+		60F922162ECF1D5000008108 /* HealthScoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthScoreService.swift; sourceTree = "<group>"; };
+		60F922172ECF1D5000008108 /* MetricConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricConfig.swift; sourceTree = "<group>"; };
+		60F922182ECF1D5000008108 /* MetricConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricConfigs.swift; sourceTree = "<group>"; };
+		60F922192ECF1D5000008108 /* ScoreEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreEngine.swift; sourceTree = "<group>"; };
 		90A1AF0112E6A00000000001 /* Services/SimpleCognitoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SimpleCognitoService.swift; sourceTree = "<group>"; };
 		90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ConfigurationManager.swift; sourceTree = "<group>"; };
 		90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/NetworkManager.swift; sourceTree = "<group>"; };
@@ -168,6 +178,7 @@
 		35A15C222E31EA8100678A42 = {
 			isa = PBXGroup;
 			children = (
+				60F9221A2ECF1D5000008108 /* ScoreEngine */,
 				35A15C2D2E31EA8100678A42 /* AWStest */,
 				35A15C5E2E31FD5D00678A42 /* Frameworks */,
 				35A15C2C2E31EA8100678A42 /* Products */,
@@ -217,6 +228,18 @@
 				90A1AF0512E6A00000000005 /* Helpers/KeychainHelper.swift */,
 			);
 			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		60F9221A2ECF1D5000008108 /* ScoreEngine */ = {
+			isa = PBXGroup;
+			children = (
+				60F922152ECF1D5000008108 /* HealthKitBridge.swift */,
+				60F922162ECF1D5000008108 /* HealthScoreService.swift */,
+				60F922172ECF1D5000008108 /* MetricConfig.swift */,
+				60F922182ECF1D5000008108 /* MetricConfigs.swift */,
+				60F922192ECF1D5000008108 /* ScoreEngine.swift */,
+			);
+			path = ScoreEngine;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -384,6 +407,11 @@
 				607C5CF72E68287800E33ED1 /* HealthProfileModels.swift in Sources */,
 				90A1B0012E6A000000000001 /* Services/SimpleCognitoService.swift in Sources */,
 				90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */,
+				60F9221B2ECF1D5000008108 /* MetricConfigs.swift in Sources */,
+				60F9221C2ECF1D5000008108 /* MetricConfig.swift in Sources */,
+				60F9221D2ECF1D5000008108 /* HealthKitBridge.swift in Sources */,
+				60F9221E2ECF1D5000008108 /* ScoreEngine.swift in Sources */,
+				60F9221F2ECF1D5000008108 /* HealthScoreService.swift in Sources */,
 				90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */,
 				90A1B0042E6A000000000004 /* Managers/ErrorManager.swift in Sources */,
 			);

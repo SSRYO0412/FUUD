@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HealthMetricsGridSection: View {
     @StateObject private var bloodTestService = BloodTestService.shared
+    @StateObject private var healthScoreService = HealthScoreService.shared
 
     var body: some View {
         VStack(spacing: 12) {
@@ -95,48 +96,26 @@ struct HealthMetricsGridSection: View {
             }
         }
         .frame(maxWidth: .infinity)
+        .onAppear {
+            // スコア計算をトリガー
+            Task {
+                await healthScoreService.calculateAllScores()
+            }
+        }
     }
 
     // MARK: - Computed Properties
 
-    /// 代謝力スコア（HbA1c、TGから計算）
+    /// 代謝力スコア（ScoreEngineで計算、0-1の範囲）
     private var metabolicScore: Double {
-        guard let bloodData = bloodTestService.bloodData else {
-            print("⚠️ 代謝力: 血液検査データなし")
-            return 0.35
+        // ScoreEngineから取得（0-100スケール）→ 0-1に変換
+        if let score = healthScoreService.metabolicScore {
+            return score / 100.0
         }
 
-        // HbA1c: 5.6%以下が正常
-        let hba1c = bloodData.bloodItems.first { item in
-            let key = item.key.lowercased()
-            return key.contains("hba1c") || key == "hemoglobin_a1c"
-        }
-
-        guard let hba1cValue = hba1c?.value.replacingOccurrences(of: " ", with: ""),
-              let hba1cNum = Double(hba1cValue) else {
-            print("⚠️ 代謝力: HbA1cデータなし、デフォルト値使用")
-            return 0.35
-        }
-        print("✅ 代謝力: HbA1c = \(hba1cNum)%")
-
-        // HbA1c: 5.6%以下が正常、6.5%以上が糖尿病域
-        let hba1cScore = max(0, min(1, (6.5 - hba1cNum) / 1.0))
-
-        // TG: 150以下が正常
-        let tg = bloodData.bloodItems.first { item in
-            let key = item.key.lowercased()
-            return key == "tg" || key == "triglyceride"
-        }
-
-        if let tgValue = tg?.value.replacingOccurrences(of: " ", with: ""),
-           let tgNum = Double(tgValue) {
-            print("✅ 代謝力: TG = \(tgNum) mg/dL")
-            let tgScore = max(0, min(1, (150 - tgNum) / 100))
-            return (hba1cScore + tgScore) / 2
-        } else {
-            print("⚠️ 代謝力: TGデータなし、HbA1cのみで計算")
-            return hba1cScore
-        }
+        // データなしの場合はデフォルト値
+        print("⚠️ 代謝力: ScoreEngineからデータなし")
+        return 0.35
     }
 
     private var metabolicStatus: String {
@@ -151,27 +130,16 @@ struct HealthMetricsGridSection: View {
         return Color(hex: "5E7CE2")
     }
 
-    /// 炎症レベル（CRPをメイン指標として使用）
+    /// 炎症レベル（ScoreEngineで計算、0-1の範囲）
     private var inflammationScore: Double {
-        guard let bloodData = bloodTestService.bloodData else {
-            print("⚠️ 炎症レベル: 血液検査データなし")
-            return 0.4
+        // ScoreEngineから取得（0-100スケール）→ 0-1に変換
+        if let score = healthScoreService.inflammationScore {
+            return score / 100.0
         }
 
-        let crp = bloodData.bloodItems.first { item in
-            let key = item.key.lowercased()
-            return key == "crp" || key == "c_reactive_protein"
-        }
-
-        guard let crpValue = crp?.value.replacingOccurrences(of: " ", with: ""),
-              let crpNum = Double(crpValue) else {
-            print("⚠️ 炎症レベル: CRPデータなし、デフォルト値使用")
-            return 0.4
-        }
-        print("✅ 炎症レベル: CRP = \(crpNum) mg/dL")
-
-        // CRP: 0.3以下が正常、値が低いほど良い
-        return max(0, min(1, (0.5 - crpNum) / 0.5))
+        // データなしの場合はデフォルト値
+        print("⚠️ 炎症レベル: ScoreEngineからデータなし")
+        return 0.4
     }
 
     private var inflammationStatus: String {
@@ -186,56 +154,16 @@ struct HealthMetricsGridSection: View {
         return Color(hex: "ED1C24")
     }
 
-    /// 回復スピード（CRP、CK、フェリチンから算出）
+    /// 回復スピード（ScoreEngineで計算、0-1の範囲）
     private var recoveryScore: Double {
-        guard let bloodData = bloodTestService.bloodData else {
-            print("⚠️ 回復スピード: 血液検査データなし")
-            return 0.71
+        // ScoreEngineから取得（0-100スケール）→ 0-1に変換
+        if let score = healthScoreService.recoveryScore {
+            return score / 100.0
         }
 
-        var scores: [Double] = []
-
-        // CRP: 0.3以下が正常
-        if let crp = bloodData.bloodItems.first(where: { $0.key.lowercased() == "crp" }) {
-            let crpValue = crp.value.replacingOccurrences(of: " ", with: "")
-            if let crpNum = Double(crpValue) {
-                print("✅ 回復スピード: CRP = \(crpNum) mg/dL")
-                let crpScore = max(0, min(1, (0.3 - crpNum) / 0.3))
-                scores.append(crpScore)
-            }
-        }
-
-        // CK: 200以下が正常
-        if let ck = bloodData.bloodItems.first(where: { item in
-            let key = item.key.lowercased()
-            return key == "ck" || key == "cpk" || key == "creatine_kinase"
-        }) {
-            let ckValue = ck.value.replacingOccurrences(of: " ", with: "")
-            if let ckNum = Double(ckValue) {
-                print("✅ 回復スピード: CK = \(ckNum) U/L")
-                let ckScore = max(0, min(1, (200 - ckNum) / 150))
-                scores.append(ckScore)
-            }
-        }
-
-        // フェリチン: 50-100が適正
-        if let ferritin = bloodData.bloodItems.first(where: { $0.key.lowercased() == "ferritin" }) {
-            let ferritinValue = ferritin.value.replacingOccurrences(of: " ", with: "")
-            if let ferritinNum = Double(ferritinValue) {
-                print("✅ 回復スピード: フェリチン = \(ferritinNum) ng/mL")
-                let ferritinScore = min(1, ferritinNum / 100)
-                scores.append(ferritinScore)
-            }
-        }
-
-        if scores.isEmpty {
-            print("⚠️ 回復スピード: 必要なデータなし、デフォルト値使用")
-            return 0.71
-        }
-
-        let average = scores.reduce(0, +) / Double(scores.count)
-        print("✅ 回復スピード計算完了: \(String(format: "%.2f", average * 100))%")
-        return average
+        // データなしの場合はデフォルト値
+        print("⚠️ 回復スピード: ScoreEngineからデータなし")
+        return 0.71
     }
 
     private var recoveryStatus: String {
@@ -250,72 +178,16 @@ struct HealthMetricsGridSection: View {
         return Color(hex: "ED1C24")
     }
 
-    /// 老化速度（HbA1c、CRP、ALB、CREから算出）
+    /// 老化速度スコア（ScoreEngineで計算、0-1の範囲）
     private var agingScore: Double {
-        guard let bloodData = bloodTestService.bloodData else {
-            print("⚠️ 老化速度: 血液検査データなし")
-            return 0.43
+        // ScoreEngineから取得（0-100スケール）→ 0-1に変換
+        if let score = healthScoreService.agingPaceScore {
+            return score / 100.0
         }
 
-        var scores: [Double] = []
-
-        // HbA1c: 5.6%以下が正常
-        if let hba1c = bloodData.bloodItems.first(where: { item in
-            let key = item.key.lowercased()
-            return key.contains("hba1c") || key == "hemoglobin_a1c"
-        }) {
-            let hba1cValue = hba1c.value.replacingOccurrences(of: " ", with: "")
-            if let hba1cNum = Double(hba1cValue) {
-                print("✅ 老化速度: HbA1c = \(hba1cNum)%")
-                let hba1cScore = max(0, min(1, (6.5 - hba1cNum) / 1.0))
-                scores.append(hba1cScore)
-            }
-        }
-
-        // CRP: 0.3以下が正常
-        if let crp = bloodData.bloodItems.first(where: { $0.key.lowercased() == "crp" }) {
-            let crpValue = crp.value.replacingOccurrences(of: " ", with: "")
-            if let crpNum = Double(crpValue) {
-                print("✅ 老化速度: CRP = \(crpNum) mg/dL")
-                let crpScore = max(0, min(1, (0.3 - crpNum) / 0.3))
-                scores.append(crpScore)
-            }
-        }
-
-        // ALB: 3.5-5.0が正常
-        if let alb = bloodData.bloodItems.first(where: { item in
-            let key = item.key.lowercased()
-            return key == "alb" || key == "albumin"
-        }) {
-            let albValue = alb.value.replacingOccurrences(of: " ", with: "")
-            if let albNum = Double(albValue) {
-                print("✅ 老化速度: ALB = \(albNum) g/dL")
-                let albScore = max(0, min(1, (albNum - 3.5) / 1.5))
-                scores.append(albScore)
-            }
-        }
-
-        // CRE: 0.6-1.2が正常
-        if let cre = bloodData.bloodItems.first(where: { item in
-            let key = item.key.lowercased()
-            return key == "cre" || key == "creatinine"
-        }) {
-            let creValue = cre.value.replacingOccurrences(of: " ", with: "")
-            if let creNum = Double(creValue) {
-                print("✅ 老化速度: CRE = \(creNum) mg/dL")
-                let creScore = max(0, min(1, (1.2 - creNum) / 0.5))
-                scores.append(creScore)
-            }
-        }
-
-        if scores.isEmpty {
-            print("⚠️ 老化速度: 必要なデータなし、デフォルト値使用")
-            return 0.43
-        }
-
-        let average = scores.reduce(0, +) / Double(scores.count)
-        print("✅ 老化速度計算完了: \(String(format: "%.2f", average * 100))%")
-        return average
+        // データなしの場合はデフォルト値
+        print("⚠️ 老化速度: ScoreEngineからデータなし")
+        return 0.43
     }
 
     private var agingStatus: String {
