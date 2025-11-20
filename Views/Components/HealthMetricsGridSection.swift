@@ -10,6 +10,7 @@ import SwiftUI
 struct HealthMetricsGridSection: View {
     @StateObject private var bloodTestService = BloodTestService.shared
     @StateObject private var healthScoreService = HealthScoreService.shared
+    @ObservedObject private var demoModeManager = DemoModeManager.shared
 
     var body: some View {
         VStack(spacing: 12) {
@@ -204,8 +205,13 @@ struct HealthMetricsGridSection: View {
 
     /// 代謝力のチャートデータ（過去7日間）
     private var metabolicChartData: [Double] {
+        // デモモードの場合、7日分のデモデータを表示
+        if demoModeManager.isDemoMode {
+            return DemoModeManager.createDemoMetabolicChartData()
+        }
+
+        // 通常モードでは現在の値のみ（過去データがない場合）
         let currentValue = metabolicScore * 100
-        // 現在のデータポイントのみ（過去データがない場合）
         return [currentValue]
     }
 

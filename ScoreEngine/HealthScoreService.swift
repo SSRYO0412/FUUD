@@ -151,8 +151,26 @@ class HealthScoreService: ObservableObject {
 
     /// HealthKitデータを収集
     private func collectHealthKitValues() -> [String: Double] {
+        // デモモード時は固定値を返す
+        if DemoModeManager.shared.isDemoMode {
+            return Self.createDemoHealthKitValues()
+        }
+
         let healthKitData = HealthKitService.shared.healthData
         return HealthKitBridge.convertToMetricValues(from: healthKitData)
+    }
+
+    /// デモモード用のHealthKitメトリック値を生成
+    static func createDemoHealthKitValues() -> [String: Double] {
+        return [
+            "BMI": 22.5,          // 理想的なBMI
+            "HRV": 55.0,          // 良好な心拍変動 (ms)
+            "RHR": 62.0,          // 正常な安静時心拍数 (bpm)
+            "VO2Max": 42.0,       // 良好なVO2Max (ml/kg/min)
+            "steps": 8500.0,      // 1日の歩数
+            "calories": 420.0,    // アクティブカロリー (kcal)
+            "sleep": 7.5          // 睡眠時間 (時間)
+        ]
     }
 
     // MARK: - Value Parsing

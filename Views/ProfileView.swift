@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var cognitoService: SimpleCognitoService
+    @ObservedObject var demoModeManager = DemoModeManager.shared
     @State private var showingLogoutAlert = false
-    @State private var isDemoMode = DemoChatData.isEnabled // [DUMMY] デモモード状態
 
     var body: some View {
         NavigationView {
@@ -139,7 +139,7 @@ struct ProfileView: View {
 
     private var demoModeSection: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
-            Text("DEMO MODE") // [DUMMY] デモ撮影用モード切り替え
+            Text("DEMO MODE")
                 .font(.system(size: 9, weight: .semibold))
                 .foregroundColor(.gray)
                 .padding(.horizontal, VirgilSpacing.sm)
@@ -149,18 +149,15 @@ struct ProfileView: View {
                     Text("デモモード")
                         .font(.virgilBodyLarge)
                         .foregroundColor(.virgilTextPrimary)
-                    Text("固定のチャット応答を使用") // [DUMMY] デモモード説明
+                    Text("デモ用のサンプルデータを表示")
                         .font(.virgilBodySmall)
                         .foregroundColor(.virgilTextSecondary)
                 }
 
                 Spacer()
 
-                Toggle("", isOn: $isDemoMode)
+                Toggle("", isOn: $demoModeManager.isDemoMode)
                     .labelsHidden()
-                    .onChange(of: isDemoMode) { newValue in
-                        DemoChatData.isEnabled = newValue // [DUMMY] デモモード状態を保存
-                    }
             }
             .padding(VirgilSpacing.md)
             .virgilGlassCard()

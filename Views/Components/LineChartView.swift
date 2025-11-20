@@ -98,7 +98,7 @@ struct LineChartView: View {
                             ForEach(0..<7, id: \.self) { day in
                                 Text("\(day + 1)")
                                     .font(.system(size: 8))
-                                    .foregroundColor(.white.opacity(0.6))
+                                    .foregroundColor(.black.opacity(0.6))
                                     .frame(maxWidth: .infinity)
                             }
                         }
@@ -112,15 +112,15 @@ struct LineChartView: View {
                         VStack {
                             Text("100")
                                 .font(.system(size: 7))
-                                .foregroundColor(.white.opacity(0.6))
+                                .foregroundColor(.black.opacity(0.6))
                             Spacer()
                             Text("50")
                                 .font(.system(size: 7))
-                                .foregroundColor(.white.opacity(0.6))
+                                .foregroundColor(.black.opacity(0.6))
                             Spacer()
                             Text("0")
                                 .font(.system(size: 7))
-                                .foregroundColor(.white.opacity(0.6))
+                                .foregroundColor(.black.opacity(0.6))
                         }
                         .frame(width: 20, height: chartHeight)
 

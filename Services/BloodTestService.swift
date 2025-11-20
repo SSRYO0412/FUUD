@@ -88,7 +88,7 @@ class BloodTestService: ObservableObject {
     }
     
     // MARK: - API Methods
-    
+
     /// 血液検査データを取得
     /// - Parameter userId: ユーザーID（メールアドレス）
     func fetchBloodTestData(for userId: String? = nil) async {
@@ -96,7 +96,17 @@ class BloodTestService: ObservableObject {
             self.isLoading = true
             self.errorMessage = ""
         }
-        
+
+        // デモモードの場合、サンプルデータを返す
+        if DemoModeManager.shared.isDemoMode {
+            await MainActor.run {
+                self.bloodData = Self.createDemoData()
+                self.errorMessage = ""
+                self.isLoading = false
+            }
+            return
+        }
+
         do {
             let userEmail = userId ?? SimpleCognitoService.shared.currentUserEmail ?? ""
             guard !userEmail.isEmpty else {
@@ -169,6 +179,50 @@ class BloodTestService: ObservableObject {
         return bloodData?.bloodItems.filter { item in
             ["正常", "normal"].contains(item.status.lowercased())
         } ?? []
+    }
+
+    // MARK: - Demo Data
+
+    /// デモモード用のサンプルデータを生成
+    static func createDemoData() -> BloodTestData {
+        let demoItems: [BloodItem] = [
+            .init(key: "HbA1c", nameJp: "ヘモグロビンA1c", value: "5.6", unit: "%", status: "正常", reference: "4.6-6.2"),
+            .init(key: "FPG", nameJp: "空腹時血糖", value: "95", unit: "mg/dL", status: "正常", reference: "70-109"),
+            .init(key: "TG", nameJp: "中性脂肪", value: "120", unit: "mg/dL", status: "正常", reference: "30-149"),
+            .init(key: "HDL", nameJp: "HDLコレステロール", value: "58", unit: "mg/dL", status: "正常", reference: "40-96"),
+            .init(key: "LDL", nameJp: "LDLコレステロール", value: "105", unit: "mg/dL", status: "正常", reference: "70-139"),
+            .init(key: "TC", nameJp: "総コレステロール", value: "195", unit: "mg/dL", status: "正常", reference: "150-219"),
+            .init(key: "CRP", nameJp: "C反応性タンパク", value: "0.08", unit: "mg/dL", status: "正常", reference: "0.00-0.30"),
+            .init(key: "AST", nameJp: "AST(GOT)", value: "25", unit: "U/L", status: "正常", reference: "10-40"),
+            .init(key: "ALT", nameJp: "ALT(GPT)", value: "28", unit: "U/L", status: "正常", reference: "5-45"),
+            .init(key: "GGT", nameJp: "γ-GTP", value: "32", unit: "U/L", status: "正常", reference: "0-70"),
+            .init(key: "ALP", nameJp: "ALP", value: "215", unit: "U/L", status: "正常", reference: "100-325"),
+            .init(key: "TP", nameJp: "総蛋白", value: "7.2", unit: "g/dL", status: "正常", reference: "6.7-8.3"),
+            .init(key: "ALB", nameJp: "アルブミン", value: "4.5", unit: "g/dL", status: "正常", reference: "3.8-5.2"),
+            .init(key: "BUN", nameJp: "尿素窒素", value: "15", unit: "mg/dL", status: "正常", reference: "8-20"),
+            .init(key: "CRE", nameJp: "クレアチニン", value: "0.85", unit: "mg/dL", status: "正常", reference: "0.60-1.10"),
+            .init(key: "UA", nameJp: "尿酸", value: "5.8", unit: "mg/dL", status: "正常", reference: "3.0-7.0"),
+            .init(key: "WBC", nameJp: "白血球数", value: "6500", unit: "/μL", status: "正常", reference: "3500-9000"),
+            .init(key: "RBC", nameJp: "赤血球数", value: "480", unit: "万/μL", status: "正常", reference: "400-550"),
+            .init(key: "Hb", nameJp: "ヘモグロビン", value: "14.5", unit: "g/dL", status: "正常", reference: "13.5-17.5"),
+            .init(key: "Ht", nameJp: "ヘマトクリット", value: "43.2", unit: "%", status: "正常", reference: "39.0-52.0"),
+            .init(key: "PLT", nameJp: "血小板数", value: "25.5", unit: "万/μL", status: "正常", reference: "13.0-35.0"),
+            .init(key: "NEU", nameJp: "好中球", value: "58.5", unit: "%", status: "正常", reference: "40.0-70.0"),
+            .init(key: "LYM", nameJp: "リンパ球", value: "32.8", unit: "%", status: "正常", reference: "25.0-45.0"),
+            .init(key: "MON", nameJp: "単球", value: "5.2", unit: "%", status: "正常", reference: "2.0-8.0"),
+            .init(key: "EOS", nameJp: "好酸球", value: "2.8", unit: "%", status: "正常", reference: "0.0-6.0"),
+            .init(key: "BAS", nameJp: "好塩基球", value: "0.7", unit: "%", status: "正常", reference: "0.0-2.0"),
+            .init(key: "CK", nameJp: "クレアチンキナーゼ", value: "145", unit: "U/L", status: "正常", reference: "50-250"),
+            .init(key: "LDH", nameJp: "乳酸脱水素酵素", value: "185", unit: "U/L", status: "正常", reference: "120-240"),
+            .init(key: "Ferritin", nameJp: "フェリチン", value: "125", unit: "ng/mL", status: "正常", reference: "20-300"),
+            .init(key: "INS", nameJp: "インスリン", value: "8.5", unit: "μU/mL", status: "正常", reference: "2.0-15.0")
+        ]
+
+        return BloodTestData(
+            userId: "demo@example.com",
+            timestamp: ISO8601DateFormatter().string(from: Date()),
+            bloodItems: demoItems
+        )
     }
 }
 
