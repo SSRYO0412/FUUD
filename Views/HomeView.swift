@@ -93,8 +93,7 @@ struct HomeView: View {
         }
         .onAppear {
             startAIInsightRotation()
-            // FIXME: Info.plist に NSHealthShareUsageDescription を追加後に有効化
-            // setupHealthKit()
+            setupHealthKit()
         }
     }
 
