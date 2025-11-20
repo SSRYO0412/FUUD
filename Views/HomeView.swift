@@ -93,6 +93,7 @@ struct HomeView: View {
         }
         .onAppear {
             startAIInsightRotation()
+            setupHealthKit()
         }
     }
 
@@ -100,6 +101,25 @@ struct HomeView: View {
         Timer.scheduledTimer(withTimeInterval: 8.0, repeats: true) { _ in
             withAnimation {
                 aiInsightIndex = (aiInsightIndex + 1) % aiInsights.count
+            }
+        }
+    }
+
+    /// HealthKit接続をセットアップ（認証 + データ取得）
+    private func setupHealthKit() {
+        Task {
+            do {
+                // 1. 認証リクエスト
+                try await HealthKitService.shared.requestAuthorization()
+                print("✅ HealthKit認証成功")
+
+                // 2. データ取得
+                await HealthKitService.shared.fetchAllHealthData()
+                print("✅ HealthKitデータ取得完了")
+
+            } catch {
+                print("❌ HealthKit接続エラー: \(error.localizedDescription)")
+                // エラーがあってもアプリは続行（HealthKitがなくても動作する）
             }
         }
     }
