@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @EnvironmentObject var cognitoService: SimpleCognitoService
-    
+
     var body: some View {
         TabView {
             HomeView()

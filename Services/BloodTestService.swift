@@ -15,7 +15,8 @@ class BloodTestService: ObservableObject {
     @Published var bloodData: BloodTestData?
     @Published var isLoading = false
     @Published var errorMessage = ""
-    
+    @Published var showCopySuccessToast = false
+
     private init() {}
     
     // MARK: - Data Models

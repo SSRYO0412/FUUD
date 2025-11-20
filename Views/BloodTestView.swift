@@ -29,6 +29,28 @@ struct BloodTestView: View {
                 await bloodTestService.fetchBloodTestData()
             }
         }
+        .overlay(alignment: .top) {
+            if bloodTestService.showCopySuccessToast {
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.white)
+                        .font(.system(size: 16, weight: .semibold))
+                    Text("プロンプトをコピーしました")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(
+                    Capsule()
+                        .fill(Color(hex: "00C853"))
+                        .shadow(color: Color.black.opacity(0.3), radius: 10, x: 0, y: 5)
+                )
+                .padding(.top, 60)
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: bloodTestService.showCopySuccessToast)
     }
 
     // MARK: - Blood Test Content
@@ -36,12 +58,27 @@ struct BloodTestView: View {
     @ViewBuilder
     private func bloodTestContent(bloodData: BloodTestService.BloodTestData) -> some View {
         VStack(spacing: VirgilSpacing.lg) {
-                // TEST DATE テキスト表示
+                // TEST DATE テキスト表示 + コピーボタン
                 HStack {
                     Text("TEST DATE: \(formatDate(bloodData.timestamp))")
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
                     Spacer()
+                    Button(action: {
+                        copyBloodTestResults(bloodData: bloodData)
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 10, weight: .semibold))
+                            Text("結果をコピー")
+                                .font(.system(size: 9, weight: .semibold))
+                        }
+                        .foregroundColor(.virgilTextPrimary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.virgilTextPrimary.opacity(0.1))
+                        .cornerRadius(8)
+                    }
                 }
                 .padding(.horizontal, VirgilSpacing.md)
 
@@ -199,6 +236,36 @@ struct BloodTestView: View {
         }
 
         return timestamp
+    }
+
+    private func copyBloodTestResults(bloodData: BloodTestService.BloodTestData) {
+        var text = "以下は私の\(formatDate(bloodData.timestamp))に検査した血液検査結果です。\n結果を考慮してこの後の質問に答えてください。\n\n"
+        text += "検査日時：\(formatDate(bloodData.timestamp))\n\n"
+
+        // カスタム順序でソート
+        let sortedItems = sortByCustomOrder(bloodData.bloodItems)
+
+        for item in sortedItems {
+            text += "検査項目名：\(item.nameJp)（\(item.key.uppercased())）\n"
+            text += "今回の数値：\(item.value) \(item.unit)\n"
+            text += "前回数値：前回の数値がありません\n"
+            text += "正常範囲：\(item.reference)\n"
+            text += "\n"
+        }
+
+        UIPasteboard.general.string = text
+
+        // コピー完了のフィードバック（ハプティック）
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+
+        // トースト表示（BloodTestServiceの共有状態を使用）
+        bloodTestService.showCopySuccessToast = true
+
+        // 2秒後に非表示
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            bloodTestService.showCopySuccessToast = false
+        }
     }
 }
 

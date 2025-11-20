@@ -58,8 +58,11 @@ struct HomeView: View {
 
                         // 以降のカード - 左右paddingあり
                         VStack(spacing: VirgilSpacing.lg) {
-                            // Real-Time Performance Section
-                            TodaysPerformanceSection()
+                            // Health Metrics Grid (2x2) - Apple Watchスタイル
+                            HealthMetricsGridSection()
+
+                            // Real-Time Performance Section - 一時的に非表示
+                            // TodaysPerformanceSection()
 
                             // AI Core Section - 一時的に非表示
                             // AICoreSection(currentInsight: aiInsights[aiInsightIndex])

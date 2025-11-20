@@ -3,6 +3,7 @@
 //  AWStest
 //
 //  DATA画面 - HTML版完全一致
+
 //
 
 import SwiftUI
