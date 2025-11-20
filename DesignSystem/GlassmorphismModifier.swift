@@ -18,7 +18,6 @@ struct GlassmorphismModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .background(.ultraThinMaterial)  // 背後のブラー効果のみ
             .clipShape(RoundedRectangle(cornerRadius: borderRadius, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: borderRadius, style: .continuous)

@@ -112,16 +112,17 @@ private struct BloodTab: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
-            HStack {
-                Text("BLOOD BIOMARKERS")
-                    .font(.system(size: 9, weight: .semibold))
-                    .foregroundColor(.gray)
-                Spacer()
-                Text("87") // [DUMMY] 仮スコア値
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundColor(Color(hex: "#00C853"))
-            }
-            .padding(.bottom, VirgilSpacing.sm)
+            // BLOOD BIOMARKERSとスコア表示を非表示
+            // HStack {
+            //     Text("BLOOD BIOMARKERS")
+            //         .font(.system(size: 9, weight: .semibold))
+            //         .foregroundColor(.gray)
+            //     Spacer()
+            //     Text("87") // [DUMMY] 仮スコア値
+            //         .font(.system(size: 20, weight: .bold))
+            //         .foregroundColor(Color(hex: "#00C853"))
+            // }
+            // .padding(.bottom, VirgilSpacing.sm)
 
             BloodTestView()
         }

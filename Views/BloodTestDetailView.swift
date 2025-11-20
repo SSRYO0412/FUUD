@@ -11,29 +11,57 @@ import Charts
 struct BloodTestDetailView: View {
     let bloodItem: BloodTestService.BloodItem
 
+    // 肝臓系項目かどうかを判定
+    var isLiverRelated: Bool {
+        let key = bloodItem.key.lowercased()
+        switch key {
+        case "ast", "got", "alt", "gpt", "ggt", "γ-gtp", "gamma_gtp", "alp":
+            return true
+        default:
+            return false
+        }
+    }
+
+    // 腎臓系項目かどうかを判定
+    var isKidneyRelated: Bool {
+        let key = bloodItem.key.lowercased()
+        switch key {
+        case "bun", "urea_nitrogen", "cre", "creatinine", "ua", "uric_acid":
+            return true
+        default:
+            return false
+        }
+    }
+
+    // HbA1c項目かどうかを判定
+    var isHbA1c: Bool {
+        let key = bloodItem.key.lowercased()
+        return key == "hba1c" || key == "hemoglobin_a1c"
+    }
+
     // 絵文字マッピング（BloodItemCardと同じロジック）
     var emoji: String {
         let key = bloodItem.key.lowercased()
         switch key {
         // 血糖・代謝系
-        case "hba1c", "hemoglobin_a1c": return "🍬"
+        case "hba1c", "hemoglobin_a1c": return ""
         case "glucose", "glu", "blood_sugar": return "🩸"
         case "ga", "glycoalbumin": return "🍰"
         case "1,5-ag", "1_5_ag": return "🍯"
 
-        // 肝機能系
-        case "ast", "got": return "🫘"
-        case "alt", "gpt": return "🫘"
-        case "ggt", "γ-gtp", "gamma_gtp": return "🫁"
-        case "alp": return "🦴"
+        // 肝機能系（カスタム画像を使用）
+        case "ast", "got": return ""
+        case "alt", "gpt": return ""
+        case "ggt", "γ-gtp", "gamma_gtp": return ""
+        case "alp": return ""
         case "t-bil", "tbil", "total_bilirubin": return "💛"
         case "d-bil", "dbil", "direct_bilirubin": return "💛"
 
         // 脂質系
         case "tc", "tcho", "total_cholesterol": return "🧈"
         case "tg", "triglyceride": return "🥓"
-        case "hdl", "hdl_cholesterol": return "✨"
-        case "ldl", "ldl_cholesterol": return "⚠️"
+        case "hdl", "hdl_cholesterol": return "👼"
+        case "ldl", "ldl_cholesterol": return "👿"
         case "apob", "apo_b": return "🔬"
         case "lp(a)", "lipoprotein_a": return "🧬"
 
@@ -42,10 +70,10 @@ struct BloodTestDetailView: View {
         case "alb", "albumin": return "🥚"
         case "palb", "prealbumin": return "🥛"
 
-        // 腎機能系
-        case "bun", "urea_nitrogen": return "🫘"
-        case "cre", "creatinine": return "🫘"
-        case "ua", "uric_acid": return "💎"
+        // 腎機能系（カスタム画像を使用）
+        case "bun", "urea_nitrogen": return ""
+        case "cre", "creatinine": return ""
+        case "ua", "uric_acid": return ""
         case "egfr": return "🚰"
 
         // 炎症・免疫系
@@ -108,8 +136,26 @@ struct BloodTestDetailView: View {
             VStack(spacing: VirgilSpacing.lg) {
                 // ヘッダースコアカード
                 VStack(spacing: VirgilSpacing.sm) {
-                    Text(emoji)
-                        .font(.system(size: 32))
+                    // アイコン（肝臓系・腎臓系・HbA1cはカスタム画像、それ以外は絵文字）
+                    if isLiverRelated {
+                        Image("liver_icon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                    } else if isKidneyRelated {
+                        Image("kidney_icon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                    } else if isHbA1c {
+                        Image("sugar_icon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                    } else {
+                        Text(emoji)
+                            .font(.system(size: 32))
+                    }
 
                     HStack(alignment: .firstTextBaseline, spacing: 4) {
                         Text(bloodItem.value)
