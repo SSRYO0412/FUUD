@@ -19,40 +19,23 @@ struct BloodTestView: View {
             } else if !bloodTestService.errorMessage.isEmpty {
                 errorView
             } else if let bloodData = bloodTestService.bloodData {
-                bloodTestScrollView(bloodData: bloodData)
+                bloodTestContent(bloodData: bloodData)
             } else {
                 emptyStateView
             }
         }
-        .background(
-            ZStack {
-                LinearGradient(
-                    colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
-
-                OrbBackground()
-                GridOverlay()
-            }
-        )
         .task {
             if bloodTestService.bloodData == nil {
                 await bloodTestService.fetchBloodTestData()
             }
         }
-        .refreshable {
-            await bloodTestService.refreshData()
-        }
     }
 
-    // MARK: - Blood Test ScrollView
+    // MARK: - Blood Test Content
 
     @ViewBuilder
-    private func bloodTestScrollView(bloodData: BloodTestService.BloodTestData) -> some View {
-        ScrollView {
-            VStack(spacing: VirgilSpacing.lg) {
+    private func bloodTestContent(bloodData: BloodTestService.BloodTestData) -> some View {
+        VStack(spacing: VirgilSpacing.lg) {
                 // ヘッダーカード(基本情報)
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
                     Text("基本情報")
@@ -142,11 +125,10 @@ struct BloodTestView: View {
                         .buttonStyle(PlainButtonStyle())
                     }
                 }
-            }
-            .padding(.horizontal, VirgilSpacing.md)
-            .padding(.top, VirgilSpacing.md)
-            .padding(.bottom, 100)
         }
+        .padding(.horizontal, VirgilSpacing.md)
+        .padding(.top, VirgilSpacing.md)
+        .padding(.bottom, 100)
     }
 
     // MARK: - Loading View
@@ -160,6 +142,7 @@ struct BloodTestView: View {
                 .foregroundColor(.virgilTextSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.clear)
     }
 
     // MARK: - Error View
@@ -395,6 +378,15 @@ struct BloodItemCard: View {
             )
         )
         .virgilGlassCard(interactive: true)
+    }
+}
+
+// MARK: - View Extension for Conditional Modifiers
+
+extension View {
+    @ViewBuilder
+    func apply<T: View>(@ViewBuilder _ transform: (Self) -> T) -> some View {
+        transform(self)
     }
 }
 

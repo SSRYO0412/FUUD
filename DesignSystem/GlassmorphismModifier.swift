@@ -18,10 +18,6 @@ struct GlassmorphismModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .background(
-                // iOS 18 Liquid Glass: 極めて透明な白色レイヤーのみ（Materialなし）
-                Color.white.opacity(intensity.glassTintOpacity)
-            )
             .background(.ultraThinMaterial)  // 背後のブラー効果のみ
             .clipShape(RoundedRectangle(cornerRadius: borderRadius, style: .continuous))
             .overlay(

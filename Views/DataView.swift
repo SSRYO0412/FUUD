@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DataView: View {
     @State private var selectedTab: DataTab = .lifestyle
+    @StateObject private var bloodTestService = BloodTestService.shared
 
     var body: some View {
         NavigationView {
@@ -25,6 +26,8 @@ struct DataView: View {
                 OrbBackground()
 
                 ScrollView {
+                    ScrollViewBackgroundClearer()
+                        .frame(height: 0)
                     VStack(spacing: VirgilSpacing.md) {
                         // Tab Navigation
                         HStack(spacing: VirgilSpacing.sm) {
@@ -58,6 +61,11 @@ struct DataView: View {
                     }
                     .padding(.horizontal, VirgilSpacing.md)
                     .padding(.top, VirgilSpacing.sm)
+                }
+                .refreshable {
+                    if selectedTab == .blood {
+                        await bloodTestService.refreshData()
+                    }
                 }
             }
             .navigationTitle("data")
@@ -100,7 +108,8 @@ private struct TabButton: View {
 // MARK: - Blood Tab
 
 private struct BloodTab: View {
-    // [DUMMY] 血液スコア表示は暫定値。バックエンド連携後に動的化予定
+    @StateObject private var bloodTestService = BloodTestService.shared
+
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
             HStack {

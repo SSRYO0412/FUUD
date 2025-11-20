@@ -28,7 +28,10 @@ struct MainTabView: View {
 
             NavigationView {
                 BloodTestView()
+                    .background(Color.clear)
             }
+            .navigationViewStyle(.stack)
+            .background(Color.clear)
             .tabItem {
                 Label("血液検査", systemImage: "heart.text.square")
             }
@@ -45,6 +48,8 @@ struct MainTabView: View {
                     Label("設定", systemImage: "gearshape")
                 }
         }
+        .background(Color.clear)
+        .ignoresSafeArea()
         .edgesIgnoringSafeArea(.bottom)
     }
 }

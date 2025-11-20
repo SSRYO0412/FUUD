@@ -46,6 +46,7 @@ struct ContentUnavailableViewCompat<Actions: View>: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.clear)
     }
 }
 
