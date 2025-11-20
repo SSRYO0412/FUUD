@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>TUUNはあなたの健康データを読み取り、代謝力・炎症レベル・回復スピード・老化速度などの健康指標を分析します。</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>TUUNはHealthKitにデータを書き込みません。読み取り専用です。</string>
+</dict>
+</plist>
