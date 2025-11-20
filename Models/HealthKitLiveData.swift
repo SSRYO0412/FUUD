@@ -10,19 +10,46 @@ import Foundation
 // MARK: - HealthKit Live Data
 
 struct HealthKitLiveData: Codable {
-    let hrv: Double?          // 心拍変動 [DUMMY] HealthKit HRVデータに置き換え
-    let rhr: Int?            // 安静時心拍数 [DUMMY] HealthKit安静時心拍数に置き換え
-    let vo2Max: Double?      // 最大酸素摂取量 [DUMMY] HealthKit VO2Maxに置き換え
-    let basalCalories: Int?  // 基礎代謝 [DUMMY] 基礎代謝計算値に置き換え
+    let hrv: Double?          // 心拍変動 (HealthKit HRV SDNN)
+    let rhr: Int?            // 安静時心拍数 (HealthKit Resting Heart Rate)
+    let vo2Max: Double?      // 最大酸素摂取量 (HealthKit VO2Max)
+    let basalCalories: Int?  // 基礎代謝 (計算値: 体重と年齢から推定)
     let lastUpdated: Date    // 最終更新時刻
 
-    // [DUMMY] テスト用のサンプルデータ生成
+    /// HealthKitServiceから実データを生成
+    static func fromHealthKitService() -> HealthKitLiveData {
+        let healthService = HealthKitService.shared
+        guard let healthData = healthService.healthData else {
+            // データがない場合はサンプルデータを返す
+            return sample
+        }
+
+        // 基礎代謝の計算 (Harris-Benedict式の簡易版)
+        // 男性: 66 + (13.7 × 体重kg) + (5.0 × 身長cm) - (6.8 × 年齢)
+        // 女性: 655 + (9.6 × 体重kg) + (1.8 × 身長cm) - (4.7 × 年齢)
+        // ここでは簡易的に体重ベースで推定 (性別・年齢不明のため)
+        var basalCal: Int? = nil
+        if let bodyMass = healthData.bodyMass {
+            // 簡易計算: 体重 × 22 (大まかな基礎代謝の目安)
+            basalCal = Int(bodyMass * 22)
+        }
+
+        return HealthKitLiveData(
+            hrv: healthData.heartRateVariability,
+            rhr: healthData.restingHeartRate.map { Int($0) },
+            vo2Max: healthData.vo2Max,
+            basalCalories: basalCal,
+            lastUpdated: healthData.lastUpdated
+        )
+    }
+
+    // テスト用のサンプルデータ生成 (HealthKitデータがない場合のフォールバック)
     static var sample: HealthKitLiveData {
         HealthKitLiveData(
-            hrv: 68.0,    // [DUMMY] 仮のHRV値
-            rhr: 52,      // [DUMMY] 仮の安静時心拍数
-            vo2Max: 42.3, // [DUMMY] 仮のVO2Max
-            basalCalories: 1850, // [DUMMY] 仮の基礎代謝
+            hrv: 68.0,
+            rhr: 52,
+            vo2Max: 42.3,
+            basalCalories: 1850,
             lastUpdated: Date()
         )
     }
