@@ -24,12 +24,12 @@ struct SemiCircleGaugeView: View {
             ZStack {
                 // 背景の半円
                 SemiCircle()
-                    .stroke(Color.gray.opacity(0.2), lineWidth: 12)
+                    .stroke(Color.gray.opacity(0.2), lineWidth: 6)
 
                 // プログレスの半円
                 SemiCircle()
                     .trim(from: 0, to: progress)
-                    .stroke(gaugeColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                    .stroke(gaugeColor, style: StrokeStyle(lineWidth: 6, lineCap: .round))
 
                 // インジケーターポイント（進行度に応じて位置が変わる）
                 Circle()

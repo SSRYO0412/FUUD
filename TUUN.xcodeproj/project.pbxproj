@@ -25,6 +25,7 @@
 		90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */; };
 		90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */; };
 		90A1B0042E6A000000000004 /* Managers/ErrorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0412E6A00000000004 /* Managers/ErrorManager.swift */; };
+		90A1B0052E6A000000000005 /* Managers/DemoModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0612E6A00000000006 /* Managers/DemoModeManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/NetworkManager.swift; sourceTree = "<group>"; };
 		90A1AF0412E6A00000000004 /* Managers/ErrorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ErrorManager.swift; sourceTree = "<group>"; };
 		90A1AF0512E6A00000000005 /* Helpers/KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers/KeychainHelper.swift; sourceTree = "<group>"; };
+		90A1AF0612E6A00000000006 /* Managers/DemoModeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/DemoModeManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -225,6 +227,7 @@
 				90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */,
 				90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */,
 				90A1AF0412E6A00000000004 /* Managers/ErrorManager.swift */,
+				90A1AF0612E6A00000000006 /* Managers/DemoModeManager.swift */,
 				90A1AF0512E6A00000000005 /* Helpers/KeychainHelper.swift */,
 			);
 			name = "Recovered References";
@@ -414,6 +417,7 @@
 				60F9221F2ECF1D5000008108 /* HealthScoreService.swift in Sources */,
 				90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */,
 				90A1B0042E6A000000000004 /* Managers/ErrorManager.swift in Sources */,
+				90A1B0052E6A000000000005 /* Managers/DemoModeManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

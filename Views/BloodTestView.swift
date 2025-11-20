@@ -380,20 +380,6 @@ struct BloodItemCard: View {
         }
     }
 
-    // グラデーション色
-    var gradientColors: [Color] {
-        switch item.statusColor {
-        case "green":
-            return [Color(hex: "66BB6A"), Color(hex: "C8E6C9")]
-        case "orange":
-            return [Color(hex: "FBC02D"), Color(hex: "FFF9C4")]
-        case "red":
-            return [Color(hex: "E57373"), Color(hex: "FFCCBC")]
-        default:
-            return [Color.gray, Color.gray.opacity(0.5)]
-        }
-    }
-
     // ステータス色
     var statusColor: Color {
         switch item.statusColor {
@@ -408,81 +394,124 @@ struct BloodItemCard: View {
         }
     }
 
-    var body: some View {
-        VStack(spacing: VirgilSpacing.xs) {
-            // アイコン（肝臓系・腎臓系・HbA1cはカスタム画像、それ以外は絵文字）
-            if isLiverRelated {
-                Image("liver_icon")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32, height: 32)
-                    .padding(.top, VirgilSpacing.xs)
-            } else if isKidneyRelated {
-                Image("kidney_icon")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32, height: 32)
-                    .padding(.top, VirgilSpacing.xs)
-            } else if isHbA1c {
-                Image("sugar_icon")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32, height: 32)
-                    .padding(.top, VirgilSpacing.xs)
-            } else {
-                Text(emoji)
-                    .font(.system(size: 28))
-                    .padding(.top, VirgilSpacing.xs)
+    // 基準範囲をパース（例: "10-40" → (10.0, 40.0)）
+    private func parseReferenceRange(_ reference: String) -> (min: Double, max: Double)? {
+        let components = reference.split(separator: "-")
+        guard components.count == 2,
+              let min = Double(components[0].trimmingCharacters(in: .whitespaces)),
+              let max = Double(components[1].trimmingCharacters(in: .whitespaces)) else {
+            return nil
+        }
+        return (min, max)
+    }
+
+    // 進捗率を計算（0.0〜1.0）
+    private var progress: Double {
+        guard let (min, max) = parseReferenceRange(item.reference),
+              let value = Double(item.value.trimmingCharacters(in: .whitespaces)) else {
+            // パース失敗時はステータスに応じたデフォルト値
+            switch item.statusColor {
+            case "green": return 0.75
+            case "orange": return 0.5
+            case "red": return 0.25
+            default: return 0.5
             }
+        }
+
+        // 進捗率を計算（範囲外の場合はクリップ）
+        let normalizedProgress = (value - min) / (max - min)
+        return Swift.max(0.0, Swift.min(1.0, normalizedProgress))
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // 上部：アイコン（左上）
+            HStack {
+                if isLiverRelated {
+                    Image("liver_icon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40.32, height: 40.32)
+                } else if isKidneyRelated {
+                    Image("kidney_icon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40.32, height: 40.32)
+                } else if isHbA1c {
+                    Image("sugar_icon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40.32, height: 40.32)
+                } else {
+                    Text(emoji)
+                        .font(.system(size: 34.56))
+                }
+                Spacer()
+            }
+            .padding(.top, VirgilSpacing.sm)
+            .padding(.horizontal, VirgilSpacing.sm)
 
             Spacer()
 
-            // 項目名
-            VStack(spacing: 2) {
-                Text(item.nameJp)
-                    .font(.system(size: 9, weight: .semibold))
-                    .foregroundColor(.virgilTextPrimary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+            // 中央：半円ゲージ + 数値 + 項目名
+            VStack(spacing: 0) {
+                // 半円ゲージ（アーチ状）
+                SemiCircleGaugeView(
+                    progress: progress,
+                    gaugeColor: statusColor
+                )
+                .frame(width: 100, height: 50)
 
-                Text(item.key.uppercased())
-                    .font(.system(size: 7, weight: .regular))
-                    .foregroundColor(.virgilTextSecondary)
+                // 数値 + 単位（縦並び）
+                VStack(spacing: 0) {
+                    Text(item.value)
+                        .font(.system(size: 48, weight: .bold))
+                        .foregroundColor(.virgilTextPrimary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+
+                    Text(item.unit)
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundColor(.virgilTextSecondary)
+                }
+                .offset(y: -30)
+
+                // 項目名（2行：日本語名 + 英語名）
+                VStack(spacing: 2) {
+                    Text(item.nameJp)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(.virgilTextPrimary)
+                        .lineLimit(1)
+
+                    Text("(\(item.key.uppercased()))")
+                        .font(.system(size: 11, weight: .regular))
+                        .foregroundColor(.virgilTextSecondary)
+                        .lineLimit(1)
+                }
+                .offset(y: -30)
             }
+            .frame(maxWidth: .infinity)
 
-            // 値 + 単位（大きく）
-            HStack(alignment: .firstTextBaseline, spacing: 2) {
-                Text(item.value)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.virgilTextPrimary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
+            Spacer()
 
-                Text(item.unit)
-                    .font(.system(size: 9, weight: .regular))
-                    .foregroundColor(.virgilTextSecondary)
+            // 下部：ステータスバッジ（中央）
+            HStack {
+                Spacer()
+                Text(item.status)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(statusColor)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 6)
+                    .background(statusColor.opacity(0.15))
+                    .cornerRadius(12)
+                Spacer()
             }
-
-            // ステータスバッジ（大きく）
-            Text(item.status)
-                .font(.system(size: 9, weight: .semibold))
-                .foregroundColor(statusColor)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 5)
-                .background(statusColor.opacity(0.15))
-                .cornerRadius(10)
-                .padding(.bottom, VirgilSpacing.xs)
+            .padding(.bottom, VirgilSpacing.sm)
+            .offset(y: -30)
         }
+        .padding(VirgilSpacing.md)
         .frame(maxWidth: .infinity)
-        .aspectRatio(1.0, contentMode: .fit)
-        .padding(VirgilSpacing.sm)
-        .background(
-            LinearGradient(
-                colors: gradientColors.map { $0.opacity(0.08) },
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
+        .aspectRatio(0.85, contentMode: .fit)
         .virgilGlassCard(interactive: true)
     }
 }

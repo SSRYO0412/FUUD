@@ -33,13 +33,13 @@ struct HealthMetricCard: View {
             HStack {
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
 
                 Spacer()
 
                 Image(systemName: iconName)
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.black.opacity(0.6))
             }
 
             Spacer()
@@ -48,12 +48,12 @@ struct HealthMetricCard: View {
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(scoreValue)
                     .font(.system(size: 40, weight: .black))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
 
                 if let unit = scoreUnit {
                     Text(unit)
                         .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.black.opacity(0.7))
                 }
 
                 Spacer()
@@ -69,11 +69,7 @@ struct HealthMetricCard: View {
                 .padding(.top, 4)
         }
         .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(hex: "2C2C2E"))
-                .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
-        )
+        .virgilGlassCard(interactive: true)
     }
 
     @ViewBuilder
