@@ -10,10 +10,17 @@ import SwiftUI
 struct AppearanceDetailView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
     // [DUMMY] 見た目の健康データはUI検証用の固定値
 
     // MARK: - Category Data
     private let categoryName = "見た目の健康"
+    private let categoryId: CategoryId = .appearance
+
+    // スコア取得用computed property
+    private var currentScore: Int {
+        lifestyleScoreService.getScore(for: categoryId) ?? 50
+    }
 
     // [DUMMY] カテゴリー関連遺伝子データ
     private let appearanceGenes: [(name: String, variant: String, risk: String, description: String)] = [
@@ -51,7 +58,7 @@ struct AppearanceDetailView: View {
                     Text("✨")
                         .font(.system(size: 24))
 
-                    Text("88")  // [DUMMY] スコア、API連携後に実データ使用
+                    Text("\(currentScore)")
                         .font(.system(size: 32, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
 
@@ -203,7 +210,8 @@ struct AppearanceDetailView: View {
                 ])
                 */
 
-                // Related HealthKit
+                // Related HealthKit - MVP: HealthKit情報を非表示
+                /*
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "VO2max", value: "42 ml/kg/min", status: "良好"),
@@ -212,6 +220,7 @@ struct AppearanceDetailView: View {
                     HealthKitSectionMetric(name: "HRV", value: "68ms", status: "良好"),
                     HealthKitSectionMetric(name: "水分摂取", value: "2.2L", status: "最適")
                 ])
+                */
 
                 // Recommendations
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -272,6 +281,12 @@ struct AppearanceDetailView: View {
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.virgilTextPrimary)
                 }
+            }
+        }
+        .task {
+            // 初回表示時にスコア計算
+            if lifestyleScoreService.categoryScores.isEmpty {
+                await lifestyleScoreService.calculateAllScores()
             }
         }
         .floatingChatButton()

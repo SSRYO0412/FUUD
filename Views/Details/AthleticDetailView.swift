@@ -10,10 +10,17 @@ import SwiftUI
 struct AthleticDetailView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
     // [DUMMY] 表示スコアと関連データは仮の固定値
 
     // MARK: - Category Data
     private let categoryName = "運動能力"
+    private let categoryId: CategoryId = .performance
+
+    // スコア取得用computed property
+    private var currentScore: Int {
+        lifestyleScoreService.getScore(for: categoryId) ?? 50
+    }
 
     // [DUMMY] カテゴリー関連遺伝子データ
     private let athleticGenes: [(name: String, variant: String, risk: String, description: String)] = [
@@ -47,7 +54,7 @@ struct AthleticDetailView: View {
                     Text("🏃")
                         .font(.system(size: 24))
 
-                    Text("89")  // [DUMMY] スコア、API連携後に実データ使用
+                    Text("\(currentScore)")
                         .font(.system(size: 32, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
 
@@ -177,7 +184,8 @@ struct AthleticDetailView: View {
                 ])
                 */
 
-                // Related HealthKit
+                // Related HealthKit - MVP: HealthKit情報を非表示
+                /*
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "VO2max", value: "48 ml/kg/min", status: "優秀"),
@@ -186,6 +194,7 @@ struct AthleticDetailView: View {
                     HealthKitSectionMetric(name: "走行ペース", value: "5:20/km", status: "良好"),
                     HealthKitSectionMetric(name: "トレーニング負荷", value: "適正", status: "最適")
                 ])
+                */
 
                 // Recommendations
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -246,6 +255,12 @@ struct AthleticDetailView: View {
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.virgilTextPrimary)
                 }
+            }
+        }
+        .task {
+            // 初回表示時にスコア計算
+            if lifestyleScoreService.categoryScores.isEmpty {
+                await lifestyleScoreService.calculateAllScores()
             }
         }
         .floatingChatButton()

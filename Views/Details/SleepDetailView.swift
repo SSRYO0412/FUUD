@@ -10,10 +10,17 @@ import SwiftUI
 struct SleepDetailView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
     // [DUMMY] 睡眠指標や関連データはテスト用の固定値
 
     // MARK: - Category Data
     private let categoryName = "睡眠"
+    private let categoryId: CategoryId = .sleep
+
+    // スコア取得用computed property
+    private var currentScore: Int {
+        lifestyleScoreService.getScore(for: categoryId) ?? 50
+    }
 
     // [DUMMY] カテゴリー関連遺伝子データ
     private let sleepGenes: [(name: String, variant: String, risk: String, description: String)] = [
@@ -47,7 +54,7 @@ struct SleepDetailView: View {
                     Text("😴")
                         .font(.system(size: 24))
 
-                    Text("90")  // [DUMMY] スコア、API連携後に実データ使用
+                    Text("\(currentScore)")
                         .font(.system(size: 32, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
 
@@ -191,7 +198,8 @@ struct SleepDetailView: View {
                 ])
                 */
 
-                // Related HealthKit
+                // Related HealthKit - MVP: HealthKit情報を非表示
+                /*
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "睡眠時間", value: "7h 12m", status: "最適"),
@@ -200,6 +208,7 @@ struct SleepDetailView: View {
                     HealthKitSectionMetric(name: "睡眠効率", value: "89%", status: "優秀"),
                     HealthKitSectionMetric(name: "HRV", value: "70ms", status: "優秀")
                 ])
+                */
 
                 // Sleep Stages
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -277,6 +286,12 @@ struct SleepDetailView: View {
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.virgilTextPrimary)
                 }
+            }
+        }
+        .task {
+            // 初回表示時にスコア計算
+            if lifestyleScoreService.categoryScores.isEmpty {
+                await lifestyleScoreService.calculateAllScores()
             }
         }
         .floatingChatButton()

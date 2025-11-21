@@ -21,6 +21,7 @@
 		60F9221D2ECF1D5000008108 /* HealthKitBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922152ECF1D5000008108 /* HealthKitBridge.swift */; };
 		60F9221E2ECF1D5000008108 /* ScoreEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922192ECF1D5000008108 /* ScoreEngine.swift */; };
 		60F9221F2ECF1D5000008108 /* HealthScoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922162ECF1D5000008108 /* HealthScoreService.swift */; };
+		60F922C92ED01A7800008108 /* BloodScoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922C82ED01A7800008108 /* BloodScoring.swift */; };
 		90A1B0012E6A000000000001 /* Services/SimpleCognitoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0112E6A00000000001 /* Services/SimpleCognitoService.swift */; };
 		90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */; };
 		90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */; };
@@ -63,6 +64,7 @@
 		60F922172ECF1D5000008108 /* MetricConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricConfig.swift; sourceTree = "<group>"; };
 		60F922182ECF1D5000008108 /* MetricConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricConfigs.swift; sourceTree = "<group>"; };
 		60F922192ECF1D5000008108 /* ScoreEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreEngine.swift; sourceTree = "<group>"; };
+		60F922C82ED01A7800008108 /* BloodScoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BloodScoring.swift; sourceTree = "<group>"; };
 		90A1AF0112E6A00000000001 /* Services/SimpleCognitoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SimpleCognitoService.swift; sourceTree = "<group>"; };
 		90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ConfigurationManager.swift; sourceTree = "<group>"; };
 		90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/NetworkManager.swift; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 		60F9221A2ECF1D5000008108 /* ScoreEngine */ = {
 			isa = PBXGroup;
 			children = (
+				60F922C82ED01A7800008108 /* BloodScoring.swift */,
 				60F922152ECF1D5000008108 /* HealthKitBridge.swift */,
 				60F922162ECF1D5000008108 /* HealthScoreService.swift */,
 				60F922172ECF1D5000008108 /* MetricConfig.swift */,
@@ -405,6 +408,7 @@
 				607C5CE62E68287800E33ED1 /* ContentView.swift in Sources */,
 				607C5CE92E68287800E33ED1 /* ChatService.swift in Sources */,
 				607C5CEC2E68287800E33ED1 /* HealthProfileService.swift in Sources */,
+				60F922C92ED01A7800008108 /* BloodScoring.swift in Sources */,
 				607C5CEF2E68287800E33ED1 /* ChatView.swift in Sources */,
 				607C5CF22E68287800E33ED1 /* AWStestApp.swift in Sources */,
 				607C5CF72E68287800E33ED1 /* HealthProfileModels.swift in Sources */,

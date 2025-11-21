@@ -190,6 +190,8 @@ private struct BacteriaRow: View {
 // MARK: - Lifestyle Tab
 
 private struct LifestyleTab: View {
+    @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
+
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
             Text("LIFESTYLE SCORES")
@@ -197,23 +199,33 @@ private struct LifestyleTab: View {
                 .foregroundColor(.gray)
 
             VStack(spacing: VirgilSpacing.sm) {
-                // [DUMMY] スコア値は仮データ、API連携後に実データ使用
-                LifeScoreCard(emoji: "⚡️", title: "ダイエット", score: 68) // [DUMMY] 黄グラデ
-                LifeScoreCard(emoji: "😴", title: "睡眠", score: 88) // [DUMMY] 緑グラデ
-                LifeScoreCard(emoji: "💪", title: "疲労回復", score: 58) // [DUMMY] 黄グラデ
-                LifeScoreCard(emoji: "🏃", title: "運動能力", score: 95) // [DUMMY] 緑グラデ
-                LifeScoreCard(emoji: "🧘", title: "ストレス", score: 38) // [DUMMY] 赤グラデ
-                LifeScoreCard(emoji: "🛡️", title: "抗酸化", score: 72) // [DUMMY] 黄グラデ
-                LifeScoreCard(emoji: "🧠", title: "脳の認知機能", score: 92) // [DUMMY] 緑グラデ
-                LifeScoreCard(emoji: "✨", title: "見た目の健康", score: 45) // [DUMMY] 赤グラデ
-                LifeScoreCard(emoji: "🌸", title: "肌", score: 82) // [DUMMY] 緑グラデ
-                LifeScoreCard(emoji: "❤️", title: "性的な健康", score: 65) // [DUMMY] 黄グラデ
-                LifeScoreCard(emoji: "⚡", title: "活力", score: 42) // [DUMMY] 赤グラデ
-                LifeScoreCard(emoji: "❤️‍🩹", title: "心臓の健康", score: 86) // [DUMMY] 緑グラデ
-                LifeScoreCard(emoji: "🫘", title: "肝機能", score: 75) // [DUMMY] 黄グラデ
-                LifeScoreCard(emoji: "📊", title: "生活習慣", score: 48) // [DUMMY] 赤グラデ
+                LifeScoreCard(emoji: "⚡️", title: "ダイエット", score: getScore(for: .diet))
+                LifeScoreCard(emoji: "😴", title: "睡眠", score: getScore(for: .sleep))
+                LifeScoreCard(emoji: "💪", title: "疲労回復", score: getScore(for: .recovery))
+                LifeScoreCard(emoji: "🏃", title: "運動能力", score: getScore(for: .performance))
+                LifeScoreCard(emoji: "🧘", title: "ストレス", score: getScore(for: .stress))
+                LifeScoreCard(emoji: "🛡️", title: "抗酸化", score: getScore(for: .antioxidant))
+                LifeScoreCard(emoji: "🧠", title: "脳の認知機能", score: getScore(for: .cognition))
+                LifeScoreCard(emoji: "✨", title: "見た目の健康", score: getScore(for: .appearance))
+                LifeScoreCard(emoji: "🌸", title: "肌", score: getScore(for: .skin))
+                LifeScoreCard(emoji: "❤️", title: "性的な健康", score: getScore(for: .sexual))
+                LifeScoreCard(emoji: "⚡", title: "活力", score: getScore(for: .vitality))
+                LifeScoreCard(emoji: "❤️‍🩹", title: "心臓の健康", score: getScore(for: .heart))
+                LifeScoreCard(emoji: "🫘", title: "肝機能", score: getScore(for: .liver))
+                LifeScoreCard(emoji: "📊", title: "生活習慣", score: getScore(for: .lifestyle))
             }
         }
+        .task {
+            // 初回表示時にスコア計算
+            if lifestyleScoreService.categoryScores.isEmpty {
+                await lifestyleScoreService.calculateAllScores()
+            }
+        }
+    }
+
+    /// カテゴリーIDからスコアを取得（デフォルト値50）
+    private func getScore(for categoryId: CategoryId) -> Int {
+        return lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 }
 
@@ -336,301 +348,148 @@ private struct LifeScoreCard: View {
 
     // MARK: - Category Data Mapping
 
-    /// カテゴリー名からデータを取得
-    /// [DUMMY] 全カテゴリーのモックデータ、DetailViewと同じ内容
+    /// カテゴリー名からデータを取得（実データ）
     private func getCategoryData(for category: String) -> (
         name: String,
         genes: [(name: String, variant: String, risk: String, description: String)],
         bloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)],
         healthKit: [(name: String, value: String, status: String)]
     ) {
-        switch category {
-        case "脳の認知機能":
-            return (
-                name: "認知機能",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "Homocysteine", value: "8.2", unit: "μmol/L", range: "5-15", status: "最適"),
-                    (name: "Vitamin B12", value: "580", unit: "pg/mL", range: "200-900", status: "良好"),
-                    (name: "Folate", value: "12.5", unit: "ng/mL", range: "3-20", status: "最適"),
-                    (name: "Omega-3 Index", value: "8.2", unit: "%", range: ">8", status: "優秀")
-                ],
-                healthKit: [
-                    (name: "睡眠時間", value: "7.5時間", status: "最適"),
-                    (name: "深睡眠", value: "90分", status: "優秀"),
-                    (name: "HRV", value: "68ms", status: "良好"),
-                    (name: "安静時心拍", value: "58bpm", status: "最適")
-                ]
-            )
-        case "活力":
-            return (
-                name: "活力",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "Ferritin", value: "98", unit: "ng/mL", range: "30-400", status: "最適"),
-                    (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.4-1.5", status: "良好"),
-                    (name: "LAC", value: "11", unit: "mg/dL", range: "4-16", status: "最適"),
-                    (name: "ALB", value: "4.6", unit: "g/dL", range: "4.1-5.1", status: "最適"),
-                    (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "正常範囲"),
-                    (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適")
-                ],
-                healthKit: [
-                    (name: "HRV", value: "72ms", status: "優秀"),
-                    (name: "安静時心拍", value: "58bpm", status: "最適"),
-                    (name: "睡眠効率", value: "88%", status: "優秀"),
-                    (name: "日中活動量", value: "450kcal", status: "良好"),
-                    (name: "立ち上がり回数", value: "12回/日", status: "最適")
-                ]
-            )
-        case "肝機能":
-            return (
-                name: "肝機能",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "AST", value: "22", unit: "U/L", range: "10-40", status: "最適"),
-                    (name: "ALT", value: "18", unit: "U/L", range: "5-45", status: "最適"),
-                    (name: "GGT", value: "25", unit: "U/L", range: "0-50", status: "最適"),
-                    (name: "ALP", value: "195", unit: "U/L", range: "100-325", status: "正常範囲"),
-                    (name: "T-Bil", value: "0.9", unit: "mg/dL", range: "0.2-1.2", status: "最適"),
-                    (name: "D-Bil", value: "0.2", unit: "mg/dL", range: "0.0-0.4", status: "最適"),
-                    (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.3", status: "最適"),
-                    (name: "TG", value: "88", unit: "mg/dL", range: "30-150", status: "最適")
-                ],
-                healthKit: [
-                    (name: "飲酒ログ", value: "週2日", status: "良好"),
-                    (name: "体重推移", value: "-0.5kg/月", status: "最適"),
-                    (name: "睡眠タイミング", value: "22:30-6:00", status: "優秀"),
-                    (name: "歩数", value: "9500歩/日", status: "良好")
-                ]
-            )
-        case "生活習慣":
-            return (
-                name: "生活習慣",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "HbA1c", value: "5.4", unit: "%", range: "4.6-6.2", status: "最適"),
-                    (name: "1,5-AG", value: "18", unit: "μg/mL", range: "14-26", status: "良好"),
-                    (name: "TG", value: "92", unit: "mg/dL", range: "<150", status: "最適"),
-                    (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "優秀"),
-                    (name: "LDL", value: "105", unit: "mg/dL", range: "<120", status: "良好"),
-                    (name: "ApoB", value: "88", unit: "mg/dL", range: "<90", status: "最適"),
-                    (name: "UA", value: "5.8", unit: "mg/dL", range: "3.0-7.0", status: "正常範囲"),
-                    (name: "GGT", value: "28", unit: "U/L", range: "<50", status: "最適"),
-                    (name: "CRP", value: "0.08", unit: "mg/dL", range: "<0.3", status: "最適"),
-                    (name: "ALB", value: "4.4", unit: "g/dL", range: "3.8-5.3", status: "最適"),
-                    (name: "TP", value: "7.1", unit: "g/dL", range: "6.5-8.0", status: "正常範囲"),
-                    (name: "Ferritin", value: "88", unit: "ng/mL", range: "30-400", status: "良好")
-                ],
-                healthKit: [
-                    (name: "歩数", value: "10200歩/日", status: "優秀"),
-                    (name: "立ち時間", value: "10h/日", status: "最適"),
-                    (name: "ワークアウト分", value: "45分/日", status: "優秀"),
-                    (name: "睡眠効率", value: "86%", status: "良好"),
-                    (name: "HRV", value: "65ms", status: "良好")
-                ]
-            )
-        case "ダイエット":
-            return (
-                name: "ダイエット",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-6.0", status: "最適"),
-                    (name: "GA", value: "14.5", unit: "%", range: "11-16", status: "良好"),
-                    (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
-                    (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
-                    (name: "HDL", value: "65", unit: "mg/dL", range: ">40", status: "良好"),
-                    (name: "LDL", value: "95", unit: "mg/dL", range: "<120", status: "最適"),
-                    (name: "TCHO", value: "180", unit: "mg/dL", range: "150-220", status: "正常範囲"),
-                    (name: "ApoB", value: "75", unit: "mg/dL", range: "<90", status: "最適")
-                ],
-                healthKit: [
-                    (name: "体重", value: "68kg", status: "最適"),
-                    (name: "BMI", value: "22.5", status: "最適"),
-                    (name: "消費カロリー", value: "2,350kcal", status: "良好"),
-                    (name: "歩数", value: "8,500歩", status: "良好"),
-                    (name: "ワークアウト時間", value: "45分", status: "優秀")
-                ]
-            )
-        case "見た目の健康":
-            return (
-                name: "見た目の健康",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.2", status: "最適"),
-                    (name: "TP", value: "7.2", unit: "g/dL", range: "6.5-8.2", status: "最適"),
-                    (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-200", status: "良好"),
-                    (name: "Zn", value: "95", unit: "μg/dL", range: "80-120", status: "最適"),
-                    (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
-                    (name: "GGT", value: "22", unit: "U/L", range: "10-50", status: "最適"),
-                    (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-5.6", status: "最適")
-                ],
-                healthKit: [
-                    (name: "VO2max", value: "42 ml/kg/min", status: "良好"),
-                    (name: "睡眠効率", value: "89%", status: "優秀"),
-                    (name: "歩行速度", value: "5.2 km/h", status: "最適"),
-                    (name: "HRV", value: "68ms", status: "良好"),
-                    (name: "水分摂取", value: "2.2L", status: "最適")
-                ]
-            )
-        case "睡眠":
-            return (
-                name: "睡眠",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "Melatonin", value: "12", unit: "pg/mL", range: "10-15", status: "最適"),
-                    (name: "Cortisol (朝)", value: "15", unit: "μg/dL", range: "10-20", status: "良好"),
-                    (name: "Magnesium", value: "2.3", unit: "mg/dL", range: "1.8-2.6", status: "最適"),
-                    (name: "Vitamin D", value: "45", unit: "ng/mL", range: "30-100", status: "最適")
-                ],
-                healthKit: [
-                    (name: "睡眠時間", value: "7h 12m", status: "最適"),
-                    (name: "深睡眠", value: "2h 30m", status: "優秀"),
-                    (name: "レム睡眠", value: "1h 48m", status: "良好"),
-                    (name: "睡眠効率", value: "89%", status: "優秀"),
-                    (name: "HRV", value: "70ms", status: "優秀")
-                ]
-            )
-        case "疲労回復":
-            return (
-                name: "疲労回復",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "CK", value: "120", unit: "U/L", range: "60-400", status: "最適"),
-                    (name: "Mb", value: "45", unit: "ng/mL", range: "28-72", status: "良好"),
-                    (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
-                    (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
-                    (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適"),
-                    (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.3", status: "最適"),
-                    (name: "Mg", value: "2.2", unit: "mg/dL", range: "1.8-2.6", status: "良好")
-                ],
-                healthKit: [
-                    (name: "心拍回復 (HRR)", value: "35bpm/1min", status: "優秀"),
-                    (name: "トレーニング負荷", value: "適正", status: "良好"),
-                    (name: "ワークアウト強度", value: "中", status: "最適"),
-                    (name: "HRV", value: "68ms", status: "良好")
-                ]
-            )
-        case "肌":
-            return (
-                name: "肌",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "Zn", value: "95", unit: "μg/dL", range: "60-130", status: "最適"),
-                    (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
-                    (name: "ALB", value: "4.5", unit: "g/dL", range: "4.0-5.0", status: "最適"),
-                    (name: "CRP", value: "0.3", unit: "mg/L", range: "<3.0", status: "最適"),
-                    (name: "GGT", value: "22", unit: "U/L", range: "0-73", status: "最適"),
-                    (name: "HbA1c", value: "5.2", unit: "%", range: "<5.6", status: "最適"),
-                    (name: "TP", value: "7.2", unit: "g/dL", range: "6.6-8.1", status: "良好"),
-                    (name: "pAlb", value: "28", unit: "mg/dL", range: "25-30", status: "最適")
-                ],
-                healthKit: [
-                    (name: "深睡眠", value: "90分", status: "優秀"),
-                    (name: "HRV", value: "68ms", status: "良好"),
-                    (name: "安静時心拍", value: "58bpm", status: "最適"),
-                    (name: "水分摂取", value: "2.2L", status: "最適")
-                ]
-            )
-        case "抗酸化":
-            return (
-                name: "抗酸化",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適"),
-                    (name: "UA", value: "5.2", unit: "mg/dL", range: "3.0-7.0", status: "最適"),
-                    (name: "CRP", value: "0.3", unit: "mg/L", range: "<1.0", status: "最適"),
-                    (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "良好"),
-                    (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "最適")
-                ],
-                healthKit: [
-                    (name: "高強度運動時間", value: "週150分", status: "最適"),
-                    (name: "睡眠時間", value: "7.5時間", status: "良好")
-                ]
-            )
-        case "ストレス":
-            return (
-                name: "ストレス",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "CRP", value: "0.3", unit: "mg/L", range: "0-5", status: "最適"),
-                    (name: "LAC", value: "12", unit: "mg/dL", range: "4-16", status: "良好"),
-                    (name: "1,5-AG", value: "18.5", unit: "μg/mL", range: "14-30", status: "最適"),
-                    (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適")
-                ],
-                healthKit: [
-                    (name: "HRV", value: "68ms", status: "良好"),
-                    (name: "安静時心拍", value: "58bpm", status: "最適"),
-                    (name: "呼吸数", value: "14回/分", status: "最適"),
-                    (name: "マインドフルネス時間", value: "10分/日", status: "良好")
-                ]
-            )
-        case "運動能力":
-            return (
-                name: "運動能力",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "CK", value: "120", unit: "U/L", range: "30-200", status: "最適"),
-                    (name: "Mb", value: "45", unit: "ng/mL", range: "20-80", status: "良好"),
-                    (name: "LAC", value: "12", unit: "mg/dL", range: "5-20", status: "最適"),
-                    (name: "TKB", value: "0.8", unit: "mg/dL", range: "0.2-1.2", status: "良好"),
-                    (name: "Ferritin", value: "95", unit: "ng/mL", range: "30-400", status: "最適")
-                ],
-                healthKit: [
-                    (name: "VO2max", value: "48 ml/kg/min", status: "優秀"),
-                    (name: "最高心拍", value: "185bpm", status: "最適"),
-                    (name: "心拍回復", value: "35bpm/1min", status: "優秀"),
-                    (name: "走行ペース", value: "5:20/km", status: "良好"),
-                    (name: "トレーニング負荷", value: "適正", status: "最適")
-                ]
-            )
-        case "性的な健康":
-            return (
-                name: "性的な健康",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "ApoB", value: "85", unit: "mg/dL", range: "<100", status: "最適"),
-                    (name: "Lp(a)", value: "18", unit: "mg/dL", range: "<30", status: "最適"),
-                    (name: "TG", value: "95", unit: "mg/dL", range: "<150", status: "最適"),
-                    (name: "HDL", value: "62", unit: "mg/dL", range: ">40", status: "良好"),
-                    (name: "LDL", value: "98", unit: "mg/dL", range: "<100", status: "最適"),
-                    (name: "HbA1c", value: "5.3", unit: "%", range: "<5.7", status: "最適"),
-                    (name: "CRP", value: "0.05", unit: "mg/dL", range: "<0.3", status: "最適"),
-                    (name: "Ferritin", value: "92", unit: "ng/mL", range: "30-400", status: "最適"),
-                    (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "良好")
-                ],
-                healthKit: [
-                    (name: "睡眠の質", value: "85%", status: "優秀"),
-                    (name: "深睡眠", value: "1h 45m", status: "良好"),
-                    (name: "HRV", value: "68ms", status: "優秀"),
-                    (name: "体重", value: "72.5kg", status: "最適"),
-                    (name: "月経周期", value: "28日", status: "正常範囲")
-                ]
-            )
-        case "心臓の健康":
-            return (
-                name: "心臓の健康",
-                genes: [], // MVP: 遺伝子情報を非表示
-                bloodMarkers: [
-                    (name: "ApoB", value: "82", unit: "mg/dL", range: "<90", status: "最適"),
-                    (name: "Lp(a)", value: "15", unit: "mg/dL", range: "<30", status: "最適"),
-                    (name: "TG", value: "85", unit: "mg/dL", range: "<150", status: "最適"),
-                    (name: "HDL", value: "68", unit: "mg/dL", range: ">40", status: "優秀"),
-                    (name: "LDL", value: "95", unit: "mg/dL", range: "<100", status: "最適"),
-                    (name: "HbA1c", value: "5.2", unit: "%", range: "<5.7", status: "最適"),
-                    (name: "CRP", value: "0.04", unit: "mg/dL", range: "<0.1", status: "最適")
-                ],
-                healthKit: [
-                    (name: "安静時心拍", value: "58bpm", status: "最適"),
-                    (name: "HRV", value: "68ms", status: "優秀"),
-                    (name: "血圧", value: "118/75", status: "最適"),
-                    (name: "VO2max", value: "42 ml/kg/min", status: "良好"),
-                    (name: "有酸素運動時間", value: "150分/週", status: "最適")
-                ]
-            )
-        default:
-            // [DUMMY] 他のカテゴリーは空データを返す（必要に応じて追加）
+        // カテゴリー名からCategoryIdを取得
+        let categoryId = getCategoryId(from: category)
+
+        // BloodTestServiceから血液検査データを取得
+        let bloodTestService = BloodTestService.shared
+        guard let bloodData = bloodTestService.bloodData else {
+            // データがない場合は空を返す
             return (name: category, genes: [], bloodMarkers: [], healthKit: [])
         }
+
+        // このカテゴリーで使用するマーカーのリストを取得
+        let relevantMarkers = getRelevantMarkers(for: categoryId)
+
+        // 血液検査データからこのカテゴリーで使用するマーカーのみを抽出
+        let bloodMarkers = bloodData.bloodItems
+            .filter { item in
+                relevantMarkers.contains(where: { markerKey in
+                    item.key.lowercased() == markerKey.lowercased() ||
+                    item.key.replacingOccurrences(of: "-", with: "").lowercased() == markerKey.lowercased()
+                })
+            }
+            .map { item in
+                (name: item.nameJp, value: item.value, unit: item.unit, range: item.reference, status: item.status)
+            }
+
+        return (
+            name: category,
+            genes: [], // MVP: 遺伝子情報を非表示
+            bloodMarkers: bloodMarkers,
+            healthKit: [] // MVP: HealthKit項目を非表示
+        )
+    }
+
+    /// カテゴリー名からCategoryIdに変換
+    private func getCategoryId(from categoryName: String) -> CategoryId? {
+        switch categoryName {
+        case "ダイエット":
+            return .diet
+        case "睡眠":
+            return .sleep
+        case "疲労回復":
+            return .recovery
+        case "運動能力":
+            return .performance
+        case "ストレス":
+            return .stress
+        case "抗酸化":
+            return .antioxidant
+        case "脳の認知機能":
+            return .cognition
+        case "見た目の健康":
+            return .appearance
+        case "肌":
+            return .skin
+        case "性的な健康":
+            return .sexual
+        case "活力":
+            return .vitality
+        case "心臓の健康":
+            return .heart
+        case "肝機能":
+            return .liver
+        case "生活習慣":
+            return .lifestyle
+        default:
+            return nil
+        }
+    }
+
+    /// CategoryIdから使用するマーカーのキーリストを取得
+    /// BloodScoring.swiftのcategoryDefinitionsで定義された重みから抽出
+    private func getRelevantMarkers(for categoryId: CategoryId?) -> [String] {
+        guard let categoryId = categoryId else {
+            return []
+        }
+
+        // BloodScoring.swiftのcategoryDefinitionsから対応するカテゴリーを取得
+        guard let definition = categoryDefinitions.first(where: { $0.id == categoryId }) else {
+            return []
+        }
+
+        // 重みで定義されているマーカーのキーを抽出
+        let markerKeys = definition.weights.keys.map { markerId -> [String] in
+            // MarkerIdをBloodTestServiceのキーに変換（複数の表記をサポート）
+            switch markerId {
+            case .AST:
+                return ["AST"]
+            case .ALT:
+                return ["ALT"]
+            case .GGT:
+                return ["GGT", "γ-GTP"]
+            case .ALP:
+                return ["ALP"]
+            case .HbA1c:
+                return ["HbA1c"]
+            case .TG:
+                return ["TG"]
+            case .HDL:
+                return ["HDL"]
+            case .LDL:
+                return ["LDL"]
+            case .TCHO:
+                return ["TC", "TCHO", "T-Cho"]
+            case .Fe:
+                return ["Fe"]
+            case .UIBC:
+                return ["UIBC"]
+            case .Ferritin:
+                return ["Ferritin", "ferritin"]
+            case .BUN:
+                return ["BUN"]
+            case .Cre:
+                return ["Cre", "CRE"]
+            case .UA:
+                return ["UA"]
+            case .TP:
+                return ["TP"]
+            case .Alb:
+                return ["Alb", "ALB"]
+            case .pAlb:
+                return ["pAlb", "PreAlb"]
+            case .CRP:
+                return ["CRP"]
+            case .CK:
+                return ["CK", "CPK"]
+            case .Mg:
+                return ["Mg", "MG"]
+            case .TBil:
+                return ["T-Bil", "TBil", "TBIL"]
+            case .DBil:
+                return ["D-Bil", "DBil", "DBIL"]
+            }
+        }
+
+        return markerKeys.flatMap { $0 }
     }
 
     @ViewBuilder

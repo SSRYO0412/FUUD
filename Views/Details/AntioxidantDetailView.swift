@@ -10,10 +10,17 @@ import SwiftUI
 struct AntioxidantDetailView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
     // [DUMMY] 抗酸化指標の数値・関連データはモック
 
     // MARK: - Category Data
     private let categoryName = "抗酸化"
+    private let categoryId: CategoryId = .antioxidant
+
+    // スコア取得用computed property
+    private var currentScore: Int {
+        lifestyleScoreService.getScore(for: categoryId) ?? 50
+    }
 
     // [DUMMY] カテゴリー関連遺伝子データ
     private let antioxidantGenes: [(name: String, variant: String, risk: String, description: String)] = [
@@ -45,7 +52,7 @@ struct AntioxidantDetailView: View {
                     Text("🛡️")
                         .font(.system(size: 24))
 
-                    Text("84")  // [DUMMY] スコア、API連携後に実データ使用
+                    Text("\(currentScore)")
                         .font(.system(size: 32, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
 
@@ -190,12 +197,14 @@ struct AntioxidantDetailView: View {
                 ])
                 */
 
-                // Related HealthKit
+                // Related HealthKit - MVP: HealthKit情報を非表示
+                /*
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "高強度運動時間", value: "週150分", status: "最適"),
                     HealthKitSectionMetric(name: "睡眠時間", value: "7.5時間", status: "良好")
                 ])
+                */
 
                 // Recommendations
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -257,6 +266,12 @@ struct AntioxidantDetailView: View {
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.virgilTextPrimary)
                 }
+            }
+        }
+        .task {
+            // 初回表示時にスコア計算
+            if lifestyleScoreService.categoryScores.isEmpty {
+                await lifestyleScoreService.calculateAllScores()
             }
         }
         .floatingChatButton()

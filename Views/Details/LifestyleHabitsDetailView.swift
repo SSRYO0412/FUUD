@@ -10,9 +10,16 @@ import SwiftUI
 struct LifestyleHabitsDetailView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
 
     // MARK: - Category Data
     private let categoryName = "生活習慣"
+    private let categoryId: CategoryId = .lifestyle
+
+    // スコア取得用computed property
+    private var currentScore: Int {
+        lifestyleScoreService.getScore(for: categoryId) ?? 50
+    }
 
     // [DUMMY] 生活習慣関連遺伝子データ
     private let lifestyleGenes: [(name: String, variant: String, risk: String, description: String)] = [
@@ -54,7 +61,7 @@ struct LifestyleHabitsDetailView: View {
                     Text("🌱")
                         .font(.system(size: 24))
 
-                    Text("88")  // [DUMMY] スコア、API連携後に実データ使用
+                    Text("\(currentScore)")
                         .font(.system(size: 32, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
 
@@ -204,7 +211,8 @@ struct LifestyleHabitsDetailView: View {
                 ])
                 */
 
-                // Related HealthKit
+                // Related HealthKit - MVP: HealthKit情報を非表示
+                /*
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "歩数", value: "10200歩/日", status: "優秀"),
@@ -213,6 +221,7 @@ struct LifestyleHabitsDetailView: View {
                     HealthKitSectionMetric(name: "睡眠効率", value: "86%", status: "良好"),
                     HealthKitSectionMetric(name: "HRV", value: "65ms", status: "良好")
                 ])
+                */
 
                 // Recommendations
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -275,6 +284,12 @@ struct LifestyleHabitsDetailView: View {
                 } // [DUMMY]
             } // [DUMMY]
         } // [DUMMY]
+        .task {
+            // 初回表示時にスコア計算
+            if lifestyleScoreService.categoryScores.isEmpty {
+                await lifestyleScoreService.calculateAllScores()
+            }
+        }
         .floatingChatButton()
         .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY]
     }

@@ -10,10 +10,17 @@ import SwiftUI
 struct MetabolicDetailView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
     // [DUMMY] 代謝スコアと各セクションは仮の固定値
 
     // MARK: - Category Data
     private let categoryName = "ダイエット"
+    private let categoryId: CategoryId = .diet
+
+    // スコア取得用computed property
+    private var currentScore: Int {
+        lifestyleScoreService.getScore(for: categoryId) ?? 50
+    }
 
     // [DUMMY] カテゴリー関連遺伝子データ
     private let metabolicGenes: [(name: String, variant: String, risk: String, description: String)] = [
@@ -52,7 +59,7 @@ struct MetabolicDetailView: View {
                     Text("⚡️")
                         .font(.system(size: 24))
 
-                    Text("85")  // [DUMMY] スコア、API連携後に実データ使用
+                    Text("\(currentScore)")
                         .font(.system(size: 32, weight: .black))
                         .foregroundColor(Color(hex: "00C853"))
 
@@ -199,7 +206,8 @@ struct MetabolicDetailView: View {
                 ])
                 */
 
-                // Related HealthKit
+                // Related HealthKit - MVP: HealthKit情報を非表示
+                /*
                 HealthKitSection(metrics: [
                     // [DUMMY] HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "体重", value: "68kg", status: "最適"),
@@ -208,6 +216,7 @@ struct MetabolicDetailView: View {
                     HealthKitSectionMetric(name: "歩数", value: "8,500歩", status: "良好"),
                     HealthKitSectionMetric(name: "ワークアウト時間", value: "45分", status: "優秀")
                 ])
+                */
 
                 // Recommendations
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -268,6 +277,12 @@ struct MetabolicDetailView: View {
                         .font(.system(size: 16, weight: .medium))
                         .foregroundColor(.virgilTextPrimary)
                 }
+            }
+        }
+        .task {
+            // 初回表示時にスコア計算
+            if lifestyleScoreService.categoryScores.isEmpty {
+                await lifestyleScoreService.calculateAllScores()
             }
         }
         .floatingChatButton()
