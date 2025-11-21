@@ -58,7 +58,7 @@ struct HealthMetricDetailCard: View {
             // タイトル
             Text(detail.type.rawValue)
                 .font(.system(size: 24, weight: .bold))
-                .foregroundColor(.white)
+                .foregroundColor(.black)
 
             // スコア表示
             VStack(spacing: 4) {
@@ -74,15 +74,15 @@ struct HealthMetricDetailCard: View {
 
                 Text(detail.status)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.black.opacity(0.7))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 6)
                     .background(
                         Capsule()
-                            .fill(Color.white.opacity(0.1))
+                            .fill(Color.black.opacity(0.1))
                             .overlay(
                                 Capsule()
-                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                    .stroke(Color.black.opacity(0.2), lineWidth: 1)
                             )
                     )
             }
@@ -97,7 +97,7 @@ struct HealthMetricDetailCard: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("SCORE BREAKDOWN")
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundColor(.white.opacity(0.6))
+                .foregroundColor(.black.opacity(0.6))
                 .tracking(1.2)
 
             VStack(spacing: 12) {
@@ -119,7 +119,7 @@ struct HealthMetricDetailCard: View {
                     .font(.system(size: 16))
                 Text("TOP 5 BLOOD MARKERS")
                     .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.black.opacity(0.6))
                     .tracking(1.2)
             }
 
@@ -139,7 +139,7 @@ struct HealthMetricDetailCard: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("7-DAY TREND")
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundColor(.white.opacity(0.6))
+                .foregroundColor(.black.opacity(0.6))
                 .tracking(1.2)
 
             // シンプルな横バートレンド表示
@@ -173,7 +173,7 @@ struct HealthMetricDetailCard: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("RECOMMENDATIONS")
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundColor(.white.opacity(0.6))
+                .foregroundColor(.black.opacity(0.6))
                 .tracking(1.2)
 
             VStack(spacing: 12) {
@@ -192,7 +192,7 @@ struct HealthMetricDetailCard: View {
         Button(action: onClose) {
             Image(systemName: "xmark.circle.fill")
                 .font(.system(size: 32))
-                .foregroundStyle(.white.opacity(0.8), .white.opacity(0.1))
+                .foregroundStyle(.black.opacity(0.8), .black.opacity(0.1))
         }
         .padding(24)
     }
@@ -200,34 +200,18 @@ struct HealthMetricDetailCard: View {
     // MARK: - Liquid Glass Styles
 
     private var liquidGlassBackground: some View {
-        ZStack {
-            // グラデーション背景
-            LinearGradient(
-                colors: [
-                    Color(hex: detail.type.accentColor).opacity(0.3),
-                    Color(hex: detail.type.accentColor).opacity(0.15),
-                    Color.clear
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+        Color.clear
             .ignoresSafeArea()
-
-            // ブラー効果
-            Color.white.opacity(0.05)
-                .background(.ultraThinMaterial)
-                .ignoresSafeArea()
-        }
     }
 
     private var liquidGlassCard: some View {
         RoundedRectangle(cornerRadius: 16)
-            .fill(Color.white.opacity(0.08))
+            .fill(Color.black.opacity(0.08))
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(
                         LinearGradient(
-                            colors: [Color.white.opacity(0.3), Color.white.opacity(0.1)],
+                            colors: [Color.black.opacity(0.3), Color.black.opacity(0.1)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -249,20 +233,20 @@ struct BreakdownRow: View {
             HStack {
                 Text(breakdown.category)
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
 
                 Spacer()
 
                 Text("\(Int(breakdown.percentage))%")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.black.opacity(0.6))
             }
 
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     // 背景バー
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.white.opacity(0.1))
+                        .fill(Color.black.opacity(0.1))
                         .frame(height: 8)
 
                     // 進捗バー
@@ -292,19 +276,19 @@ struct MarkerRow: View {
             // マーカー名
             Text(marker.name)
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(.white)
+                .foregroundColor(.black)
                 .frame(width: 70, alignment: .leading)
 
             // 値
             Text("\(marker.value) \(marker.unit)")
                 .font(.system(size: 12, weight: .medium))
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(.black.opacity(0.8))
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             // ステータスバッジ
             Text(marker.status.rawValue)
                 .font(.system(size: 10, weight: .semibold))
-                .foregroundColor(.white)
+                .foregroundColor(.black)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
                 .background(
@@ -336,14 +320,14 @@ struct ActionCard: View {
                 HStack {
                     Text(action.title)
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
 
                     Spacer()
 
                     // 優先度バッジ
                     Text(action.priority.rawValue)
                         .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
                         .background(
@@ -354,17 +338,17 @@ struct ActionCard: View {
 
                 Text(action.description)
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.black.opacity(0.7))
                     .lineSpacing(2)
             }
         }
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white.opacity(0.06))
+                .fill(Color.black.opacity(0.06))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                        .stroke(Color.black.opacity(0.15), lineWidth: 1)
                 )
         )
     }
