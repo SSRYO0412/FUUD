@@ -12,6 +12,10 @@ struct HealthMetricsGridSection: View {
     @StateObject private var healthScoreService = HealthScoreService.shared
     @ObservedObject private var demoModeManager = DemoModeManager.shared
 
+    @Namespace private var animation
+    @State private var expandedCardType: HealthMetricType? = nil
+    @State private var isExpanded = false
+
     var body: some View {
         VStack(spacing: 12) {
             // 上の行: 代謝力 + 炎症レベル
@@ -30,6 +34,12 @@ struct HealthMetricsGridSection: View {
                 )
                 .frame(maxWidth: .infinity)
                 .frame(height: 130)
+                .onTapGesture {
+                    expandedCardType = .metabolic
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                        isExpanded = true
+                    }
+                }
                 .onAppear {
                     print("🔥 代謝力: progress=\(metabolicScore), chartData=\(metabolicChartData)")
                 }
@@ -47,6 +57,12 @@ struct HealthMetricsGridSection: View {
                 )
                 .frame(maxWidth: .infinity)
                 .frame(height: 130)
+                .onTapGesture {
+                    expandedCardType = .inflammation
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                        isExpanded = true
+                    }
+                }
                 .onAppear {
                     print("🛡️ 炎症レベル: progress=\(inflammationScore)")
                 }
@@ -68,6 +84,12 @@ struct HealthMetricsGridSection: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 130)
                 .offset(y: 50)
+                .onTapGesture {
+                    expandedCardType = .recovery
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                        isExpanded = true
+                    }
+                }
                 .onAppear {
                     print("🔄 回復スピード: progress=\(recoveryScore)")
                 }
@@ -86,6 +108,12 @@ struct HealthMetricsGridSection: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 130)
                 .offset(y: 50)
+                .onTapGesture {
+                    expandedCardType = .aging
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                        isExpanded = true
+                    }
+                }
                 .onAppear {
                     print("📈 老化速度詳細:")
                     print("  - agingScore: \(String(format: "%.2f", agingScore))")
@@ -97,12 +125,157 @@ struct HealthMetricsGridSection: View {
             }
         }
         .frame(maxWidth: .infinity)
+        .expandableCard(detail: currentDetail, isExpanded: $isExpanded, namespace: animation)
         .onAppear {
             // スコア計算をトリガー
             Task {
                 await healthScoreService.calculateAllScores()
             }
         }
+    }
+
+    // MARK: - Expanded Card Detail
+
+    /// 現在展開中のカード詳細データ
+    private var currentDetail: HealthMetricDetail? {
+        guard let cardType = expandedCardType else { return nil }
+
+        switch cardType {
+        case .metabolic:
+            return metabolicDetail
+        case .inflammation:
+            return inflammationDetail
+        case .recovery:
+            return recoveryDetail
+        case .aging:
+            return agingDetail
+        }
+    }
+
+    /// 代謝力カードの詳細データ
+    private var metabolicDetail: HealthMetricDetail {
+        HealthMetricDetail(
+            type: .metabolic,
+            score: metabolicScore * 100,
+            scoreDisplay: "\(Int(metabolicScore * 100))%",
+            status: metabolicStatus,
+            breakdowns: [
+                ScoreBreakdown(category: "血糖制御", percentage: 30, value: metabolicScore * 100 * 0.9),
+                ScoreBreakdown(category: "脂質代謝", percentage: 25, value: metabolicScore * 100 * 0.95),
+                ScoreBreakdown(category: "エネルギー効率", percentage: 20, value: metabolicScore * 100 * 1.1),
+                ScoreBreakdown(category: "インスリン感受性", percentage: 15, value: metabolicScore * 100 * 0.85),
+                ScoreBreakdown(category: "ミトコンドリア機能", percentage: 10, value: metabolicScore * 100)
+            ],
+            topMarkers: [
+                BloodMarker(name: "HbA1c", value: "5.4", unit: "%", status: .good, normalRange: "<5.7"),
+                BloodMarker(name: "TG", value: "92", unit: "mg/dL", status: .optimal, normalRange: "<150"),
+                BloodMarker(name: "HDL", value: "65", unit: "mg/dL", status: .optimal, normalRange: ">40"),
+                BloodMarker(name: "LDL", value: "105", unit: "mg/dL", status: .good, normalRange: "<120"),
+                BloodMarker(name: "Glucose", value: "95", unit: "mg/dL", status: .optimal, normalRange: "70-100")
+            ],
+            trendData: metabolicChartData.enumerated().map { index, value in
+                TrendData(date: Calendar.current.date(byAdding: .day, value: -6 + index, to: Date())!, value: value)
+            },
+            actions: [
+                RecommendedAction(icon: "🏃", title: "朝の有酸素運動", description: "空腹時に30分の軽いジョギングで脂肪燃焼促進", priority: .high),
+                RecommendedAction(icon: "🍽️", title: "食後の軽い運動", description: "食後15分の散歩で血糖値スパイク抑制", priority: .high),
+                RecommendedAction(icon: "🥗", title: "低GI食品選択", description: "全粒穀物・野菜中心の食事で血糖安定化", priority: .medium)
+            ]
+        )
+    }
+
+    /// 炎症レベルカードの詳細データ
+    private var inflammationDetail: HealthMetricDetail {
+        HealthMetricDetail(
+            type: .inflammation,
+            score: inflammationScore * 100,
+            scoreDisplay: "\(Int(inflammationScore * 100))%",
+            status: inflammationStatus,
+            breakdowns: [
+                ScoreBreakdown(category: "急性炎症", percentage: 40, value: inflammationScore * 100 * 1.1),
+                ScoreBreakdown(category: "慢性炎症", percentage: 30, value: inflammationScore * 100 * 0.9),
+                ScoreBreakdown(category: "酸化ストレス", percentage: 20, value: inflammationScore * 100),
+                ScoreBreakdown(category: "免疫バランス", percentage: 10, value: inflammationScore * 100 * 1.05)
+            ],
+            topMarkers: [
+                BloodMarker(name: "CRP", value: "0.08", unit: "mg/dL", status: .optimal, normalRange: "<0.3"),
+                BloodMarker(name: "IL-6", value: "2.1", unit: "pg/mL", status: .good, normalRange: "<5.0"),
+                BloodMarker(name: "Ferritin", value: "88", unit: "ng/mL", status: .good, normalRange: "30-400"),
+                BloodMarker(name: "白血球", value: "6200", unit: "/μL", status: .optimal, normalRange: "3500-9000"),
+                BloodMarker(name: "ESR", value: "8", unit: "mm/hr", status: .optimal, normalRange: "<15")
+            ],
+            trendData: Array(0..<7).map { day in
+                TrendData(date: Calendar.current.date(byAdding: .day, value: -6 + day, to: Date())!, value: inflammationScore * 100 + Double.random(in: -5...5))
+            },
+            actions: [
+                RecommendedAction(icon: "🥗", title: "抗炎症食材摂取", description: "オメガ3・ターメリック・緑茶で炎症抑制", priority: .high),
+                RecommendedAction(icon: "🧘", title: "ストレス管理", description: "毎日15分の瞑想でコルチゾール低減", priority: .high),
+                RecommendedAction(icon: "😴", title: "十分な睡眠", description: "7-8時間の質の高い睡眠で炎症回復", priority: .medium)
+            ]
+        )
+    }
+
+    /// 回復スピードカードの詳細データ
+    private var recoveryDetail: HealthMetricDetail {
+        HealthMetricDetail(
+            type: .recovery,
+            score: recoveryScore * 100,
+            scoreDisplay: "\(Int(recoveryScore * 100))%",
+            status: recoveryStatus,
+            breakdowns: [
+                ScoreBreakdown(category: "筋肉回復", percentage: 35, value: recoveryScore * 100 * 1.05),
+                ScoreBreakdown(category: "神経回復", percentage: 25, value: recoveryScore * 100 * 0.95),
+                ScoreBreakdown(category: "代謝回復", percentage: 20, value: recoveryScore * 100),
+                ScoreBreakdown(category: "睡眠質", percentage: 20, value: recoveryScore * 100 * 0.98)
+            ],
+            topMarkers: [
+                BloodMarker(name: "CK", value: "145", unit: "U/L", status: .optimal, normalRange: "50-200"),
+                BloodMarker(name: "LDH", value: "168", unit: "U/L", status: .good, normalRange: "120-240"),
+                BloodMarker(name: "Cortisol", value: "12.5", unit: "μg/dL", status: .optimal, normalRange: "6-18"),
+                BloodMarker(name: "HRV", value: "68", unit: "ms", status: .good, normalRange: ">50"),
+                BloodMarker(name: "深睡眠", value: "90", unit: "分", status: .optimal, normalRange: ">60")
+            ],
+            trendData: Array(0..<7).map { day in
+                TrendData(date: Calendar.current.date(byAdding: .day, value: -6 + day, to: Date())!, value: recoveryScore * 100 + Double.random(in: -3...3))
+            },
+            actions: [
+                RecommendedAction(icon: "🚶", title: "アクティブリカバリー", description: "軽い散歩・ストレッチで血流促進", priority: .high),
+                RecommendedAction(icon: "😴", title: "質の高い睡眠", description: "22時就寝で深睡眠90分以上確保", priority: .high),
+                RecommendedAction(icon: "🍖", title: "タンパク質摂取", description: "体重×1.5gのタンパク質で筋肉回復", priority: .medium)
+            ]
+        )
+    }
+
+    /// 老化速度カードの詳細データ
+    private var agingDetail: HealthMetricDetail {
+        HealthMetricDetail(
+            type: .aging,
+            score: agingRate,
+            scoreDisplay: String(format: "%.1f歳/年", agingRate),
+            status: agingRateStatus,
+            breakdowns: [
+                ScoreBreakdown(category: "細胞老化", percentage: 30, value: agingScore * 100 * 0.9),
+                ScoreBreakdown(category: "酸化ダメージ", percentage: 25, value: agingScore * 100 * 1.05),
+                ScoreBreakdown(category: "糖化", percentage: 20, value: agingScore * 100 * 0.95),
+                ScoreBreakdown(category: "テロメア", percentage: 15, value: agingScore * 100 * 1.1),
+                ScoreBreakdown(category: "DNA修復", percentage: 10, value: agingScore * 100)
+            ],
+            topMarkers: [
+                BloodMarker(name: "AGEs", value: "12", unit: "μg/mL", status: .good, normalRange: "<15"),
+                BloodMarker(name: "抗酸化能力", value: "1.2", unit: "mM", status: .good, normalRange: ">1.0"),
+                BloodMarker(name: "HbA1c", value: "5.4", unit: "%", status: .good, normalRange: "<5.7"),
+                BloodMarker(name: "Albumin", value: "4.4", unit: "g/dL", status: .optimal, normalRange: "3.8-5.3"),
+                BloodMarker(name: "TP", value: "7.1", unit: "g/dL", status: .optimal, normalRange: "6.5-8.0")
+            ],
+            trendData: Array(0..<7).map { day in
+                TrendData(date: Calendar.current.date(byAdding: .day, value: -6 + day, to: Date())!, value: agingRate + Double.random(in: -0.1...0.1))
+            },
+            actions: [
+                RecommendedAction(icon: "🥗", title: "抗酸化食品摂取", description: "ベリー類・緑茶・ダークチョコで酸化防止", priority: .high),
+                RecommendedAction(icon: "🍽️", title: "カロリー制限", description: "適度なカロリー制限で長寿遺伝子活性化", priority: .medium),
+                RecommendedAction(icon: "🏃", title: "適度な運動", description: "週3回の中強度運動でテロメア保護", priority: .medium)
+            ]
+        )
     }
 
     // MARK: - Computed Properties
