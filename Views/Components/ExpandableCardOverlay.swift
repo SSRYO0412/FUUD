@@ -33,8 +33,10 @@ struct ExpandableCardOverlay: View {
                     HealthMetricDetailCard(detail: detail, onClose: closeCard)
                         .frame(width: geometry.size.width * 0.95, height: geometry.size.height * 2.0)
                         .clipShape(RoundedRectangle(cornerRadius: 24))
-                        .offset(y: dragOffset)
-                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                        .offset(
+                            x: (geometry.size.width - geometry.size.width * 0.95) / 2,
+                            y: dragOffset
+                        )
                         .gesture(
                             DragGesture()
                                 .onChanged { value in
