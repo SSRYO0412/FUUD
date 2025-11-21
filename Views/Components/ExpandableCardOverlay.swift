@@ -19,7 +19,7 @@ struct ExpandableCardOverlay: View {
         ZStack {
             // 背景ぼかしオーバーレイ
             if isExpanded {
-                Color.black.opacity(0.4 + opacity * 0.2)
+                Color.clear
                     .ignoresSafeArea()
                     .onTapGesture {
                         closeCard()
@@ -29,37 +29,41 @@ struct ExpandableCardOverlay: View {
 
             // 詳細カード
             if isExpanded {
-                HealthMetricDetailCard(detail: detail, onClose: closeCard)
-                    .clipShape(RoundedRectangle(cornerRadius: 24))
-                    .offset(y: dragOffset)
-                    .gesture(
-                        DragGesture()
-                            .onChanged { value in
-                                // 下方向のドラッグのみ許可
-                                if value.translation.height > 0 {
-                                    dragOffset = value.translation.height
-                                    // ドラッグ量に応じて透明度を変更
-                                    opacity = max(0, 1.0 - Double(dragOffset / 200))
-                                }
-                            }
-                            .onEnded { value in
-                                // 閾値を超えたら閉じる
-                                if value.translation.height > 150 {
-                                    closeCard()
-                                } else {
-                                    // 閾値未満なら元の位置に戻す
-                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                        dragOffset = 0
-                                        opacity = 1
+                GeometryReader { geometry in
+                    HealthMetricDetailCard(detail: detail, onClose: closeCard)
+                        .frame(width: geometry.size.width * 0.95, height: geometry.size.height * 2.0)
+                        .clipShape(RoundedRectangle(cornerRadius: 24))
+                        .offset(y: dragOffset)
+                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    // 下方向のドラッグのみ許可
+                                    if value.translation.height > 0 {
+                                        dragOffset = value.translation.height
+                                        // ドラッグ量に応じて透明度を変更
+                                        opacity = max(0.0, 1.0 - Double(dragOffset / 200))
                                     }
                                 }
-                            }
-                    )
-                    .transition(.asymmetric(
-                        insertion: .scale(scale: 0.9).combined(with: .opacity),
-                        removal: .scale(scale: 0.9).combined(with: .opacity)
-                    ))
-                    .zIndex(1)
+                                .onEnded { value in
+                                    // 閾値を超えたら閉じる
+                                    if value.translation.height > 150 {
+                                        closeCard()
+                                    } else {
+                                        // 閾値未満なら元の位置に戻す
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                            dragOffset = 0
+                                            opacity = 1
+                                        }
+                                    }
+                                }
+                        )
+                }
+                .transition(.asymmetric(
+                    insertion: .scale(scale: 0.9).combined(with: .opacity),
+                    removal: .scale(scale: 0.9).combined(with: .opacity)
+                ))
+                .zIndex(1)
             }
         }
         .onChange(of: isExpanded) { newValue in
@@ -90,6 +94,8 @@ struct ExpandableCardModifier: ViewModifier {
     func body(content: Content) -> some View {
         ZStack {
             content
+                .blur(radius: isExpanded ? 8 : 0)
+                .animation(.easeInOut(duration: 0.3), value: isExpanded)
 
             if let detail = detail {
                 ExpandableCardOverlay(detail: detail, isExpanded: $isExpanded, namespace: namespace)

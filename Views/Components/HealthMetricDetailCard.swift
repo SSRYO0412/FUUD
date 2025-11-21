@@ -12,29 +12,32 @@ struct HealthMetricDetailCard: View {
     var onClose: () -> Void
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 24) {
-                // ヘッダーセクション
-                headerSection
+        GeometryReader { geometry in
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 24) {
+                    // ヘッダーセクション
+                    headerSection
 
-                // スコアブレークダウン
-                breakdownSection
+                    // スコアブレークダウン
+                    breakdownSection
 
-                // 主要マーカーTOP5
-                topMarkersSection
+                    // 主要マーカーTOP5
+                    topMarkersSection
 
-                // 7日間トレンド
-                trendSection
+                    // 7日間トレンド
+                    trendSection
 
-                // 推奨アクション
-                actionsSection
+                    // 推奨アクション
+                    actionsSection
+                }
+                .frame(minHeight: geometry.size.height * 2)
+                .padding(24)
+                .padding(.top, 16)
             }
-            .padding(24)
-            .padding(.top, 16)
-        }
-        .background(liquidGlassBackground)
-        .overlay(alignment: .topTrailing) {
-            closeButton
+            .background(liquidGlassBackground)
+            .overlay(alignment: .topTrailing) {
+                closeButton
+            }
         }
     }
 
@@ -204,7 +207,7 @@ struct HealthMetricDetailCard: View {
                 colors: [
                     Color(hex: detail.type.accentColor).opacity(0.3),
                     Color(hex: detail.type.accentColor).opacity(0.15),
-                    Color.black.opacity(0.8)
+                    Color.clear
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
