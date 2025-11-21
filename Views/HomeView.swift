@@ -10,6 +10,9 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var cognitoService: SimpleCognitoService
     @State private var aiInsightIndex = 0
+    @State private var isCardExpanded = false
+    @State private var expandedCardDetail: HealthMetricDetail? = nil
+    @Namespace private var animation
 
     // [DUMMY] AIインサイト文面はUI試作用。API連携後に実データへ置き換え予定
     private let aiInsights = [
@@ -59,7 +62,7 @@ struct HomeView: View {
                         // 以降のカード - 左右paddingあり
                         VStack(spacing: VirgilSpacing.lg) {
                             // Health Metrics Grid (2x2) - Apple Watchスタイル
-                            HealthMetricsGridSection()
+                            HealthMetricsGridSection(isExpanded: $isCardExpanded, expandedCardDetail: $expandedCardDetail)
 
                             // Real-Time Performance Section - 一時的に非表示
                             // TodaysPerformanceSection()
@@ -87,7 +90,10 @@ struct HomeView: View {
                     .padding(.top, VirgilSpacing.lg)
                     .padding(.bottom, 100)
                 }
+                .blur(radius: isCardExpanded ? 8 : 0)
+                .animation(.easeInOut(duration: 0.3), value: isCardExpanded)
             }
+            .expandableCard(detail: expandedCardDetail, isExpanded: $isCardExpanded, namespace: animation)
             .navigationBarHidden(true)
             .floatingChatButton()
         }

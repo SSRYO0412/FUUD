@@ -12,9 +12,10 @@ struct HealthMetricsGridSection: View {
     @StateObject private var healthScoreService = HealthScoreService.shared
     @ObservedObject private var demoModeManager = DemoModeManager.shared
 
-    @Namespace private var animation
+    @Binding var isExpanded: Bool
+    @Binding var expandedCardDetail: HealthMetricDetail?
+
     @State private var expandedCardType: HealthMetricType? = nil
-    @State private var isExpanded = false
 
     var body: some View {
         VStack(spacing: 12) {
@@ -36,6 +37,7 @@ struct HealthMetricsGridSection: View {
                 .frame(height: 130)
                 .onTapGesture {
                     expandedCardType = .metabolic
+                    expandedCardDetail = metabolicDetail
                     withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
                         isExpanded = true
                     }
@@ -59,6 +61,7 @@ struct HealthMetricsGridSection: View {
                 .frame(height: 130)
                 .onTapGesture {
                     expandedCardType = .inflammation
+                    expandedCardDetail = inflammationDetail
                     withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
                         isExpanded = true
                     }
@@ -86,6 +89,7 @@ struct HealthMetricsGridSection: View {
                 .offset(y: 50)
                 .onTapGesture {
                     expandedCardType = .recovery
+                    expandedCardDetail = recoveryDetail
                     withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
                         isExpanded = true
                     }
@@ -110,6 +114,7 @@ struct HealthMetricsGridSection: View {
                 .offset(y: 50)
                 .onTapGesture {
                     expandedCardType = .aging
+                    expandedCardDetail = agingDetail
                     withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
                         isExpanded = true
                     }
@@ -125,7 +130,6 @@ struct HealthMetricsGridSection: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .expandableCard(detail: currentDetail, isExpanded: $isExpanded, namespace: animation)
         .onAppear {
             // スコア計算をトリガー
             Task {
@@ -134,23 +138,7 @@ struct HealthMetricsGridSection: View {
         }
     }
 
-    // MARK: - Expanded Card Detail
-
-    /// 現在展開中のカード詳細データ
-    private var currentDetail: HealthMetricDetail? {
-        guard let cardType = expandedCardType else { return nil }
-
-        switch cardType {
-        case .metabolic:
-            return metabolicDetail
-        case .inflammation:
-            return inflammationDetail
-        case .recovery:
-            return recoveryDetail
-        case .aging:
-            return agingDetail
-        }
-    }
+    // MARK: - Card Detail Data
 
     /// 代謝力カードの詳細データ
     private var metabolicDetail: HealthMetricDetail {
@@ -423,20 +411,29 @@ struct HealthMetricsGridSection: View {
 
 #if DEBUG
 struct HealthMetricsGridSection_Previews: PreviewProvider {
-    static var previews: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+    struct PreviewWrapper: View {
+        @State private var isExpanded = false
+        @State private var expandedDetail: HealthMetricDetail? = nil
 
-            ScrollView {
-                HealthMetricsGridSection()
-                    .padding(.top, 20)
+        var body: some View {
+            ZStack {
+                LinearGradient(
+                    colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
+                ScrollView {
+                    HealthMetricsGridSection(isExpanded: $isExpanded, expandedCardDetail: $expandedDetail)
+                        .padding(.top, 20)
+                }
             }
         }
+    }
+
+    static var previews: some View {
+        PreviewWrapper()
     }
 }
 #endif

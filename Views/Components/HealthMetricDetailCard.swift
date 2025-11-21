@@ -30,7 +30,6 @@ struct HealthMetricDetailCard: View {
                     // 推奨アクション
                     actionsSection
                 }
-                .frame(minHeight: geometry.size.height * 2)
                 .padding(24)
                 .padding(.top, 16)
             }
