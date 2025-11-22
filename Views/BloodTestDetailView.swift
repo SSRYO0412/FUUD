@@ -10,6 +10,7 @@ import Charts
 
 struct BloodTestDetailView: View {
     let bloodItem: BloodTestService.BloodItem
+    @EnvironmentObject var bloodTestService: BloodTestService
 
     // 肝臓系項目かどうかを判定
     var isLiverRelated: Bool {
@@ -182,7 +183,7 @@ struct BloodTestDetailView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .background(liquidGlassCard)
 
                 // 詳細情報カード
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -199,7 +200,7 @@ struct BloodTestDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .background(liquidGlassCard)
 
                 // 推奨事項カード
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -218,31 +219,38 @@ struct BloodTestDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .background(liquidGlassCard)
 
-                // 履歴トレンドカード（将来実装）
+                // 履歴トレンドカード
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
                     Text("履歴トレンド")
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    VStack(spacing: VirgilSpacing.md) {
-                        Image(systemName: "chart.line.uptrend.xyaxis")
-                            .font(.system(size: 40))
-                            .foregroundColor(.virgilTextSecondary)
+                    if bloodTestService.hasHistory {
+                        let history = bloodTestService.getValueHistory(for: bloodItem.key)
 
-                        Text("過去の検査結果を表示する機能は今後実装予定です")
-                            .font(.system(size: 11, weight: .regular))
-                            .foregroundColor(.virgilTextSecondary)
-                            .multilineTextAlignment(.center)
+                        if history.isEmpty {
+                            emptyHistoryView
+                        } else {
+                            VStack(spacing: VirgilSpacing.sm) {
+                                ForEach(Array(history.enumerated()), id: \.offset) { index, record in
+                                    HistoryRecordRow(
+                                        timestamp: record.timestamp,
+                                        value: record.value,
+                                        unit: bloodItem.unit,
+                                        isLatest: index == 0,
+                                        previousValue: index < history.count - 1 ? history[index + 1].value : nil
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        emptyHistoryView
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(VirgilSpacing.xl)
-                    .background(Color.black.opacity(0.02))
-                    .cornerRadius(12)
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .background(liquidGlassCard)
             }
             .padding(.horizontal, VirgilSpacing.md)
             .padding(.top, VirgilSpacing.md)
@@ -296,6 +304,50 @@ struct BloodTestDetailView: View {
         }
 
         return recommendations
+    }
+
+    // MARK: - Helper Views
+
+    private var emptyHistoryView: some View {
+        VStack(spacing: VirgilSpacing.md) {
+            Image(systemName: "chart.line.uptrend.xyaxis")
+                .font(.system(size: 40))
+                .foregroundColor(.virgilTextSecondary)
+
+            Text("まだ履歴データがありません")
+                .font(.system(size: 11, weight: .regular))
+                .foregroundColor(.virgilTextSecondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(VirgilSpacing.xl)
+        .background(Color.black.opacity(0.02))
+        .cornerRadius(12)
+    }
+
+    // MARK: - Liquid Glass Styles
+
+    private var liquidGlassBackground: some View {
+        Color.clear
+            .ignoresSafeArea()
+    }
+
+    private var liquidGlassCard: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .fill(Color.black.opacity(0.08))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(
+                        LinearGradient(
+                            colors: [Color.black.opacity(0.3), Color.black.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            )
+            .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+            .shadow(color: Color.black.opacity(0.05), radius: 20, x: 0, y: 10)
     }
 }
 
@@ -362,6 +414,103 @@ struct BloodRecommendationCard: View {
                 .padding(.vertical, 2)
                 .background(priorityColor.opacity(0.1))
                 .cornerRadius(4)
+        }
+        .padding(VirgilSpacing.sm)
+        .background(Color.black.opacity(0.02))
+        .cornerRadius(8)
+    }
+}
+
+// MARK: - History Record Row
+
+struct HistoryRecordRow: View {
+    let timestamp: String
+    let value: String
+    let unit: String
+    let isLatest: Bool
+    let previousValue: String?
+
+    private var formattedDate: String {
+        // ISO8601形式からフォーマット変換
+        let formatter = ISO8601DateFormatter()
+        if let date = formatter.date(from: timestamp) {
+            let displayFormatter = DateFormatter()
+            displayFormatter.dateFormat = "yyyy/MM/dd HH:mm"
+            displayFormatter.locale = Locale(identifier: "ja_JP")
+            return displayFormatter.string(from: date)
+        }
+        return timestamp
+    }
+
+    private var trendIcon: String? {
+        guard let prevValue = previousValue,
+              let currentNum = Double(value),
+              let prevNum = Double(prevValue) else {
+            return nil
+        }
+
+        if currentNum > prevNum {
+            return "arrow.up.right"
+        } else if currentNum < prevNum {
+            return "arrow.down.right"
+        } else {
+            return "arrow.right"
+        }
+    }
+
+    private var trendColor: Color {
+        guard let prevValue = previousValue,
+              let currentNum = Double(value),
+              let prevNum = Double(prevValue) else {
+            return .gray
+        }
+
+        if currentNum > prevNum {
+            return Color(hex: "ED1C24") // 上昇 = 赤
+        } else if currentNum < prevNum {
+            return Color(hex: "00C853") // 下降 = 緑（検査値の場合、低い方が良いことが多い）
+        } else {
+            return .gray
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: VirgilSpacing.md) {
+            VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
+                HStack(spacing: 4) {
+                    Text(formattedDate)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+
+                    if isLatest {
+                        Text("最新")
+                            .font(.system(size: 8, weight: .medium))
+                            .foregroundColor(Color(hex: "0088CC"))
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 2)
+                            .background(Color(hex: "0088CC").opacity(0.1))
+                            .cornerRadius(4)
+                    }
+                }
+
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(value)
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(.virgilTextPrimary)
+
+                    Text(unit)
+                        .font(.system(size: 10, weight: .regular))
+                        .foregroundColor(.virgilTextSecondary)
+                }
+            }
+
+            Spacer()
+
+            if let icon = trendIcon {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(trendColor)
+            }
         }
         .padding(VirgilSpacing.sm)
         .background(Color.black.opacity(0.02))

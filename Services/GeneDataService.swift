@@ -30,33 +30,111 @@ class GeneDataService: ObservableObject {
         let timestamp: String?
     }
     
-    /// 遺伝子データ本体
+    /// 遺伝子データ本体（新仕様 v6.0）
     struct GeneData: Codable, Identifiable {
         let id = UUID()
-        let userId: String?
-        let timestamp: String?
-        let diabetesRiskCategory: String?
-        let hypertensionRiskCategory: String?
-        let alcoholMetabolismCategory: String?
-        let recommendations: [String]?
-        let analysisVersion: String?
-        
+
+        // メタ情報
+        let version: String
+        let userId: String
+        let timestamp: String
+        let totalGenotypesProcessed: Double
+        let dataQualityScore: Double
+        let analysisType: String
+
+        // 遺伝子マーカーデータ（6カテゴリー）
+        let geneticMarkersWithGenotypes: [String: [GeneticMarker]]
+
+        // 統計情報（オプショナル）
+        let chromosomePositionLines: Double?
+        let invalidLines: Double?
+        let headerLines: Double?
+        let requestId: String?
+        let verificationHash: String?
+        let createdAt: String?
+        let ttl: Double?
+
         private enum CodingKeys: String, CodingKey {
-            case userId, timestamp, diabetesRiskCategory, hypertensionRiskCategory
-            case alcoholMetabolismCategory, recommendations, analysisVersion
+            case version, userId, timestamp
+            case totalGenotypesProcessed, dataQualityScore, analysisType
+            case geneticMarkersWithGenotypes
+            case chromosomePositionLines, invalidLines, headerLines
+            case requestId, verificationHash, createdAt, ttl
         }
-        
-        // デフォルト値を提供するcomputed properties
-        var displayDiabetesRisk: String { diabetesRiskCategory ?? "データなし" }
-        var displayHypertensionRisk: String { hypertensionRiskCategory ?? "データなし" }
-        var displayAlcoholMetabolism: String { alcoholMetabolismCategory ?? "データなし" }
-        var displayRecommendations: [String] { recommendations ?? [] }
-        
-        
     }
-    
-    
-    
+
+    /// 遺伝子マーカー（各カテゴリー内の個別項目）
+    struct GeneticMarker: Codable, Identifiable {
+        let id = UUID()
+        let title: String              // 例: "テロメアの長さ（細胞老化の指標）"
+        let genotypes: [String: String] // 例: {"rs4387287": "CC", "rs3027234": "AG"}
+
+        private enum CodingKeys: String, CodingKey {
+            case title, genotypes
+        }
+    }
+
+
+}
+
+// MARK: - GeneData Extensions
+
+extension GeneDataService.GeneData {
+    /// カテゴリー名の配列を取得（ソート済み）
+    var categories: [String] {
+        Array(geneticMarkersWithGenotypes.keys).sorted()
+    }
+
+    /// 特定カテゴリーのマーカーを取得
+    /// - Parameter category: カテゴリー名
+    /// - Returns: 該当するマーカーの配列
+    func markers(for category: String) -> [GeneDataService.GeneticMarker] {
+        geneticMarkersWithGenotypes[category] ?? []
+    }
+
+    /// 全マーカー数を取得
+    var totalMarkers: Int {
+        geneticMarkersWithGenotypes.values.reduce(0) { $0 + $1.count }
+    }
+
+    /// フォーマットされた解析日時
+    var formattedTimestamp: String {
+        let formatter = ISO8601DateFormatter()
+        if let date = formatter.date(from: timestamp) {
+            let displayFormatter = DateFormatter()
+            displayFormatter.dateFormat = "yyyy/MM/dd HH:mm"
+            displayFormatter.locale = Locale(identifier: "ja_JP")
+            return displayFormatter.string(from: date)
+        }
+        return timestamp
+    }
+}
+
+// MARK: - GeneticMarker Extensions
+
+extension GeneDataService.GeneticMarker {
+    /// SNP（rs番号）の配列を取得（ソート済み）
+    var snpIDs: [String] {
+        Array(genotypes.keys).sorted()
+    }
+
+    /// 特定SNPの遺伝子型を取得
+    /// - Parameter snpID: SNP ID（例: "rs4387287"）
+    /// - Returns: 遺伝子型（例: "CC"）
+    func genotype(for snpID: String) -> String? {
+        genotypes[snpID]
+    }
+
+    /// SNP数を取得
+    var snpCount: Int {
+        genotypes.count
+    }
+}
+
+// MARK: - GeneDataService
+
+extension GeneDataService {
+
     // MARK: - API Methods
     
     /// 遺伝子データを取得

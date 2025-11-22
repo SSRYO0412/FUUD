@@ -103,7 +103,8 @@ struct BloodTestView: View {
                         GridItem(.flexible(), spacing: VirgilSpacing.sm)
                     ], spacing: VirgilSpacing.sm) {
                         ForEach(filteredItems) { item in
-                            NavigationLink(destination: BloodTestDetailView(bloodItem: item)) {
+                            NavigationLink(destination: BloodTestDetailView(bloodItem: item)
+                                .environmentObject(bloodTestService)) {
                                 BloodItemCard(item: item)
                             }
                             .buttonStyle(PlainButtonStyle())

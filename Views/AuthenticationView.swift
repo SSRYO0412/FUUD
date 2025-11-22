@@ -49,6 +49,9 @@ struct AuthenticationView: View {
                 loginView
             }
         }
+        .onAppear {
+            print("🟢 [TEST] AuthenticationView appeared - Console is working!")
+        }
         .alert("メッセージ", isPresented: .constant(!cognitoService.message.isEmpty)) {
             Button("OK") {
                 cognitoService.message = ""

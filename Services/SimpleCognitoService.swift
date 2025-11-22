@@ -217,6 +217,7 @@ class SimpleCognitoService: ObservableObject {
     
     /// メール確認（AWS Cognito ConfirmSignUp API）
     func confirmSignUp(email: String, confirmationCode: String) async {
+        print("🔵 [DEBUG] confirmSignUp called with email: \(email)")
         do {
             let cognitoUrl = "https://cognito-idp.\(config.region).amazonaws.com/"
 
@@ -241,25 +242,32 @@ class SimpleCognitoService: ObservableObject {
                 // ConfirmSignUpは成功時に空のレスポンスを返すことがある
             }
 
+            print("🔵 [DEBUG] Calling Cognito ConfirmSignUp API...")
             let _: CognitoConfirmSignUpResponse = try await NetworkManager.shared.sendRequest(
                 config: requestConfig,
                 responseType: CognitoConfirmSignUpResponse.self
             )
+            print("🔵 [DEBUG] Cognito ConfirmSignUp succeeded")
 
             // メール確認成功後、DynamoDBにユーザープロファイルを作成
             print("📧 Email confirmed, creating user profile...")
+            print("🔵 [DEBUG] Calling createUserProfile API...")
             try await createUserProfile(email: email)
+            print("🔵 [DEBUG] createUserProfile succeeded")
 
             await MainActor.run {
+                print("🔵 [DEBUG] Setting success message")
                 self.message = "確認完了！ログインしてください"
             }
 
         } catch {
+            print("🔴 [DEBUG] Error in confirmSignUp: \(error)")
             let appError = ErrorManager.shared.convertToAppError(error)
             ErrorManager.shared.logError(appError, context: "SimpleCognitoService.confirmSignUp")
 
             await MainActor.run {
                 self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
+                print("🔴 [DEBUG] Error message set to: \(self.message)")
             }
         }
     }

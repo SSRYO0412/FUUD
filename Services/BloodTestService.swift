@@ -12,19 +12,29 @@ class BloodTestService: ObservableObject {
     static let shared = BloodTestService()
     
     // MARK: - Published Properties
-    @Published var bloodData: BloodTestData?
+    @Published var bloodHistory: [BloodTestData] = []
     @Published var isLoading = false
     @Published var errorMessage = ""
     @Published var showCopySuccessToast = false
 
+    /// 最新の血液検査データ（後方互換性のための計算プロパティ）
+    var bloodData: BloodTestData? {
+        bloodHistory.first
+    }
+
     private init() {}
     
     // MARK: - Data Models
-    
+
+    /// 履歴データコンテナ
+    struct HistoryContainer: Codable {
+        let history: [BloodTestData]
+    }
+
     /// 血液検査データ全体のレスポンス
     struct BloodTestResponse: Codable {
         let success: Bool
-        let data: BloodTestData?
+        let data: HistoryContainer?
         let error: String?
         let errorCode: String?
         let timestamp: String?
@@ -100,7 +110,7 @@ class BloodTestService: ObservableObject {
         // デモモードの場合、サンプルデータを返す
         if DemoModeManager.shared.isDemoMode {
             await MainActor.run {
-                self.bloodData = Self.createDemoData()
+                self.bloodHistory = [Self.createDemoData()]
                 self.errorMessage = ""
                 self.isLoading = false
             }
@@ -128,9 +138,12 @@ class BloodTestService: ObservableObject {
             )
             
             await MainActor.run {
-                if response.success, let data = response.data {
-                    print("🩸 BloodTest data received: \(data.bloodItems.count) items")
-                    self.bloodData = data
+                if response.success, let container = response.data {
+                    self.bloodHistory = container.history
+                    print("🩸 BloodTest history received: \(self.bloodHistory.count) records")
+                    if let latest = self.bloodHistory.first {
+                        print("🩸 Latest test: \(latest.bloodItems.count) items, timestamp: \(latest.timestamp)")
+                    }
                     self.errorMessage = ""
                 } else {
                     print("🩸 BloodTest failed: \(response.error ?? "Unknown error")")
@@ -154,7 +167,7 @@ class BloodTestService: ObservableObject {
     func refreshData() async {
         // 強制的にデータをクリアしてから再取得
         await MainActor.run {
-            self.bloodData = nil
+            self.bloodHistory = []
             self.errorMessage = ""
         }
         await fetchBloodTestData()
@@ -179,6 +192,43 @@ class BloodTestService: ObservableObject {
         return bloodData?.bloodItems.filter { item in
             ["正常", "normal"].contains(item.status.lowercased())
         } ?? []
+    }
+
+    // MARK: - History Helper Methods
+
+    /// 履歴データが複数あるか確認
+    var hasHistory: Bool {
+        bloodHistory.count > 1
+    }
+
+    /// 指定インデックスの履歴データから特定項目の値を取得
+    /// - Parameters:
+    ///   - key: 血液検査項目のキー
+    ///   - index: 履歴のインデックス（0が最新）
+    /// - Returns: 項目の値（見つからない場合はnil）
+    func getHistoricalValue(for key: String, at index: Int) -> String? {
+        guard index < bloodHistory.count else { return nil }
+        return bloodHistory[index].bloodItems.first { $0.key == key }?.value
+    }
+
+    /// 前回の検査結果から特定項目の値を取得
+    /// - Parameter key: 血液検査項目のキー
+    /// - Returns: 前回の値（見つからない場合はnil）
+    func getPreviousValue(for key: String) -> String? {
+        guard bloodHistory.count > 1 else { return nil }
+        return getHistoricalValue(for: key, at: 1)
+    }
+
+    /// 指定項目の履歴データ配列を取得
+    /// - Parameter key: 血液検査項目のキー
+    /// - Returns: 時系列順の値の配列
+    func getValueHistory(for key: String) -> [(timestamp: String, value: String)] {
+        return bloodHistory.compactMap { data in
+            guard let item = data.bloodItems.first(where: { $0.key == key }) else {
+                return nil
+            }
+            return (timestamp: data.timestamp, value: item.value)
+        }
     }
 
     // MARK: - Demo Data
