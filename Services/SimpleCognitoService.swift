@@ -219,13 +219,13 @@ class SimpleCognitoService: ObservableObject {
     func confirmSignUp(email: String, confirmationCode: String) async {
         do {
             let cognitoUrl = "https://cognito-idp.\(config.region).amazonaws.com/"
-            
+
             let requestBody = [
                 "ClientId": config.clientId,
                 "Username": email,
                 "ConfirmationCode": confirmationCode
             ] as [String: Any]
-            
+
             let requestConfig = NetworkManager.RequestConfig(
                 url: cognitoUrl,
                 method: .POST,
@@ -236,27 +236,68 @@ class SimpleCognitoService: ObservableObject {
                     "Content-Type": "application/x-amz-json-1.1"
                 ]
             )
-            
+
             struct CognitoConfirmSignUpResponse: Codable {
                 // ConfirmSignUpは成功時に空のレスポンスを返すことがある
             }
-            
+
             let _: CognitoConfirmSignUpResponse = try await NetworkManager.shared.sendRequest(
                 config: requestConfig,
                 responseType: CognitoConfirmSignUpResponse.self
             )
-            
+
+            // メール確認成功後、DynamoDBにユーザープロファイルを作成
+            print("📧 Email confirmed, creating user profile...")
+            try await createUserProfile(email: email)
+
             await MainActor.run {
                 self.message = "確認完了！ログインしてください"
             }
-            
+
         } catch {
             let appError = ErrorManager.shared.convertToAppError(error)
             ErrorManager.shared.logError(appError, context: "SimpleCognitoService.confirmSignUp")
-            
+
             await MainActor.run {
                 self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
             }
+        }
+    }
+
+    /// DynamoDBにユーザープロファイルを作成（API Gateway /users 経由）
+    private func createUserProfile(email: String) async throws {
+        let requestConfig = NetworkManager.RequestConfig(
+            url: apiGatewayUrl,
+            method: .POST,
+            body: ["email": email]
+        )
+
+        struct CreateUserResponse: Codable {
+            let message: String
+            let userId: String
+            let profile: UserProfile?
+            let s3Folders: [S3FolderResult]?
+
+            struct UserProfile: Codable {
+                let id: String
+                let name: String
+            }
+
+            struct S3FolderResult: Codable {
+                let path: String
+                let status: String
+                let description: String?
+            }
+        }
+
+        let response: CreateUserResponse = try await NetworkManager.shared.sendRequest(
+            config: requestConfig,
+            responseType: CreateUserResponse.self
+        )
+
+        print("✅ User profile created in DynamoDB: \(response.userId)")
+        if let folders = response.s3Folders {
+            print("✅ S3 folders created: \(folders.count) folders")
         }
     }
     

@@ -20,6 +20,7 @@ struct ExpandableCardOverlay: View {
             // 背景ぼかしオーバーレイ
             if isExpanded {
                 Color.clear
+                    .contentShape(Rectangle())
                     .ignoresSafeArea()
                     .onTapGesture {
                         closeCard()
