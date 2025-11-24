@@ -53,7 +53,15 @@ struct ChatView: View {
                                 }
                             } else {
                                 HStack {
-                                    AIMessageBubble(content: chat.content)
+                                    // 選択式質問を検出してボタン表示
+                                    if let questionMsg = ChatService.shared.extractQuestionMessage(from: chat.content) {
+                                        QuestionButtons(question: questionMsg) { selectedText in
+                                            message = selectedText
+                                            sendMessage()
+                                        }
+                                    } else {
+                                        AIMessageBubble(content: chat.content)
+                                    }
                                     Spacer(minLength: 50)
                                 }
                             }
@@ -302,5 +310,53 @@ struct ChatInputField: View {
             }
             .disabled(message.isEmpty || isLoading)
         }
+    }
+}
+
+// MARK: - Question Buttons
+
+struct QuestionButtons: View {
+    let question: QuestionMessage
+    let onSelect: (String) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
+            // 質問テキスト
+            Text(question.question)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.virgilTextPrimary)
+                .padding(.bottom, VirgilSpacing.xs)
+
+            // 選択肢ボタン
+            ForEach(question.options) { option in
+                Button {
+                    onSelect(option.text)
+                } label: {
+                    HStack(spacing: VirgilSpacing.sm) {
+                        Text(option.emoji)
+                            .font(.system(size: 16))
+                        Text(option.text)
+                            .font(.system(size: 13, weight: .regular))
+                            .foregroundColor(.virgilTextPrimary)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11))
+                            .foregroundColor(.virgilTextSecondary)
+                    }
+                    .padding(VirgilSpacing.md)
+                    .background(
+                        RoundedRectangle(cornerRadius: VirgilSpacing.radiusMedium)
+                            .fill(Color.white.opacity(0.05))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: VirgilSpacing.radiusMedium)
+                                    .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                            )
+                    )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+        .padding(VirgilSpacing.md)
+        .virgilGlassCard()
     }
 }

@@ -312,6 +312,61 @@ class ChatService {
 
         return requests
     }
+
+    /// AI応答から選択式質問を検出
+    /// フォーマット: 【選択】質問文 \n 1️⃣ 選択肢1 \n 2️⃣ 選択肢2 \n 3️⃣ 選択肢3
+    /// - Parameter response: AIの応答メッセージ
+    /// - Returns: 選択式質問（検出できなかった場合はnil）
+    func extractQuestionMessage(from response: String) -> QuestionMessage? {
+        guard response.contains("【選択】") else { return nil }
+
+        print("🔍 [DEBUG] Extracting question message from response")
+
+        let lines = response.components(separatedBy: "\n")
+        var question = ""
+        var options: [QuestionOption] = []
+        var inQuestionSection = false
+
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // 【選択】マーカーを検出
+            if trimmed.hasPrefix("【選択】") {
+                question = trimmed.replacingOccurrences(of: "【選択】", with: "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                inQuestionSection = true
+                print("✅ Found question: '\(question)'")
+                continue
+            }
+
+            // 選択肢を検出（絵文字番号: 1️⃣ 2️⃣ 3️⃣）
+            if inQuestionSection && !trimmed.isEmpty {
+                // 正規表現で絵文字番号を検出
+                let pattern = #"^([1-3]️⃣)\s*(.+)$"#
+                if let regex = try? NSRegularExpression(pattern: pattern, options: []),
+                   let match = regex.firstMatch(in: trimmed, options: [], range: NSRange(trimmed.startIndex..., in: trimmed)) {
+
+                    if let emojiRange = Range(match.range(at: 1), in: trimmed),
+                       let textRange = Range(match.range(at: 2), in: trimmed) {
+                        let emoji = String(trimmed[emojiRange])
+                        let text = String(trimmed[textRange])
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+                        options.append(QuestionOption(emoji: emoji, text: text))
+                        print("✅ Found option: \(emoji) \(text)")
+                    }
+                }
+            }
+        }
+
+        guard !question.isEmpty, !options.isEmpty else {
+            print("❌ Failed to extract question or options")
+            return nil
+        }
+
+        print("✅ Successfully extracted question with \(options.count) options")
+        return QuestionMessage(question: question, options: options)
+    }
 }
 
 // NOTE: ChatError is now handled by the unified AppError system
