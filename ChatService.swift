@@ -111,6 +111,207 @@ class ChatService {
 
         return [response.response] // 通常のAPIレスポンスは単一のメッセージとして返す
     }
+
+    /// 改善版: 血液・遺伝子データを含むチャットメッセージを送信（2段階抽出対応）
+    /// - Parameters:
+    ///   - message: ユーザーのメッセージ
+    ///   - topic: トピック
+    ///   - conversationHistory: 会話履歴
+    ///   - requestedGeneRequests: AIが要求した遺伝子データ（前回の応答から検出）
+    ///   - isFirstMessage: 初回メッセージかどうか
+    /// - Returns: AIからの応答
+    func sendEnhancedMessage(
+        _ message: String,
+        topic: String = "general_health",
+        conversationHistory: [ChatMessage] = [],
+        requestedGeneRequests: [GeneRequest] = [],
+        isFirstMessage: Bool = false
+    ) async throws -> String {
+        // [DUMMY] デモモード: 固定Q&Aチェック
+        if DemoChatData.isEnabled {
+            if let demoResponse = DemoChatData.demoQA[message] {
+                try await Task.sleep(nanoseconds: 1_500_000_000)
+                let sections = demoResponse.components(separatedBy: "\n\n").filter { !$0.isEmpty }
+                return sections.joined(separator: "\n\n")
+            }
+        }
+
+        // 現在のユーザーメールを取得
+        guard let userEmail = SimpleCognitoService.shared.currentUserEmail else {
+            throw AppError.userNotFound
+        }
+
+        // リクエストボディを構築
+        var requestBody: [String: Any] = [
+            "userId": userEmail,
+            "message": message,
+            "topic": topic,
+            "isFirstMessage": isFirstMessage
+        ]
+
+        // 会話履歴を追加（2回目以降）
+        if !conversationHistory.isEmpty {
+            let historyData = conversationHistory.map { msg in
+                return [
+                    "role": msg.role,
+                    "content": msg.content,
+                    "timestamp": msg.timestamp
+                ]
+            }
+            requestBody["conversationHistory"] = historyData
+            print("💬 Sending conversation history: \(conversationHistory.count) messages")
+        }
+
+        // 初回メッセージの場合、血液データを送信
+        if isFirstMessage {
+            if let bloodData = BloodTestService.shared.extractBloodDataForChat() {
+                requestBody["bloodData"] = bloodData
+                print("🩸 Sending blood data: \(bloodData.count) items")
+            }
+
+            // 利用可能な遺伝子カテゴリーリストも送信（AIが選択できるように）
+            let availableCategories = GeneDataService.shared.availableCategories()
+            if !availableCategories.isEmpty {
+                requestBody["availableGeneCategories"] = availableCategories
+                print("🧬 Sending available gene categories: \(availableCategories.count) categories")
+            }
+        }
+
+        // AIが要求した遺伝子データがある場合、そのデータを送信
+        if !requestedGeneRequests.isEmpty {
+            print("🔍 [DEBUG] Processing \(requestedGeneRequests.count) gene request(s)")
+            var geneData: [String: Any] = [:]
+
+            for request in requestedGeneRequests {
+                print("🔍 [DEBUG] Request - Category: '\(request.category)', Subcategories: \(request.subcategories?.joined(separator: ", ") ?? "nil (list only)")")
+
+                if let subcategories = request.subcategories {
+                    // Pattern 1: 小カテゴリー指定 → SNPsデータを送信
+                    if let categoryData = GeneDataService.shared.extractCategoryData(
+                        categoryName: request.category,
+                        subcategories: subcategories
+                    ) {
+                        geneData[request.category] = categoryData
+                        print("✅ Extracted SNPs data for '\(request.category)': \(categoryData.count) subcategories")
+                    } else {
+                        print("❌ Failed to extract data for '\(request.category)'")
+                    }
+                } else {
+                    // Pattern 2: 大カテゴリーのみ → 小カテゴリーリストのみを送信
+                    if let metadata = GeneDataService.shared.extractCategoryMetadata(categoryName: request.category) {
+                        geneData[request.category] = metadata
+                        print("✅ Extracted metadata for '\(request.category)': \(metadata.count) subcategories")
+                    } else {
+                        print("❌ Failed to extract metadata for '\(request.category)'")
+                    }
+                }
+            }
+
+            if !geneData.isEmpty {
+                requestBody["geneData"] = geneData
+                print("🧬 Sending gene data: \(geneData.keys.joined(separator: ", "))")
+            } else {
+                print("🔍 [DEBUG] No gene data extracted")
+            }
+        } else {
+            print("🔍 [DEBUG] No gene requests")
+        }
+
+        // リクエスト設定
+        let requestConfig = NetworkManager.RequestConfig(
+            url: chatEndpoint,
+            method: .POST,
+            body: requestBody,
+            requiresAuth: true
+        )
+
+        // リクエスト送信
+        let response: ChatResponse = try await NetworkManager.shared.sendRequest(
+            config: requestConfig,
+            responseType: ChatResponse.self
+        )
+
+        return response.response
+    }
+
+    /// AI応答から遺伝子カテゴリー要求を検出（2段階抽出対応）
+    /// - Parameter response: AIの応答メッセージ
+    /// - Returns: 要求された遺伝子カテゴリーの配列（GeneRequest構造体）
+    func extractRequestedGeneCategories(from response: String) -> [GeneRequest] {
+        var requests: [GeneRequest] = []
+
+        print("🔍 [DEBUG] Extracting gene requests from AI response:")
+        print("🔍 [DEBUG] Response length: \(response.count) chars")
+        print("🔍 [DEBUG] Full response: \(response)")
+
+        // 🧬 マーカーでsplitして各セグメントを処理（同じ行に複数の🧬がある場合に対応）
+        let segments = response.components(separatedBy: "🧬").filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+        print("🔍 [DEBUG] Total segments: \(segments.count)")
+
+        for (index, segment) in segments.enumerated() {
+            let trimmed = segment.trimmingCharacters(in: .whitespacesAndNewlines)
+            print("🔍 [DEBUG] Processing segment \(index): '\(trimmed)'")
+
+            // Pattern 1: "代謝力 >> インスリン抵抗性, 中性脂肪" （小カテゴリー指定）
+            // Pattern 2: "代謝力（Metabolic Power）" （大カテゴリーのみ）
+            if trimmed.contains(">>") {
+                // Pattern 1: 小カテゴリー指定
+                let parts = trimmed.components(separatedBy: ">>")
+                guard parts.count >= 2 else {
+                    print("⚠️ [WARN] Invalid format: '\(trimmed)'")
+                    continue
+                }
+
+                let category = parts[0]
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .replacingOccurrences(of: "に関する遺伝子情報", with: "")
+                    .replacingOccurrences(of: "の遺伝子情報", with: "")
+                    .replacingOccurrences(of: "遺伝子情報", with: "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+
+                let subcategoriesStr = parts[1].trimmingCharacters(in: .whitespacesAndNewlines)
+                let subcategories = subcategoriesStr
+                    .replacingOccurrences(of: "、", with: ",")  // 全角カンマを半角カンマに変換
+                    .components(separatedBy: ",")
+                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+
+                if !category.isEmpty && !subcategories.isEmpty {
+                    let request = GeneRequest(category: category, subcategories: subcategories)
+                    requests.append(request)
+                    print("✅ [Pattern 1] Category: '\(category)', Subcategories: \(subcategories.joined(separator: ", "))")
+                }
+
+            } else {
+                // Pattern 2: 大カテゴリーのみ（小カテゴリーリスト要求）
+                // 最初の改行または文の終わりまでを抽出（複数行にまたがる場合に対応）
+                let firstLine = trimmed.components(separatedBy: "\n").first ?? trimmed
+                let category = firstLine
+                    .replacingOccurrences(of: "に関する遺伝子情報", with: "")
+                    .replacingOccurrences(of: "の遺伝子情報", with: "")
+                    .replacingOccurrences(of: "遺伝子情報", with: "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+
+                if !category.isEmpty {
+                    let request = GeneRequest(category: category, subcategories: nil)
+                    requests.append(request)
+                    print("✅ [Pattern 2] Category: '\(category)' (小カテゴリーリストのみ要求)")
+                }
+            }
+        }
+
+        if !requests.isEmpty {
+            print("🧬 Detected \(requests.count) gene request(s)")
+        } else {
+            print("🔍 [DEBUG] No gene requests detected")
+        }
+
+        // 利用可能なカテゴリーも表示
+        let availableCategories = GeneDataService.shared.availableCategories()
+        print("🔍 [DEBUG] Available categories: \(availableCategories.joined(separator: ", "))")
+
+        return requests
+    }
 }
 
 // NOTE: ChatError is now handled by the unified AppError system
@@ -120,4 +321,17 @@ struct ChatResponse: Codable {
     let response: String
     let timestamp: String
     let disclaimer: String?
+}
+
+// MARK: - 会話履歴モデル
+struct ChatMessage: Codable {
+    let role: String      // "user" or "assistant"
+    let content: String   // メッセージ内容
+    let timestamp: String // ISO8601形式のタイムスタンプ
+}
+
+// MARK: - 遺伝子データ要求モデル（2段階抽出対応）
+struct GeneRequest {
+    let category: String           // 大カテゴリー名（例: "代謝力（Metabolic Power）"）
+    let subcategories: [String]?   // 小カテゴリー名配列、nilの場合は小カテゴリーリストのみ要求
 }

@@ -9,10 +9,11 @@ import SwiftUI
 
 struct ChatView: View {
     @State private var message = ""
-    @State private var chatHistory: [(role: String, content: String)] = []
+    @State private var chatHistory: [ChatMessage] = []
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var selectedTopic = "general_health"
+    @State private var requestedGeneRequests: [GeneRequest] = [] // AIが要求した遺伝子データ（2段階抽出対応）
 
     let topics = [
         ("general_health", "一般的な健康"),
@@ -98,32 +99,35 @@ struct ChatView: View {
         let userMessage = message
         message = ""
         errorMessage = nil
-
-        // ユーザーメッセージを追加
-        chatHistory.append((role: "user", content: userMessage))
-
         isLoading = true
 
         Task {
             do {
-                let responses = try await ChatService.shared.sendMessage(
+                // ✅ 送信前に初回判定（chatHistoryに追加する前）
+                let isFirstMessage = chatHistory.isEmpty
+
+                // ✅ 改善版APIを呼び出し（この時点のchatHistoryは最新メッセージを含まない）
+                let response = try await ChatService.shared.sendEnhancedMessage(
                     userMessage,
-                    topic: selectedTopic
+                    topic: selectedTopic,
+                    conversationHistory: chatHistory,
+                    requestedGeneRequests: requestedGeneRequests,
+                    isFirstMessage: isFirstMessage
                 )
 
-                // 複数のレスポンスを順番にゆっくり表示
-                for (index, response) in responses.enumerated() {
-                    // 最初のメッセージ以外は2秒待つ
-                    if index > 0 {
-                        try await Task.sleep(nanoseconds: 2_000_000_000) // 2秒 [DUMMY] メッセージ間の遅延
-                    }
-
-                    await MainActor.run {
-                        chatHistory.append((role: "assistant", content: response))
-                    }
-                }
-
                 await MainActor.run {
+                    // ✅ 送信成功後に履歴追加（ユーザーメッセージ + AI応答）
+                    let userTimestamp = ISO8601DateFormatter().string(from: Date())
+                    let userChatMessage = ChatMessage(role: "user", content: userMessage, timestamp: userTimestamp)
+                    chatHistory.append(userChatMessage)
+
+                    let aiTimestamp = ISO8601DateFormatter().string(from: Date())
+                    let aiChatMessage = ChatMessage(role: "assistant", content: response, timestamp: aiTimestamp)
+                    chatHistory.append(aiChatMessage)
+
+                    // AI応答から遺伝子データ要求を検出（次回送信用）
+                    requestedGeneRequests = ChatService.shared.extractRequestedGeneCategories(from: response)
+
                     isLoading = false
                 }
             } catch {
