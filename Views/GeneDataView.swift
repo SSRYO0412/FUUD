@@ -28,209 +28,13 @@ struct GeneDataView: View {
 
     @ViewBuilder
     private func geneDataContent(geneData: GeneDataService.GeneData) -> some View {
-        VStack(alignment: .leading, spacing: VirgilSpacing.md) {
-            // メタ情報カード
-            metaInfoCard(geneData: geneData)
-
-            // カテゴリー別遺伝子マーカー表示
+        VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
+            // 全マーカーを縦に並べる（カテゴリータイトルなし）
             ForEach(geneData.categories, id: \.self) { category in
-                categoryCard(category: category, markers: geneData.markers(for: category))
-            }
-        }
-    }
-
-    // MARK: - Meta Info Card
-
-    @ViewBuilder
-    private func metaInfoCard(geneData: GeneDataService.GeneData) -> some View {
-        VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
-            Text("GENETIC ANALYSIS")
-                .font(.system(size: 9, weight: .semibold))
-                .foregroundColor(.gray)
-
-            VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
-                HStack {
-                    Text("解析日時")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.virgilTextSecondary)
-                    Spacer()
-                    Text(geneData.formattedTimestamp)
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.virgilTextPrimary)
-                }
-
-                HStack {
-                    Text("処理された遺伝子型")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.virgilTextSecondary)
-                    Spacer()
-                    Text("\(Int(geneData.totalGenotypesProcessed).formatted())")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.virgilTextPrimary)
-                }
-
-                HStack {
-                    Text("データ品質スコア")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.virgilTextSecondary)
-                    Spacer()
-                    Text(String(format: "%.2f", geneData.dataQualityScore))
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(qualityScoreColor(geneData.dataQualityScore))
-                }
-
-                HStack {
-                    Text("バージョン")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.virgilTextSecondary)
-                    Spacer()
-                    Text("v\(geneData.version)")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.virgilTextPrimary)
+                ForEach(geneData.markers(for: category)) { marker in
+                    GeneMarkerCard(marker: marker)
                 }
             }
-            .padding(VirgilSpacing.md)
-            .background(Color.black.opacity(0.02))
-            .cornerRadius(VirgilSpacing.radiusMedium)
-        }
-        .virgilGlassCard()
-    }
-
-    // MARK: - Category Card
-
-    @ViewBuilder
-    private func categoryCard(category: String, markers: [GeneDataService.GeneticMarker]) -> some View {
-        VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
-            // カテゴリー名
-            Text(category)
-                .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.virgilTextPrimary)
-                .padding(.bottom, VirgilSpacing.xs)
-
-            // マーカーリスト
-            VStack(spacing: VirgilSpacing.xs) {
-                ForEach(markers) { marker in
-                    markerDisclosure(marker: marker)
-                }
-            }
-        }
-        .virgilGlassCard()
-    }
-
-    // MARK: - Marker Disclosure
-
-    @ViewBuilder
-    private func markerDisclosure(marker: GeneDataService.GeneticMarker) -> some View {
-        // 事前計算済みのキャッシュを使用（ビュー描画時の重い計算を回避）
-        let impact = marker.cachedImpact ?? SNPImpactCount(protective: 0, risk: 0, neutral: 0)
-
-        DisclosureGroup {
-            VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
-                // 影響因子カウント表示
-                HStack(spacing: VirgilSpacing.sm) {
-                    HStack(spacing: 4) {
-                        Text("🟢")
-                            .font(.system(size: 10))
-                        Text("保護: \(impact.protective)")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundColor(Color(hex: "66BB6A"))
-                    }
-                    HStack(spacing: 4) {
-                        Text("🔴")
-                            .font(.system(size: 10))
-                        Text("リスク: \(impact.risk)")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundColor(Color(hex: "E57373"))
-                    }
-                    HStack(spacing: 4) {
-                        Text("⚪️")
-                            .font(.system(size: 10))
-                        Text("中立: \(impact.neutral)")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundColor(.gray)
-                    }
-                }
-                .padding(.bottom, VirgilSpacing.xs)
-
-                Divider()
-                    .padding(.vertical, VirgilSpacing.xs)
-
-                // SNP情報表示
-                ForEach(marker.snpIDs, id: \.self) { snpID in
-                    if let genotype = marker.genotype(for: snpID) {
-                        HStack {
-                            Text(snpID)
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundColor(.virgilTextSecondary)
-                            Spacer()
-                            Text(genotype)
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundColor(.virgilTextPrimary)
-                                .padding(.horizontal, VirgilSpacing.xs)
-                                .padding(.vertical, 2)
-                                .background(Color(hex: "E3F2FD"))
-                                .cornerRadius(4)
-                        }
-                        .padding(.vertical, 2)
-                    }
-                }
-
-                // スコア表示
-                HStack {
-                    Text("影響スコア:")
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(.gray)
-                    Text("\(impact.score > 0 ? "+" : "")\(impact.score)")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundColor(scoreColor(impact.score))
-                }
-                .padding(.top, VirgilSpacing.xs)
-            }
-            .padding(VirgilSpacing.sm)
-            .background(Color.black.opacity(0.01))
-            .cornerRadius(VirgilSpacing.radiusSmall)
-        } label: {
-            VStack(spacing: VirgilSpacing.xs) {
-                HStack {
-                    Text(marker.title)
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(.virgilTextPrimary)
-                    Spacer()
-                    Text("\(marker.snpCount)")
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(.gray)
-                }
-
-                // 影響因子カウントサマリー
-                HStack(spacing: VirgilSpacing.xs) {
-                    Text("🟢 \(impact.protective)")
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(Color(hex: "66BB6A"))
-                    Text("🔴 \(impact.risk)")
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(Color(hex: "E57373"))
-                    Text("⚪️ \(impact.neutral)")
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundColor(.gray)
-                    Spacer()
-                }
-            }
-            .padding(.vertical, VirgilSpacing.xs)
-        }
-        .padding(VirgilSpacing.sm)
-        .background(Color.black.opacity(0.02))
-        .cornerRadius(VirgilSpacing.radiusMedium)
-    }
-
-    /// スコアに応じた色を返す
-    private func scoreColor(_ score: Int) -> Color {
-        switch score {
-        case 20...100:
-            return Color(hex: "66BB6A") // 緑（優秀）
-        case -19...19:
-            return Color(hex: "FBC02D") // 黄色（中立）
-        default:
-            return Color(hex: "E57373") // 赤（要注意）
         }
     }
 
@@ -319,22 +123,66 @@ struct GeneDataView: View {
         .virgilGlassCard()
     }
 
-    // MARK: - Helper Functions
-
-    /// データ品質スコアに応じた色を返す
-    private func qualityScoreColor(_ score: Double) -> Color {
-        switch score {
-        case 0.8...1.0:
-            return Color(hex: "66BB6A") // 緑（優秀）
-        case 0.5...0.79:
-            return Color(hex: "FBC02D") // 黄色（良好）
-        default:
-            return Color(hex: "E57373") // 赤（要改善）
-        }
-    }
 }
 
 // MARK: - Preview
+
+// MARK: - Gene Marker Card
+
+struct GeneMarkerCard: View {
+    let marker: GeneDataService.GeneticMarker
+
+    // 事前計算済みのキャッシュを使用
+    private var impact: SNPImpactCount {
+        marker.cachedImpact ?? SNPImpactCount(protective: 0, risk: 0, neutral: 0)
+    }
+
+    // スコアに応じた色
+    private var scoreColor: Color {
+        switch impact.score {
+        case 20...1000:
+            return Color(hex: "00C853") // 緑（良好）
+        case 1...19:
+            return Color(hex: "66BB6A") // 薄緑
+        case -19...0:
+            return Color(hex: "FFCB05") // 黄色（中立）
+        case -99...(-20):
+            return Color(hex: "FF9800") // オレンジ（注意）
+        default:
+            return Color(hex: "ED1C24") // 赤（要注意）
+        }
+    }
+
+    // スコアのフォーマット
+    private var formattedScore: String {
+        if impact.score > 0 {
+            return "+\(impact.score)"
+        } else {
+            return "\(impact.score)"
+        }
+    }
+
+    var body: some View {
+        HStack {
+            // 項目名（左寄せ）
+            Text(marker.title)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.virgilTextPrimary)
+                .lineLimit(1)
+
+            Spacer()
+
+            // スコア（右寄せ）
+            Text(formattedScore)
+                .font(.system(size: 20, weight: .bold))
+                .foregroundColor(scoreColor)
+        }
+        .padding(.horizontal, VirgilSpacing.md)
+        .padding(.vertical, VirgilSpacing.sm)
+        .frame(maxWidth: .infinity)
+        .virgilGlassCard()
+    }
+}
 
 #if DEBUG
 struct GeneDataView_Previews: PreviewProvider {

@@ -121,7 +121,7 @@ class ChatService {
     ///   - bloodData: 血液データ（ユーザーが選択した場合のみ）
     ///   - vitalData: バイタルデータ/HealthKitデータ（ユーザーが選択した場合のみ）
     ///   - geneData: 遺伝子データ（ユーザーが選択した場合のみ）
-    /// - Returns: AIからの応答
+    /// - Returns: AIからの応答（ChatResponse構造体、chunksを含む）
     func sendEnhancedMessage(
         _ message: String,
         topic: String = "general_health",
@@ -130,13 +130,21 @@ class ChatService {
         bloodData: [[String: Any]]? = nil,
         vitalData: HealthKitData? = nil,
         geneData: [String: Any]? = nil
-    ) async throws -> String {
+    ) async throws -> ChatResponse {
         // [DUMMY] デモモード: 固定Q&Aチェック
         if DemoChatData.isEnabled {
             if let demoResponse = DemoChatData.demoQA[message] {
                 try await Task.sleep(nanoseconds: 1_500_000_000)
                 let sections = demoResponse.components(separatedBy: "\n\n").filter { !$0.isEmpty }
-                return sections.joined(separator: "\n\n")
+                let fullResponse = sections.joined(separator: "\n\n")
+                // デモモードでも chunks 形式で返す（後方互換）
+                return ChatResponse(
+                    response: fullResponse,
+                    chunks: nil,
+                    chunked: false,
+                    timestamp: ISO8601DateFormatter().string(from: Date()),
+                    disclaimer: nil
+                )
             }
         }
 
@@ -275,7 +283,7 @@ class ChatService {
             responseType: ChatResponse.self
         )
 
-        return response.response
+        return response
     }
 
     /// AI応答から遺伝子カテゴリー要求を検出（2段階抽出対応）
@@ -449,6 +457,8 @@ class ChatService {
 // MARK: - レスポンスモデル
 struct ChatResponse: Codable {
     let response: String
+    let chunks: [String]?    // Phase 4: 【1/3】【2/3】【3/3】形式で分割されたチャンク
+    let chunked: Bool?       // チャンク分割の有無
     let timestamp: String
     let disclaimer: String?
 }

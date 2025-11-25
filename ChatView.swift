@@ -15,6 +15,9 @@ struct ChatView: View {
     @State private var selectedTopic = "general_health"
     @State private var requestedGeneRequests: [GeneRequest] = [] // AIが要求した遺伝子データ（2段階抽出対応）
 
+    // キーボード制御
+    @FocusState private var isInputFocused: Bool
+
     // データ選択ボタンの状態（永続化）
     @AppStorage("isBloodDataSelected") private var isBloodDataSelected = false
     @AppStorage("isGeneDataSelected") private var isGeneDataSelected = false
@@ -113,46 +116,8 @@ struct ChatView: View {
                         .padding(.horizontal, VirgilSpacing.md)
                 }
 
-                // デバッグ情報パネル（TestFlight用）
-                if !debugInfo.isEmpty {
-                    if showDebugInfo {
-                        // 展開状態：フル表示
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text("🔍 Debug Info")
-                                    .font(.system(size: 10, weight: .bold))
-                                Spacer()
-                                Button("×") {
-                                    showDebugInfo = false
-                                }
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(.gray)
-                            }
-                            Text(debugInfo)
-                                .font(.system(size: 9, weight: .regular))
-                                .foregroundColor(.gray)
-                        }
-                        .padding(VirgilSpacing.sm)
-                        .background(Color.yellow.opacity(0.1))
-                        .cornerRadius(8)
-                        .padding(.horizontal, VirgilSpacing.md)
-                    } else {
-                        // 折りたたみ状態：小さなアイコンのみ
-                        HStack {
-                            Spacer()
-                            Button(action: {
-                                showDebugInfo = true
-                            }) {
-                                Text("🔍")
-                                    .font(.system(size: 16))
-                                    .padding(6)
-                                    .background(Color.yellow.opacity(0.2))
-                                    .cornerRadius(6)
-                            }
-                        }
-                        .padding(.horizontal, VirgilSpacing.md)
-                    }
-                }
+                // デバッグ情報パネル（TestFlight用）- 非表示
+                // if !debugInfo.isEmpty { ... }
 
                 // コンテキストバー（選択中のデータを表示）
                 if isBloodDataSelected || isGeneDataSelected || isVitalDataSelected {
@@ -222,7 +187,8 @@ struct ChatView: View {
                 ChatInputField(
                     message: $message,
                     isLoading: isLoading,
-                    onSend: sendMessage
+                    onSend: sendMessage,
+                    isFocused: $isInputFocused
                 )
                 .padding(.horizontal, VirgilSpacing.md)
                 .padding(.bottom, VirgilSpacing.md)
@@ -230,6 +196,10 @@ struct ChatView: View {
         }
         .navigationTitle("TUUN.ai")
         .navigationBarTitleDisplayMode(.large)
+        .onTapGesture {
+            // キーボード外タップで非表示
+            isInputFocused = false
+        }
         .onAppear {
             // 遺伝子データを事前にロード
             Task {
@@ -436,6 +406,9 @@ struct ChatView: View {
     }
 
     private func sendMessage() {
+        // キーボードを非表示
+        isInputFocused = false
+
         let userMessage = message
         message = ""
         errorMessage = nil
@@ -502,8 +475,15 @@ struct ChatView: View {
                     }
                 }
 
+                // ✅ ユーザーメッセージを即座に表示（API呼び出し前）
+                let userTimestamp = ISO8601DateFormatter().string(from: Date())
+                let userChatMessage = ChatMessage(role: "user", content: userMessage, timestamp: userTimestamp)
+                await MainActor.run {
+                    chatHistory.append(userChatMessage)
+                }
+
                 // v8改善版APIを呼び出し
-                let response = try await ChatService.shared.sendEnhancedMessage(
+                let chatResponse = try await ChatService.shared.sendEnhancedMessage(
                     userMessage,
                     topic: selectedTopic,
                     conversationHistory: chatHistory,
@@ -514,17 +494,28 @@ struct ChatView: View {
                 )
 
                 await MainActor.run {
-                    // ✅ 送信成功後に履歴追加（ユーザーメッセージ + AI応答）
-                    let userTimestamp = ISO8601DateFormatter().string(from: Date())
-                    let userChatMessage = ChatMessage(role: "user", content: userMessage, timestamp: userTimestamp)
-                    chatHistory.append(userChatMessage)
-
-                    let aiTimestamp = ISO8601DateFormatter().string(from: Date())
-                    let aiChatMessage = ChatMessage(role: "assistant", content: response, timestamp: aiTimestamp)
-                    chatHistory.append(aiChatMessage)
+                    // Phase 4: chunksがあれば順次表示、なければ従来通り
+                    if let chunks = chatResponse.chunks, chunks.count > 1 {
+                        // 複数チャンクを順次追加（アニメーション付き）
+                        for (index, chunk) in chunks.enumerated() {
+                            Task {
+                                try? await Task.sleep(nanoseconds: UInt64(index) * 500_000_000) // 0.5秒間隔
+                                await MainActor.run {
+                                    let chunkTimestamp = ISO8601DateFormatter().string(from: Date())
+                                    let chunkMessage = ChatMessage(role: "assistant", content: chunk, timestamp: chunkTimestamp)
+                                    chatHistory.append(chunkMessage)
+                                }
+                            }
+                        }
+                    } else {
+                        // 単一レスポンス（後方互換）
+                        let aiTimestamp = ISO8601DateFormatter().string(from: Date())
+                        let aiChatMessage = ChatMessage(role: "assistant", content: chatResponse.response, timestamp: aiTimestamp)
+                        chatHistory.append(aiChatMessage)
+                    }
 
                     // AI応答から遺伝子データ要求を検出（次回送信用）
-                    requestedGeneRequests = ChatService.shared.extractRequestedGeneCategories(from: response)
+                    requestedGeneRequests = ChatService.shared.extractRequestedGeneCategories(from: chatResponse.response)
 
                     // AI応答からクイックリプライ選択肢を抽出
                     extractQuickReplyOptions()
@@ -632,7 +623,7 @@ struct UserMessageBubble: View {
 
     var body: some View {
         Text(content)
-            .font(.system(size: 13, weight: .regular))
+            .font(.system(size: 17, weight: .regular))
             .foregroundColor(.white)
             .padding(VirgilSpacing.md)
             .background(
@@ -661,7 +652,7 @@ struct AIMessageBubble: View {
 
     var body: some View {
         Text(content)
-            .font(.system(size: 13, weight: .regular))
+            .font(.system(size: 17, weight: .regular))
             .foregroundColor(.virgilTextPrimary)
             .padding(VirgilSpacing.md)
             .virgilGlassCard()
@@ -700,12 +691,11 @@ struct ChatInputField: View {
     @Binding var message: String
     let isLoading: Bool
     let onSend: () -> Void
+    var isFocused: FocusState<Bool>.Binding
 
     var body: some View {
         HStack(spacing: VirgilSpacing.sm) {
-            TextField("メッセージを入力...", text: $message)
-                .font(.system(size: 13, weight: .regular))
-                .foregroundColor(.virgilTextPrimary)
+            inputField
                 .padding(VirgilSpacing.md)
                 .background(
                     RoundedRectangle(cornerRadius: 24)
@@ -751,6 +741,22 @@ struct ChatInputField: View {
                 }
             }
             .disabled(message.isEmpty || isLoading)
+        }
+    }
+
+    @ViewBuilder
+    private var inputField: some View {
+        if #available(iOS 16.0, *) {
+            TextField("メッセージを入力...", text: $message, axis: .vertical)
+                .font(.system(size: 17, weight: .regular))
+                .foregroundColor(.virgilTextPrimary)
+                .lineLimit(1...10)
+                .focused(isFocused)
+        } else {
+            TextField("メッセージを入力...", text: $message)
+                .font(.system(size: 17, weight: .regular))
+                .foregroundColor(.virgilTextPrimary)
+                .focused(isFocused)
         }
     }
 }

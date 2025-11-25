@@ -22,8 +22,9 @@ struct HealthKitData: Codable {
     var heartRateVariability: Double?  // 心拍変動 SDNN (ms)
     var heartRate: Double?             // 心拍数 (bpm)
 
-    // 活動量系 (3種類)
+    // 活動量系 (4種類)
     var activeEnergyBurned: Double?    // アクティブカロリー (kcal)
+    var basalEnergyBurned: Double?     // 安静時消費エネルギー (kcal)
     var exerciseTime: Double?          // エクササイズ時間 (分)
     var stepCount: Double?             // 歩数 (steps)
 

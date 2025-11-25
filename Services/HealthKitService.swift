@@ -56,9 +56,12 @@ class HealthKitService: ObservableObject {
             types.insert(heartRate)
         }
 
-        // 活動量系 (3種類)
+        // 活動量系 (4種類)
         if let activeEnergyBurned = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) {
             types.insert(activeEnergyBurned)
+        }
+        if let basalEnergyBurned = HKObjectType.quantityType(forIdentifier: .basalEnergyBurned) {
+            types.insert(basalEnergyBurned)
         }
         if let exerciseTime = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) {
             types.insert(exerciseTime)
@@ -160,6 +163,7 @@ class HealthKitService: ObservableObject {
         newHealthData.heartRate = cardiac.heartRate
 
         newHealthData.activeEnergyBurned = activity.activeEnergyBurned
+        newHealthData.basalEnergyBurned = activity.basalEnergyBurned
         newHealthData.exerciseTime = activity.exerciseTime
         newHealthData.stepCount = activity.stepCount
 
@@ -199,13 +203,14 @@ class HealthKitService: ObservableObject {
         return await (restingHR, vo2, hrv, hr)
     }
 
-    /// 活動量系データを取得 (3種類)
-    private func fetchActivityMetrics() async -> (activeEnergyBurned: Double?, exerciseTime: Double?, stepCount: Double?) {
+    /// 活動量系データを取得 (4種類)
+    private func fetchActivityMetrics() async -> (activeEnergyBurned: Double?, basalEnergyBurned: Double?, exerciseTime: Double?, stepCount: Double?) {
         async let activeEnergy = fetchMostRecentQuantitySample(for: .activeEnergyBurned, unit: .kilocalorie())
+        async let basalEnergy = fetchMostRecentQuantitySample(for: .basalEnergyBurned, unit: .kilocalorie())
         async let exercise = fetchMostRecentQuantitySample(for: .appleExerciseTime, unit: .minute())
         async let steps = fetchMostRecentQuantitySample(for: .stepCount, unit: .count())
 
-        return await (activeEnergy, exercise, steps)
+        return await (activeEnergy, basalEnergy, exercise, steps)
     }
 
     /// 移動距離系データを取得 (2種類)
@@ -410,6 +415,7 @@ class HealthKitService: ObservableObject {
 
         print("  活動量系:")
         print("    - アクティブカロリー: \(data.activeEnergyBurned.map { String(format: "%.0f kcal", $0) } ?? "N/A")")
+        print("    - 安静時消費エネルギー: \(data.basalEnergyBurned.map { String(format: "%.0f kcal", $0) } ?? "N/A")")
         print("    - エクササイズ時間: \(data.exerciseTime.map { String(format: "%.0f 分", $0) } ?? "N/A")")
         print("    - 歩数: \(data.stepCount.map { String(format: "%.0f steps", $0) } ?? "N/A")")
 
