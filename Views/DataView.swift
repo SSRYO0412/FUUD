@@ -11,6 +11,7 @@ import SwiftUI
 struct DataView: View {
     @State private var selectedTab: DataTab = .lifestyle
     @StateObject private var bloodTestService = BloodTestService.shared
+    @StateObject private var geneDataService = GeneDataService.shared
 
     var body: some View {
         NavigationView {
@@ -57,6 +58,8 @@ struct DataView: View {
                             BloodTab()
                         case .lifestyle:
                             LifestyleTab()
+                        case .gene:
+                            GeneTab()
                         }
                         }
                     }
@@ -66,6 +69,8 @@ struct DataView: View {
                 .refreshable {
                     if selectedTab == .blood {
                         await bloodTestService.refreshData()
+                    } else if selectedTab == .gene {
+                        await geneDataService.refreshData()
                     }
                 }
             }
@@ -81,6 +86,7 @@ struct DataView: View {
 enum DataTab: String, CaseIterable, Identifiable {
     case lifestyle = "LIFESTYLE"
     case blood = "BLOOD"
+    case gene = "GENE"
     // case microbiome = "MICROBIOME" - 一時的に非表示
 
     var id: String { rawValue }
@@ -226,6 +232,24 @@ private struct LifestyleTab: View {
     /// カテゴリーIDからスコアを取得（デフォルト値50）
     private func getScore(for categoryId: CategoryId) -> Int {
         return lifestyleScoreService.getScore(for: categoryId) ?? 50
+    }
+}
+
+// MARK: - Gene Tab
+
+private struct GeneTab: View {
+    @StateObject private var geneDataService = GeneDataService.shared
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+            GeneDataView()
+        }
+        .task {
+            // 初回表示時にデータ取得
+            if geneDataService.geneData == nil && !geneDataService.isLoading {
+                await geneDataService.fetchGeneData()
+            }
+        }
     }
 }
 

@@ -15,6 +15,27 @@ struct ChatView: View {
     @State private var selectedTopic = "general_health"
     @State private var requestedGeneRequests: [GeneRequest] = [] // AIが要求した遺伝子データ（2段階抽出対応）
 
+    // データ選択ボタンの状態
+    @State private var isBloodDataSelected = false
+    @State private var isGeneDataSelected = false
+    @State private var isVitalDataSelected = false
+
+    // 遺伝子データ蓄積（会話全体で永続化）
+    @State private var accumulatedGeneData: [String: Any] = [:]
+
+    // データ可用性の状態
+    @State private var bloodDataAvailability: DataAvailability = .unknown
+    @State private var geneDataAvailability: DataAvailability = .unknown
+    @State private var vitalDataAvailability: DataAvailability = .unknown
+
+    // トースト表示
+    @State private var showSendToast = false
+    @State private var sendToastMessage = ""
+
+    // デバッグ情報表示（TestFlight用）
+    @State private var showDebugInfo = true
+    @State private var debugInfo = ""
+
     let topics = [
         ("general_health", "一般的な健康"),
         ("nutrition", "栄養"),
@@ -89,6 +110,44 @@ struct ChatView: View {
                         .padding(.horizontal, VirgilSpacing.md)
                 }
 
+                // デバッグ情報パネル（TestFlight用）
+                if showDebugInfo && !debugInfo.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text("🔍 Debug Info")
+                                .font(.system(size: 10, weight: .bold))
+                            Spacer()
+                            Button("×") {
+                                showDebugInfo = false
+                            }
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.gray)
+                        }
+                        Text(debugInfo)
+                            .font(.system(size: 9, weight: .regular))
+                            .foregroundColor(.gray)
+                    }
+                    .padding(VirgilSpacing.sm)
+                    .background(Color.yellow.opacity(0.1))
+                    .cornerRadius(8)
+                    .padding(.horizontal, VirgilSpacing.md)
+                }
+
+                // データ選択ボタン
+                DataSelectionButtons(
+                    isBloodDataSelected: $isBloodDataSelected,
+                    isGeneDataSelected: $isGeneDataSelected,
+                    isVitalDataSelected: $isVitalDataSelected,
+                    bloodDataAvailability: bloodDataAvailability,
+                    geneDataAvailability: geneDataAvailability,
+                    vitalDataAvailability: vitalDataAvailability,
+                    onBloodTapped: { handleBloodDataToggle() },
+                    onGeneTapped: { handleGeneDataToggle() },
+                    onVitalTapped: { handleVitalDataToggle() }
+                )
+                .padding(.horizontal, VirgilSpacing.md)
+                .padding(.bottom, VirgilSpacing.xs)
+
                 // 入力フィールド
                 ChatInputField(
                     message: $message,
@@ -101,8 +160,152 @@ struct ChatView: View {
         }
         .navigationTitle("TUUN.ai")
         .navigationBarTitleDisplayMode(.large)
+        .onAppear {
+            // 遺伝子データを事前にロード
+            Task {
+                if GeneDataService.shared.geneData == nil {
+                    await GeneDataService.shared.fetchGeneData()
+                }
+                // データ可用性をチェック
+                checkDataAvailability()
+            }
+        }
+        .overlay(
+            // 送信トースト
+            VStack {
+                if showSendToast {
+                    SendToast(message: sendToastMessage)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .padding(.top, 60)
+                }
+                Spacer()
+            }
+        )
     }
-    
+
+    // MARK: - Data Availability Checking
+
+    /// すべてのデータの可用性をチェック
+    private func checkDataAvailability() {
+        // 血液データ
+        if let bloodData = BloodTestService.shared.extractBloodDataForChat(), !bloodData.isEmpty {
+            bloodDataAvailability = .available
+        } else {
+            bloodDataAvailability = .unavailable
+        }
+
+        // 遺伝子データ
+        let availableCategories = GeneDataService.shared.availableCategories()
+        if !availableCategories.isEmpty || !accumulatedGeneData.isEmpty {
+            geneDataAvailability = .available
+        } else {
+            geneDataAvailability = .unavailable
+        }
+
+        // バイタルデータ
+        if HealthKitService.shared.healthData != nil {
+            vitalDataAvailability = .available
+        } else {
+            vitalDataAvailability = .unavailable
+        }
+
+        print("📊 Data availability: Blood=\(bloodDataAvailability), Gene=\(geneDataAvailability), Vital=\(vitalDataAvailability)")
+    }
+
+    // MARK: - Data Toggle Handlers
+
+    /// 血液データボタンのタップ処理
+    private func handleBloodDataToggle() {
+        // ボタンがOFFになる場合は何もしない
+        if isBloodDataSelected {
+            isBloodDataSelected = false
+            return
+        }
+
+        // データが利用可能な場合はそのままON
+        if bloodDataAvailability == .available {
+            isBloodDataSelected = true
+            return
+        }
+
+        // データが利用不可の場合は自動取得を試みる
+        bloodDataAvailability = .loading
+        Task {
+            await BloodTestService.shared.fetchBloodTestData()
+            await MainActor.run {
+                checkDataAvailability()
+
+                if bloodDataAvailability == .available {
+                    isBloodDataSelected = true
+                    print("✅ Blood data loaded successfully")
+                } else {
+                    errorMessage = "血液データが見つかりません。「データ」タブで血液検査結果を登録してください。"
+                    print("❌ Blood data still unavailable after fetch")
+                }
+            }
+        }
+    }
+
+    /// 遺伝子データボタンのタップ処理
+    private func handleGeneDataToggle() {
+        if isGeneDataSelected {
+            isGeneDataSelected = false
+            return
+        }
+
+        if geneDataAvailability == .available {
+            isGeneDataSelected = true
+            return
+        }
+
+        // 遺伝子データの自動取得を試みる
+        geneDataAvailability = .loading
+        Task {
+            await GeneDataService.shared.fetchGeneData()
+            await MainActor.run {
+                checkDataAvailability()
+
+                if geneDataAvailability == .available {
+                    isGeneDataSelected = true
+                    print("✅ Gene data loaded successfully")
+                } else {
+                    errorMessage = "遺伝子データが見つかりません。「データ」タブで遺伝子データを登録してください。"
+                    print("❌ Gene data still unavailable after fetch")
+                }
+            }
+        }
+    }
+
+    /// バイタルデータボタンのタップ処理
+    private func handleVitalDataToggle() {
+        if isVitalDataSelected {
+            isVitalDataSelected = false
+            return
+        }
+
+        if vitalDataAvailability == .available {
+            isVitalDataSelected = true
+            return
+        }
+
+        // バイタルデータの自動取得を試みる
+        vitalDataAvailability = .loading
+        Task {
+            await HealthKitService.shared.fetchAllHealthData()
+            await MainActor.run {
+                checkDataAvailability()
+
+                if vitalDataAvailability == .available {
+                    isVitalDataSelected = true
+                    print("✅ Vital data loaded successfully")
+                } else {
+                    errorMessage = "バイタルデータが見つかりません。HealthKitの許可を確認してください。"
+                    print("❌ Vital data still unavailable after fetch")
+                }
+            }
+        }
+    }
+
     private func sendMessage() {
         let userMessage = message
         message = ""
@@ -111,16 +314,58 @@ struct ChatView: View {
 
         Task {
             do {
-                // ✅ 送信前に初回判定（chatHistoryに追加する前）
-                let isFirstMessage = chatHistory.isEmpty
+                // データを準備（ボタンの状態に基づいて）
+                let bloodData: [[String: Any]]? = isBloodDataSelected ? BloodTestService.shared.extractBloodDataForChat() : nil
+                let vitalData: HealthKitData? = isVitalDataSelected ? HealthKitService.shared.healthData : nil
 
-                // ✅ 改善版APIを呼び出し（この時点のchatHistoryは最新メッセージを含まない）
+                // デバッグ情報を構築
+                var debugLines: [String] = []
+                debugLines.append("📤 送信データ:")
+                debugLines.append("血液: ボタン=\(isBloodDataSelected ? "ON" : "OFF"), データ=\(bloodData != nil ? "あり(\(bloodData?.count ?? 0)項目)" : "なし")")
+                debugLines.append("遺伝子: ボタン=\(isGeneDataSelected ? "ON" : "OFF")")
+                debugLines.append("バイタル: ボタン=\(isVitalDataSelected ? "ON" : "OFF"), データ=\(vitalData != nil ? "あり" : "なし")")
+
+                if let blood = bloodData, let first = blood.first {
+                    debugLines.append("\n血液データサンプル:")
+                    debugLines.append("  key: \(first["key"] as? String ?? "?")")
+                    debugLines.append("  nameJp: \(first["nameJp"] as? String ?? "?")")
+                    debugLines.append("  value: \(first["value"] as? String ?? "?")")
+                }
+
+                debugInfo = debugLines.joined(separator: "\n")
+
+                print("📤 [DEBUG] Preparing to send:")
+                print("   - Blood button ON: \(isBloodDataSelected), Data available: \(bloodData != nil), Items: \(bloodData?.count ?? 0)")
+                print("   - Gene button ON: \(isGeneDataSelected)")
+                print("   - Vital button ON: \(isVitalDataSelected), Data available: \(vitalData != nil)")
+
+                // 遺伝子データ: ボタンONの場合、蓄積データを送信
+                var geneData: [String: Any]? = nil
+                if isGeneDataSelected {
+                    // 蓄積データがある場合は送信、なければ利用可能なカテゴリーリスト送信
+                    if !accumulatedGeneData.isEmpty {
+                        geneData = accumulatedGeneData
+                    } else {
+                        let availableCategories = GeneDataService.shared.availableCategories()
+                        if !availableCategories.isEmpty {
+                            geneData = ["availableCategories": availableCategories]
+                        } else {
+                            // 遺伝子データがロードされていない場合は警告のみ表示し、処理を続ける
+                            print("⚠️ 遺伝子データがまだロードされていません。遺伝子データなしで送信します。")
+                            // geneData = nil のまま（遺伝子データなしで送信）
+                        }
+                    }
+                }
+
+                // v8改善版APIを呼び出し
                 let response = try await ChatService.shared.sendEnhancedMessage(
                     userMessage,
                     topic: selectedTopic,
                     conversationHistory: chatHistory,
                     requestedGeneRequests: requestedGeneRequests,
-                    isFirstMessage: isFirstMessage
+                    bloodData: bloodData,
+                    vitalData: vitalData,
+                    geneData: geneData
                 )
 
                 await MainActor.run {
@@ -136,6 +381,47 @@ struct ChatView: View {
                     // AI応答から遺伝子データ要求を検出（次回送信用）
                     requestedGeneRequests = ChatService.shared.extractRequestedGeneCategories(from: response)
 
+                    // 遺伝子データを蓄積（requestedGeneRequestsに基づいて）
+                    if !requestedGeneRequests.isEmpty {
+                        for request in requestedGeneRequests {
+                            if let subcategories = request.subcategories {
+                                // SNPsデータを抽出
+                                if let categoryData = GeneDataService.shared.extractCategoryData(
+                                    categoryName: request.category,
+                                    subcategories: subcategories
+                                ) {
+                                    accumulatedGeneData[request.category] = categoryData
+                                    print("✅ Accumulated gene data for '\(request.category)'")
+                                }
+                            }
+                        }
+                    }
+
+                    // 送信成功トーストを表示
+                    var sentDataParts: [String] = []
+                    if bloodData != nil { sentDataParts.append("🩸 血液データ: \(bloodData?.count ?? 0)項目") }
+                    if vitalData != nil { sentDataParts.append("💓 バイタルデータ") }
+                    if geneData != nil { sentDataParts.append("🧬 遺伝子データ") }
+
+                    if !sentDataParts.isEmpty {
+                        sendToastMessage = "✅ 送信完了\n" + sentDataParts.joined(separator: "\n")
+                        showSendToast = true
+                        Task {
+                            try? await Task.sleep(nanoseconds: 3_000_000_000)
+                            await MainActor.run {
+                                showSendToast = false
+                            }
+                        }
+                    }
+
+                    // データ選択ボタンをリセット
+                    isBloodDataSelected = false
+                    isGeneDataSelected = false
+                    isVitalDataSelected = false
+
+                    // データ可用性を再チェック
+                    checkDataAvailability()
+
                     isLoading = false
                 }
             } catch {
@@ -144,6 +430,16 @@ struct ChatView: View {
 
                 await MainActor.run {
                     errorMessage = ErrorManager.shared.userFriendlyMessage(for: appError)
+
+                    // デバッグ情報にエラー詳細を追加
+                    var errorDebug = debugInfo
+                    errorDebug += "\n\n❌ エラー発生:"
+                    errorDebug += "\n\(error.localizedDescription)"
+                    if let urlError = error as? URLError {
+                        errorDebug += "\nURLError code: \(urlError.code.rawValue)"
+                    }
+                    debugInfo = errorDebug
+
                     isLoading = false
                 }
             }
@@ -358,5 +654,160 @@ struct QuestionButtons: View {
         }
         .padding(VirgilSpacing.md)
         .virgilGlassCard()
+    }
+}
+
+// MARK: - Data Selection Buttons
+
+struct DataSelectionButtons: View {
+    @Binding var isBloodDataSelected: Bool
+    @Binding var isGeneDataSelected: Bool
+    @Binding var isVitalDataSelected: Bool
+    let bloodDataAvailability: DataAvailability
+    let geneDataAvailability: DataAvailability
+    let vitalDataAvailability: DataAvailability
+    let onBloodTapped: () -> Void
+    let onGeneTapped: () -> Void
+    let onVitalTapped: () -> Void
+
+    var body: some View {
+        HStack(spacing: VirgilSpacing.sm) {
+            DataButton(
+                title: "血液",
+                icon: "drop.fill",
+                isSelected: isBloodDataSelected,
+                availability: bloodDataAvailability,
+                onTapped: onBloodTapped
+            )
+
+            DataButton(
+                title: "遺伝子",
+                icon: "dna",
+                isSelected: isGeneDataSelected,
+                availability: geneDataAvailability,
+                onTapped: onGeneTapped
+            )
+
+            DataButton(
+                title: "バイタル",
+                icon: "heart.fill",
+                isSelected: isVitalDataSelected,
+                availability: vitalDataAvailability,
+                onTapped: onVitalTapped
+            )
+        }
+    }
+}
+
+struct DataButton: View {
+    let title: String
+    let icon: String
+    let isSelected: Bool
+    let availability: DataAvailability
+    let onTapped: () -> Void
+
+    /// 可用性に基づくインジケーターアイコン
+    private var statusIcon: String {
+        switch availability {
+        case .available:
+            return "checkmark.circle.fill"
+        case .unavailable:
+            return "exclamationmark.triangle.fill"
+        case .loading:
+            return "arrow.clockwise"
+        case .unknown:
+            return ""
+        }
+    }
+
+    /// 可用性に基づくインジケーターカラー
+    private var statusColor: Color {
+        switch availability {
+        case .available:
+            return Color.green
+        case .unavailable:
+            return Color.orange
+        case .loading:
+            return Color.blue
+        case .unknown:
+            return Color.clear
+        }
+    }
+
+    var body: some View {
+        Button {
+            onTapped()
+        } label: {
+            HStack(spacing: VirgilSpacing.xs) {
+                Image(systemName: icon)
+                    .font(.system(size: 12, weight: .semibold))
+                Text(title)
+                    .font(.system(size: 11, weight: .semibold))
+
+                // ステータスインジケーター
+                if availability != .unknown {
+                    Image(systemName: statusIcon)
+                        .font(.system(size: 8, weight: .semibold))
+                        .foregroundColor(statusColor)
+                }
+            }
+            .foregroundColor(isSelected ? .white : Color.virgilTextSecondary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, VirgilSpacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: VirgilSpacing.radiusMedium)
+                    .fill(isSelected ? Color(hex: "0088CC") : Color.white.opacity(0.3))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: VirgilSpacing.radiusMedium)
+                    .strokeBorder(
+                        isSelected ? Color.white.opacity(0.3) : Color.white.opacity(0.1),
+                        lineWidth: 0.5
+                    )
+            )
+            .shadow(
+                color: isSelected ? Color(hex: "0088CC").opacity(0.3) : .clear,
+                radius: 8,
+                x: 0,
+                y: 2
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+        .disabled(availability == .loading)
+    }
+}
+
+// MARK: - Data Availability
+
+/// データ可用性の状態
+enum DataAvailability {
+    case unknown      // 未確認
+    case available    // 利用可能
+    case unavailable  // 利用不可
+    case loading      // ロード中
+}
+
+// MARK: - Send Toast
+
+/// 送信完了トースト
+struct SendToast: View {
+    let message: String
+
+    var body: some View {
+        Text(message)
+            .font(.system(size: 12, weight: .medium))
+            .foregroundColor(.white)
+            .multilineTextAlignment(.leading)
+            .padding(VirgilSpacing.md)
+            .background(
+                RoundedRectangle(cornerRadius: VirgilSpacing.radiusMedium)
+                    .fill(Color.black.opacity(0.8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: VirgilSpacing.radiusMedium)
+                            .strokeBorder(Color.white.opacity(0.2), lineWidth: 0.5)
+                    )
+            )
+            .shadow(color: Color.black.opacity(0.3), radius: 12, x: 0, y: 4)
+            .padding(.horizontal, VirgilSpacing.md)
     }
 }

@@ -2,324 +2,344 @@
 //  GeneDataView.swift
 //  AWStest
 //
-//  遺伝子データ表示画面
-//  MVP: 遺伝子機能を非表示化
+//  遺伝子データ表示画面（v6.0対応）
 //
 
 import SwiftUI
 
-// MVP: 遺伝子データ表示画面を全体コメントアウト
-/*
 struct GeneDataView: View {
     @StateObject private var geneDataService = GeneDataService.shared
-    
+
     var body: some View {
-        NavigationView {
-            Group {
-                if geneDataService.isLoading {
-                    loadingView
-                } else if !geneDataService.errorMessage.isEmpty {
-                    errorView
-                } else if let geneData = geneDataService.geneData {
-                    geneDataList(geneData: geneData)
-                } else {
-                    emptyStateView
-                }
+        Group {
+            if geneDataService.isLoading {
+                loadingView
+            } else if !geneDataService.errorMessage.isEmpty {
+                errorView
+            } else if let geneData = geneDataService.geneData {
+                geneDataContent(geneData: geneData)
+            } else {
+                emptyStateView
             }
-            .navigationTitle("遺伝子解析結果")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("更新", systemImage: "arrow.clockwise") {
-                        Task {
-                            await geneDataService.refreshData()
-                        }
-                    }
-                    .disabled(geneDataService.isLoading)
-                }
-            }
-        }
-        .task {
-            if geneDataService.geneData == nil {
-                await geneDataService.fetchGeneData()
-            }
-        }
-        .refreshable {
-            await geneDataService.refreshData()
         }
     }
-    
-    // MARK: - Gene Data List
-    
+
+    // MARK: - Gene Data Content
+
     @ViewBuilder
-    private func geneDataList(geneData: GeneDataService.GeneData) -> some View {
-        List {
-            // 基本情報セクション
-            Section {
+    private func geneDataContent(geneData: GeneDataService.GeneData) -> some View {
+        VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+            // メタ情報カード
+            metaInfoCard(geneData: geneData)
+
+            // カテゴリー別遺伝子マーカー表示
+            ForEach(geneData.categories, id: \.self) { category in
+                categoryCard(category: category, markers: geneData.markers(for: category))
+            }
+        }
+    }
+
+    // MARK: - Meta Info Card
+
+    @ViewBuilder
+    private func metaInfoCard(geneData: GeneDataService.GeneData) -> some View {
+        VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
+            Text("GENETIC ANALYSIS")
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundColor(.gray)
+
+            VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
                 HStack {
                     Text("解析日時")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.virgilTextSecondary)
                     Spacer()
-                    Text(formatDate(geneData.timestamp ?? "データなし"))
-                        .foregroundStyle(.secondary)
+                    Text(geneData.formattedTimestamp)
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.virgilTextPrimary)
                 }
+
                 HStack {
-                    Text("解析版数")
+                    Text("処理された遺伝子型")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.virgilTextSecondary)
                     Spacer()
-                    Text("v\(geneData.analysisVersion ?? "1.0")")
-                        .foregroundStyle(.secondary)
+                    Text("\(Int(geneData.totalGenotypesProcessed).formatted())")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.virgilTextPrimary)
                 }
-                if let userId = geneData.userId {
-                    HStack {
-                        Text("ユーザーID")
-                        Spacer()
-                        Text(userId)
-                            .foregroundStyle(.secondary)
-                    }
+
+                HStack {
+                    Text("データ品質スコア")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.virgilTextSecondary)
+                    Spacer()
+                    Text(String(format: "%.2f", geneData.dataQualityScore))
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(qualityScoreColor(geneData.dataQualityScore))
                 }
-            } header: {
-                Label("基本情報", systemImage: "info.circle")
+
+                HStack {
+                    Text("バージョン")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.virgilTextSecondary)
+                    Spacer()
+                    Text("v\(geneData.version)")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.virgilTextPrimary)
+                }
             }
-            
-            // 遺伝子解析結果セクション
-            Section {
-                HStack {
-                    Image(systemName: "drop.circle.fill")
-                        .foregroundStyle(.blue)
-                        .imageScale(.medium)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("糖尿病リスク")
-                            .font(.body)
-                        Text(geneData.displayDiabetesRisk)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                }
-                .padding(.vertical, 2)
-                
-                HStack {
-                    Image(systemName: "heart.circle.fill")
-                        .foregroundStyle(.red)
-                        .imageScale(.medium)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("高血圧リスク")
-                            .font(.body)
-                        Text(geneData.displayHypertensionRisk)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                }
-                .padding(.vertical, 2)
-                
-                HStack {
-                    Image(systemName: "wineglass.fill")
-                        .foregroundStyle(.purple)
-                        .imageScale(.medium)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("アルコール代謝")
-                            .font(.body)
-                        Text(geneData.displayAlcoholMetabolism)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                }
-                .padding(.vertical, 2)
-            } header: {
-                Label("解析結果", systemImage: "dna")
-            }
-            
-            // 推奨事項セクション
-            recommendationsListSection(recommendations: geneData.displayRecommendations)
-            
-            // 詳細データセクション
-            debugDataSection(geneData: geneData)
+            .padding(VirgilSpacing.md)
+            .background(Color.black.opacity(0.02))
+            .cornerRadius(VirgilSpacing.radiusMedium)
         }
-        .listStyle(.insetGrouped)
+        .virgilGlassCard()
     }
-    
-    
-    // MARK: - Recommendations List Section
-    
+
+    // MARK: - Category Card
+
     @ViewBuilder
-    private func recommendationsListSection(recommendations: [String]) -> some View {
-        Section {
-            if recommendations.isEmpty {
-                HStack {
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundStyle(.orange)
-                    Text("推奨事項データが取得されていません")
-                        .foregroundStyle(.secondary)
-                }
-            } else {
-                ForEach(Array(recommendations.enumerated()), id: \.offset) { index, recommendation in
-                    HStack(alignment: .top, spacing: 12) {
-                        Text("\(index + 1)")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 20, height: 20)
-                            .background(
-                                Circle()
-                                    .fill(.blue)
-                            )
-                        
-                        Text(recommendation)
-                            .font(.body)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(.vertical, 2)
+    private func categoryCard(category: String, markers: [GeneDataService.GeneticMarker]) -> some View {
+        VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
+            // カテゴリー名
+            Text(category)
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(.virgilTextPrimary)
+                .padding(.bottom, VirgilSpacing.xs)
+
+            // マーカーリスト
+            VStack(spacing: VirgilSpacing.xs) {
+                ForEach(markers) { marker in
+                    markerDisclosure(marker: marker)
                 }
             }
-        } header: {
-            Label("推奨事項 (\(recommendations.count)件)", systemImage: "lightbulb")
         }
+        .virgilGlassCard()
     }
-    
-    // MARK: - Debug Data Section
-    
+
+    // MARK: - Marker Disclosure
+
     @ViewBuilder
-    private func debugDataSection(geneData: GeneDataService.GeneData) -> some View {
-        Section {
-            DisclosureGroup {
-                ScrollView {
-                    Text(formatGeneDataAsJSON(geneData))
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .textSelection(.enabled)
+    private func markerDisclosure(marker: GeneDataService.GeneticMarker) -> some View {
+        // 事前計算済みのキャッシュを使用（ビュー描画時の重い計算を回避）
+        let impact = marker.cachedImpact ?? SNPImpactCount(protective: 0, risk: 0, neutral: 0)
+
+        DisclosureGroup {
+            VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
+                // 影響因子カウント表示
+                HStack(spacing: VirgilSpacing.sm) {
+                    HStack(spacing: 4) {
+                        Text("🟢")
+                            .font(.system(size: 10))
+                        Text("保護: \(impact.protective)")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundColor(Color(hex: "66BB6A"))
+                    }
+                    HStack(spacing: 4) {
+                        Text("🔴")
+                            .font(.system(size: 10))
+                        Text("リスク: \(impact.risk)")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundColor(Color(hex: "E57373"))
+                    }
+                    HStack(spacing: 4) {
+                        Text("⚪️")
+                            .font(.system(size: 10))
+                        Text("中立: \(impact.neutral)")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundColor(.gray)
+                    }
                 }
-                .frame(maxHeight: 200)
-            } label: {
-                Label("パースされたデータ", systemImage: "curlybraces")
-            }
-            
-            DisclosureGroup {
-                ScrollView {
-                    Text(geneDataService.rawResponseData.isEmpty ? "データなし" : geneDataService.rawResponseData)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .textSelection(.enabled)
+                .padding(.bottom, VirgilSpacing.xs)
+
+                Divider()
+                    .padding(.vertical, VirgilSpacing.xs)
+
+                // SNP情報表示
+                ForEach(marker.snpIDs, id: \.self) { snpID in
+                    if let genotype = marker.genotype(for: snpID) {
+                        HStack {
+                            Text(snpID)
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(.virgilTextSecondary)
+                            Spacer()
+                            Text(genotype)
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.virgilTextPrimary)
+                                .padding(.horizontal, VirgilSpacing.xs)
+                                .padding(.vertical, 2)
+                                .background(Color(hex: "E3F2FD"))
+                                .cornerRadius(4)
+                        }
+                        .padding(.vertical, 2)
+                    }
                 }
-                .frame(maxHeight: 200)
-            } label: {
-                Label("生レスポンス", systemImage: "doc.text")
+
+                // スコア表示
+                HStack {
+                    Text("影響スコア:")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(.gray)
+                    Text("\(impact.score > 0 ? "+" : "")\(impact.score)")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(scoreColor(impact.score))
+                }
+                .padding(.top, VirgilSpacing.xs)
             }
-        } header: {
-            Label("開発者情報", systemImage: "hammer")
+            .padding(VirgilSpacing.sm)
+            .background(Color.black.opacity(0.01))
+            .cornerRadius(VirgilSpacing.radiusSmall)
+        } label: {
+            VStack(spacing: VirgilSpacing.xs) {
+                HStack {
+                    Text(marker.title)
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.virgilTextPrimary)
+                    Spacer()
+                    Text("\(marker.snpCount)")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(.gray)
+                }
+
+                // 影響因子カウントサマリー
+                HStack(spacing: VirgilSpacing.xs) {
+                    Text("🟢 \(impact.protective)")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(Color(hex: "66BB6A"))
+                    Text("🔴 \(impact.risk)")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(Color(hex: "E57373"))
+                    Text("⚪️ \(impact.neutral)")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(.gray)
+                    Spacer()
+                }
+            }
+            .padding(.vertical, VirgilSpacing.xs)
+        }
+        .padding(VirgilSpacing.sm)
+        .background(Color.black.opacity(0.02))
+        .cornerRadius(VirgilSpacing.radiusMedium)
+    }
+
+    /// スコアに応じた色を返す
+    private func scoreColor(_ score: Int) -> Color {
+        switch score {
+        case 20...100:
+            return Color(hex: "66BB6A") // 緑（優秀）
+        case -19...19:
+            return Color(hex: "FBC02D") // 黄色（中立）
+        default:
+            return Color(hex: "E57373") // 赤（要注意）
         }
     }
-    
+
     // MARK: - Loading View
-    
-    @ViewBuilder
+
     private var loadingView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: VirgilSpacing.md) {
             ProgressView()
-                .controlSize(.large)
-            Text("遺伝子データを解析中...")
-                .foregroundStyle(.secondary)
+                .scaleEffect(1.2)
+            Text("遺伝子データを読み込んでいます...")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.virgilTextSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .virgilGlassCard()
     }
-    
+
     // MARK: - Error View
-    
-    @ViewBuilder
+
     private var errorView: some View {
-        ContentUnavailableViewCompat(
-            "エラーが発生しました",
-            systemImage: "exclamationmark.triangle.fill",
-            description: geneDataService.errorMessage
-        ) {
-            Button("再試行") {
+        VStack(spacing: VirgilSpacing.md) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 40))
+                .foregroundColor(.red)
+
+            Text("エラー")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.virgilTextPrimary)
+
+            Text(geneDataService.errorMessage)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.virgilTextSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, VirgilSpacing.lg)
+
+            Button(action: {
                 Task {
                     await geneDataService.refreshData()
                 }
+            }) {
+                Text("再試行")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, VirgilSpacing.lg)
+                    .padding(.vertical, VirgilSpacing.sm)
+                    .background(Color.blue)
+                    .cornerRadius(VirgilSpacing.radiusMedium)
             }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
         }
+        .padding(VirgilSpacing.xl)
+        .virgilGlassCard()
     }
-    
+
     // MARK: - Empty State View
-    
-    @ViewBuilder
+
     private var emptyStateView: some View {
-        ContentUnavailableViewCompat(
-            "遺伝子データがありません",
-            systemImage: "dna",
-            description: "遺伝子データをアップロードして解析を開始してください"
-        ) {
-            Button("データを取得") {
+        VStack(spacing: VirgilSpacing.md) {
+            Image(systemName: "dna")
+                .font(.system(size: 40))
+                .foregroundColor(.gray)
+
+            Text("遺伝子データがありません")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.virgilTextPrimary)
+
+            Text("遺伝子データをアップロードしてください")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.virgilTextSecondary)
+                .multilineTextAlignment(.center)
+
+            Button(action: {
                 Task {
                     await geneDataService.fetchGeneData()
                 }
+            }) {
+                Text("データを取得")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, VirgilSpacing.lg)
+                    .padding(.vertical, VirgilSpacing.sm)
+                    .background(Color.blue)
+                    .cornerRadius(VirgilSpacing.radiusMedium)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
         }
+        .padding(VirgilSpacing.xl)
+        .virgilGlassCard()
     }
-    
-    
-    // MARK: - Helper Methods
-    
-    private func formatDate(_ timestamp: String) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        
-        if let date = formatter.date(from: timestamp) {
-            formatter.dateFormat = "yyyy年MM月dd日"
-            return formatter.string(from: date)
+
+    // MARK: - Helper Functions
+
+    /// データ品質スコアに応じた色を返す
+    private func qualityScoreColor(_ score: Double) -> Color {
+        switch score {
+        case 0.8...1.0:
+            return Color(hex: "66BB6A") // 緑（優秀）
+        case 0.5...0.79:
+            return Color(hex: "FBC02D") // 黄色（良好）
+        default:
+            return Color(hex: "E57373") // 赤（要改善）
         }
-        
-        return timestamp
-    }
-    
-    private func formatGeneDataAsJSON(_ geneData: GeneDataService.GeneData) -> String {
-        let jsonData: [String: Any?] = [
-            "userId": geneData.userId,
-            "timestamp": geneData.timestamp,
-            "diabetesRiskCategory": geneData.diabetesRiskCategory,
-            "hypertensionRiskCategory": geneData.hypertensionRiskCategory,
-            "alcoholMetabolismCategory": geneData.alcoholMetabolismCategory,
-            "recommendations": geneData.recommendations,
-            "analysisVersion": geneData.analysisVersion
-        ]
-        
-        var result = "{\n"
-        for (key, value) in jsonData {
-            let formattedValue: String
-            if let value = value {
-                if let stringArray = value as? [String] {
-                    let arrayItems = stringArray.map { "\"\($0)\"" }.joined(separator: ", ")
-                    formattedValue = "[\(arrayItems)]"
-                } else if let stringValue = value as? String {
-                    formattedValue = "\"\(stringValue)\""
-                } else {
-                    formattedValue = "\(value)"
-                }
-            } else {
-                formattedValue = "null"
-            }
-            result += "  \"\(key)\": \(formattedValue),\n"
-        }
-        
-        if result.hasSuffix(",\n") {
-            result = String(result.dropLast(2)) + "\n"
-        }
-        result += "}"
-        
-        return result
     }
 }
 
 // MARK: - Preview
 
+#if DEBUG
 struct GeneDataView_Previews: PreviewProvider {
     static var previews: some View {
         GeneDataView()
     }
 }
-*/
+#endif

@@ -282,7 +282,7 @@ enum BloodTestError: LocalizedError {
     case userNotFound
     case invalidData
     case networkError
-    
+
     var errorDescription: String? {
         switch self {
         case .userNotFound:
@@ -292,5 +292,48 @@ enum BloodTestError: LocalizedError {
         case .networkError:
             return "ネットワークエラーが発生しました"
         }
+    }
+}
+
+// MARK: - AI Chat Support Extensions
+
+extension BloodTestService {
+
+    /// 最新の血液検査データをAIチャット送信用にJSON化
+    /// - Returns: 血液データの辞書配列、データがない場合はnil
+    func extractBloodDataForChat() -> [[String: Any]]? {
+        guard let latestData = bloodData else {
+            print("🩸 extractBloodDataForChat: bloodData is nil")
+            return nil
+        }
+
+        let bloodItemsData: [[String: Any]] = latestData.bloodItems.map { item in
+            return [
+                "key": item.key,
+                "nameJp": item.nameJp,
+                "value": item.value,
+                "unit": item.unit,
+                "status": item.status,
+                "reference": item.reference
+            ]
+        }
+
+        print("🩸 extractBloodDataForChat: \(bloodItemsData.count) 項目を抽出")
+        return bloodItemsData
+    }
+
+    /// 血液検査データのメタ情報を取得（AIチャット用）
+    /// - Returns: メタ情報の辞書、データがない場合はnil
+    func extractBloodMetaForChat() -> [String: Any]? {
+        guard let latestData = bloodData else {
+            return nil
+        }
+
+        return [
+            "timestamp": latestData.timestamp,
+            "itemCount": latestData.bloodItems.count,
+            "abnormalCount": abnormalItems.count,
+            "normalCount": normalItems.count
+        ]
     }
 }

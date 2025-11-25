@@ -112,20 +112,24 @@ class ChatService {
         return [response.response] // 通常のAPIレスポンスは単一のメッセージとして返す
     }
 
-    /// 改善版: 血液・遺伝子データを含むチャットメッセージを送信（2段階抽出対応）
+    /// v8改善版: ユーザー選択式データ送信対応
     /// - Parameters:
     ///   - message: ユーザーのメッセージ
     ///   - topic: トピック
     ///   - conversationHistory: 会話履歴
     ///   - requestedGeneRequests: AIが要求した遺伝子データ（前回の応答から検出）
-    ///   - isFirstMessage: 初回メッセージかどうか
+    ///   - bloodData: 血液データ（ユーザーが選択した場合のみ）
+    ///   - vitalData: バイタルデータ/HealthKitデータ（ユーザーが選択した場合のみ）
+    ///   - geneData: 遺伝子データ（ユーザーが選択した場合のみ）
     /// - Returns: AIからの応答
     func sendEnhancedMessage(
         _ message: String,
         topic: String = "general_health",
         conversationHistory: [ChatMessage] = [],
         requestedGeneRequests: [GeneRequest] = [],
-        isFirstMessage: Bool = false
+        bloodData: [[String: Any]]? = nil,
+        vitalData: HealthKitData? = nil,
+        geneData: [String: Any]? = nil
     ) async throws -> String {
         // [DUMMY] デモモード: 固定Q&Aチェック
         if DemoChatData.isEnabled {
@@ -145,11 +149,10 @@ class ChatService {
         var requestBody: [String: Any] = [
             "userId": userEmail,
             "message": message,
-            "topic": topic,
-            "isFirstMessage": isFirstMessage
+            "topic": topic
         ]
 
-        // 会話履歴を追加（2回目以降）
+        // 会話履歴を追加
         if !conversationHistory.isEmpty {
             let historyData = conversationHistory.map { msg in
                 return [
@@ -162,19 +165,43 @@ class ChatService {
             print("💬 Sending conversation history: \(conversationHistory.count) messages")
         }
 
-        // 初回メッセージの場合、血液データを送信
-        if isFirstMessage {
-            if let bloodData = BloodTestService.shared.extractBloodDataForChat() {
-                requestBody["bloodData"] = bloodData
-                print("🩸 Sending blood data: \(bloodData.count) items")
-            }
+        // 血液データを送信（ユーザーが選択した場合）
+        if let blood = bloodData {
+            requestBody["bloodData"] = blood
+            print("🩸 Sending blood data: \(blood.count) items")
 
-            // 利用可能な遺伝子カテゴリーリストも送信（AIが選択できるように）
-            let availableCategories = GeneDataService.shared.availableCategories()
-            if !availableCategories.isEmpty {
-                requestBody["availableGeneCategories"] = availableCategories
-                print("🧬 Sending available gene categories: \(availableCategories.count) categories")
+            // デバッグ: 最初の項目を確認
+            if let firstItem = blood.first {
+                print("🩸 First blood item keys: \(firstItem.keys.joined(separator: ", "))")
+                print("🩸 First blood item sample: \(firstItem)")
             }
+        } else {
+            print("⚠️ Blood data is nil (not selected or empty)")
+        }
+
+        // バイタルデータを送信（ユーザーが選択した場合）
+        if let vital = vitalData {
+            let encoder = JSONEncoder()
+            do {
+                let jsonData = try encoder.encode(vital)
+                if let dict = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                    requestBody["vitalData"] = dict
+                    print("💓 Sending vital data: \(dict.keys.count) keys")
+                } else {
+                    print("❌ Vital data: Failed to convert to dictionary")
+                }
+            } catch {
+                print("❌ Vital data encoding failed: \(error)")
+            }
+        }
+
+        // 遺伝子データを送信（ユーザーが選択した場合）
+        if let gene = geneData {
+            requestBody["geneData"] = gene
+            print("🧬 Sending gene data: \(gene.keys.count) keys, type: \(type(of: gene))")
+        } else if !requestedGeneRequests.isEmpty {
+            // 遺伝子ボタンがOFFでも、AIが要求した遺伝子データがある場合は送信
+            // （これは後方互換性のため）
         }
 
         // AIが要求した遺伝子データがある場合、そのデータを送信
@@ -215,6 +242,23 @@ class ChatService {
             }
         } else {
             print("🔍 [DEBUG] No gene requests")
+        }
+
+        // リクエストボディのJSON変換テスト
+        print("📦 [DEBUG] Testing JSON serialization...")
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: requestBody, options: [])
+            let jsonSize = jsonData.count
+            print("✅ JSON serialization successful: \(jsonSize) bytes")
+
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                let preview = jsonString.prefix(200)
+                print("📄 JSON preview: \(preview)...")
+            }
+        } catch {
+            print("❌ JSON serialization failed: \(error)")
+            print("❌ Request body keys: \(requestBody.keys.joined(separator: ", "))")
+            throw error
         }
 
         // リクエスト設定
@@ -313,14 +357,17 @@ class ChatService {
         return requests
     }
 
-    /// AI応答から選択式質問を検出
-    /// フォーマット: 【選択】質問文 \n 1️⃣ 選択肢1 \n 2️⃣ 選択肢2 \n 3️⃣ 選択肢3
+    /// AI応答から選択式質問を検出（v8: 柔軟化版）
+    /// 対応マーカー: 【選択】【選択肢】[選択][選択肢]
+    /// 対応番号: 1️⃣ ① 1. １. 1) １)
     /// - Parameter response: AIの応答メッセージ
     /// - Returns: 選択式質問（検出できなかった場合はnil）
     func extractQuestionMessage(from response: String) -> QuestionMessage? {
-        guard response.contains("【選択】") else { return nil }
+        // 柔軟なマーカー検出
+        let markers = ["【選択】", "【選択肢】", "[選択]", "[選択肢]"]
+        guard markers.contains(where: { response.contains($0) }) else { return nil }
 
-        print("🔍 [DEBUG] Extracting question message from response")
+        print("🔍 [DEBUG] Extracting question message from response (flexible mode)")
 
         let lines = response.components(separatedBy: "\n")
         var question = ""
@@ -330,28 +377,38 @@ class ChatService {
         for line in lines {
             let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
 
-            // 【選択】マーカーを検出
-            if trimmed.hasPrefix("【選択】") {
-                question = trimmed.replacingOccurrences(of: "【選択】", with: "")
+            // マーカーを検出
+            var foundMarker: String? = nil
+            for marker in markers {
+                if trimmed.hasPrefix(marker) {
+                    foundMarker = marker
+                    break
+                }
+            }
+
+            if let marker = foundMarker {
+                question = trimmed.replacingOccurrences(of: marker, with: "")
                     .trimmingCharacters(in: .whitespacesAndNewlines)
                 inQuestionSection = true
-                print("✅ Found question: '\(question)'")
+                print("✅ Found question with marker '\(marker)': '\(question)'")
                 continue
             }
 
-            // 選択肢を検出（絵文字番号: 1️⃣ 2️⃣ 3️⃣）
+            // 選択肢を検出（柔軟な番号形式対応）
             if inQuestionSection && !trimmed.isEmpty {
-                // 正規表現で絵文字番号を検出
-                let pattern = #"^([1-3]️⃣)\s*(.+)$"#
+                // 柔軟な番号パターン: 1️⃣, ①, 1., １., 1), １) (1〜5対応)
+                let pattern = #"^([1-5]️⃣|[①②③④⑤]|[1-5１-５][.．\)])\s*(.+)$"#
                 if let regex = try? NSRegularExpression(pattern: pattern, options: []),
                    let match = regex.firstMatch(in: trimmed, options: [], range: NSRange(trimmed.startIndex..., in: trimmed)) {
 
-                    if let emojiRange = Range(match.range(at: 1), in: trimmed),
+                    if let numberRange = Range(match.range(at: 1), in: trimmed),
                        let textRange = Range(match.range(at: 2), in: trimmed) {
-                        let emoji = String(trimmed[emojiRange])
+                        let numberStr = String(trimmed[numberRange])
                         let text = String(trimmed[textRange])
                             .trimmingCharacters(in: .whitespacesAndNewlines)
 
+                        // 番号を絵文字形式に統一
+                        let emoji = normalizeNumberToEmoji(numberStr)
                         options.append(QuestionOption(emoji: emoji, text: text))
                         print("✅ Found option: \(emoji) \(text)")
                     }
@@ -366,6 +423,24 @@ class ChatService {
 
         print("✅ Successfully extracted question with \(options.count) options")
         return QuestionMessage(question: question, options: options)
+    }
+
+    /// 様々な番号形式を絵文字番号に統一
+    /// - Parameter numberStr: 番号文字列（1️⃣, ①, 1., １., 1), １) など）
+    /// - Returns: 絵文字番号（1️⃣, 2️⃣, 3️⃣, 4️⃣, 5️⃣）
+    private func normalizeNumberToEmoji(_ numberStr: String) -> String {
+        // 絵文字番号マッピング（1〜5対応）
+        let emojiMap: [String: String] = [
+            "1️⃣": "1️⃣", "2️⃣": "2️⃣", "3️⃣": "3️⃣", "4️⃣": "4️⃣", "5️⃣": "5️⃣",
+            "①": "1️⃣", "②": "2️⃣", "③": "3️⃣", "④": "4️⃣", "⑤": "5️⃣",
+            "1.": "1️⃣", "2.": "2️⃣", "3.": "3️⃣", "4.": "4️⃣", "5.": "5️⃣",
+            "１.": "1️⃣", "２.": "2️⃣", "３.": "3️⃣", "４.": "4️⃣", "５.": "5️⃣",
+            "１．": "1️⃣", "２．": "2️⃣", "３．": "3️⃣", "４．": "4️⃣", "５．": "5️⃣",
+            "1)": "1️⃣", "2)": "2️⃣", "3)": "3️⃣", "4)": "4️⃣", "5)": "5️⃣",
+            "１)": "1️⃣", "２)": "2️⃣", "３)": "3️⃣", "４)": "4️⃣", "５)": "5️⃣"
+        ]
+
+        return emojiMap[numberStr] ?? numberStr
     }
 }
 
