@@ -1272,13 +1272,33 @@ class SNPEffectRulesDatabase {
                 index[rule.snpID] = rule
             }
         }
-        print("🧬 SNPEffectRulesDatabase: インデックス構築完了 - \(index.count)件のSNPルール")
+        print("🧬 SNPEffectRulesDatabase: グローバルインデックス構築完了 - \(index.count)件のSNPルール")
+        return index
+    }()
+
+    /// マーカー特化の高速検索用インデックス（遅延初期化）
+    /// マーカーごとに SNP ID -> Rule のハッシュマップを作成
+    private lazy var markerIndex: [String: [String: SNPEffectRule]] = {
+        var index: [String: [String: SNPEffectRule]] = [:]
+        for (markerTitle, markerRules) in rules {
+            var markerMap: [String: SNPEffectRule] = [:]
+            for rule in markerRules {
+                markerMap[rule.snpID] = rule
+            }
+            index[markerTitle] = markerMap
+        }
+        print("🧬 SNPEffectRulesDatabase: マーカー特化インデックス構築完了 - \(index.count)マーカー")
         return index
     }()
 
     /// 特定マーカータイトルのルールを取得
     func rules(for markerTitle: String) -> [SNPEffectRule]? {
         return rules[markerTitle]
+    }
+
+    /// 特定マーカー内の特定SNPルールを高速検索（O(1)）
+    func findRule(for snpID: String, in markerTitle: String) -> SNPEffectRule? {
+        return markerIndex[markerTitle]?[snpID]
     }
 
     /// 特定SNP IDのルールを検索（全マーカーから）

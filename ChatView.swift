@@ -15,10 +15,10 @@ struct ChatView: View {
     @State private var selectedTopic = "general_health"
     @State private var requestedGeneRequests: [GeneRequest] = [] // AIが要求した遺伝子データ（2段階抽出対応）
 
-    // データ選択ボタンの状態
-    @State private var isBloodDataSelected = false
-    @State private var isGeneDataSelected = false
-    @State private var isVitalDataSelected = false
+    // データ選択ボタンの状態（永続化）
+    @AppStorage("isBloodDataSelected") private var isBloodDataSelected = false
+    @AppStorage("isGeneDataSelected") private var isGeneDataSelected = false
+    @AppStorage("isVitalDataSelected") private var isVitalDataSelected = false
 
     // 遺伝子データ蓄積（会話全体で永続化）
     @State private var accumulatedGeneData: [String: Any] = [:]
@@ -33,8 +33,11 @@ struct ChatView: View {
     @State private var sendToastMessage = ""
 
     // デバッグ情報表示（TestFlight用）
-    @State private var showDebugInfo = true
+    @State private var showDebugInfo = false  // デフォルトで折りたたみ
     @State private var debugInfo = ""
+
+    // クイックリプライボタン
+    @State private var quickReplyOptions: [String] = []
 
     let topics = [
         ("general_health", "一般的な健康"),
@@ -111,26 +114,57 @@ struct ChatView: View {
                 }
 
                 // デバッグ情報パネル（TestFlight用）
-                if showDebugInfo && !debugInfo.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text("🔍 Debug Info")
-                                .font(.system(size: 10, weight: .bold))
-                            Spacer()
-                            Button("×") {
-                                showDebugInfo = false
+                if !debugInfo.isEmpty {
+                    if showDebugInfo {
+                        // 展開状態：フル表示
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text("🔍 Debug Info")
+                                    .font(.system(size: 10, weight: .bold))
+                                Spacer()
+                                Button("×") {
+                                    showDebugInfo = false
+                                }
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.gray)
                             }
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.gray)
+                            Text(debugInfo)
+                                .font(.system(size: 9, weight: .regular))
+                                .foregroundColor(.gray)
                         }
-                        Text(debugInfo)
-                            .font(.system(size: 9, weight: .regular))
-                            .foregroundColor(.gray)
+                        .padding(VirgilSpacing.sm)
+                        .background(Color.yellow.opacity(0.1))
+                        .cornerRadius(8)
+                        .padding(.horizontal, VirgilSpacing.md)
+                    } else {
+                        // 折りたたみ状態：小さなアイコンのみ
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                showDebugInfo = true
+                            }) {
+                                Text("🔍")
+                                    .font(.system(size: 16))
+                                    .padding(6)
+                                    .background(Color.yellow.opacity(0.2))
+                                    .cornerRadius(6)
+                            }
+                        }
+                        .padding(.horizontal, VirgilSpacing.md)
                     }
-                    .padding(VirgilSpacing.sm)
-                    .background(Color.yellow.opacity(0.1))
-                    .cornerRadius(8)
+                }
+
+                // コンテキストバー（選択中のデータを表示）
+                if isBloodDataSelected || isGeneDataSelected || isVitalDataSelected {
+                    ContextBar(
+                        isBloodDataSelected: isBloodDataSelected,
+                        isGeneDataSelected: isGeneDataSelected,
+                        isVitalDataSelected: isVitalDataSelected,
+                        bloodDataCount: BloodTestService.shared.extractBloodDataForChat()?.count ?? 0,
+                        geneDataStatus: GeneDataService.shared.geneData?.geneDataStatus.displayText
+                    )
                     .padding(.horizontal, VirgilSpacing.md)
+                    .padding(.bottom, VirgilSpacing.xs)
                 }
 
                 // データ選択ボタン
@@ -147,6 +181,42 @@ struct ChatView: View {
                 )
                 .padding(.horizontal, VirgilSpacing.md)
                 .padding(.bottom, VirgilSpacing.xs)
+
+                // クイックリプライボタン
+                if !quickReplyOptions.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: VirgilSpacing.xs) {
+                            ForEach(Array(quickReplyOptions.enumerated()), id: \.offset) { index, option in
+                                Button(action: {
+                                    message = option
+                                    sendMessage()
+                                    quickReplyOptions = [] // 選択後はクリア
+                                }) {
+                                    HStack(spacing: 4) {
+                                        Text("\(index + 1)️⃣")
+                                            .font(.system(size: 14))
+                                        Text(option)
+                                            .font(.system(size: 13, weight: .medium))
+                                            .lineLimit(1)
+                                    }
+                                    .padding(.horizontal, VirgilSpacing.sm)
+                                    .padding(.vertical, VirgilSpacing.xs)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: VirgilSpacing.radiusSmall)
+                                            .fill(Color(hex: "0088CC").opacity(0.1))
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: VirgilSpacing.radiusSmall)
+                                            .stroke(Color(hex: "0088CC").opacity(0.3), lineWidth: 1)
+                                    )
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                        }
+                        .padding(.horizontal, VirgilSpacing.md)
+                    }
+                    .padding(.bottom, VirgilSpacing.xs)
+                }
 
                 // 入力フィールド
                 ChatInputField(
@@ -254,6 +324,20 @@ struct ChatView: View {
         }
 
         if geneDataAvailability == .available {
+            // データの詳細ステータスを取得して警告を表示
+            if let geneData = GeneDataService.shared.geneData {
+                let status = geneData.geneDataStatus
+                switch status {
+                case .categoryOnly:
+                    errorMessage = "⚠️ 遺伝子データ: カテゴリ情報のみ（SNPsなし）\nAIには利用可能なカテゴリーリストのみが送信されます。"
+                    print("⚠️ Gene data: Category only (no SNPs)")
+                case .partial(let count):
+                    errorMessage = "⚠️ 遺伝子データ: 一部データのみ（\(count)個のSNP）\n品質スコア: \(String(format: "%.1f", geneData.dataQualityScore * 100))%"
+                    print("⚠️ Gene data: Partial data (\(count) SNPs)")
+                case .complete:
+                    print("✅ Gene data: Complete")
+                }
+            }
             isGeneDataSelected = true
             return
         }
@@ -266,6 +350,18 @@ struct ChatView: View {
                 checkDataAvailability()
 
                 if geneDataAvailability == .available {
+                    // データの詳細ステータスを取得して警告を表示
+                    if let geneData = GeneDataService.shared.geneData {
+                        let status = geneData.geneDataStatus
+                        switch status {
+                        case .categoryOnly:
+                            errorMessage = "⚠️ 遺伝子データ: カテゴリ情報のみ（SNPsなし）\nAIには利用可能なカテゴリーリストのみが送信されます。"
+                        case .partial(let count):
+                            errorMessage = "⚠️ 遺伝子データ: 一部データのみ（\(count)個のSNP）\n品質スコア: \(String(format: "%.1f", geneData.dataQualityScore * 100))%"
+                        case .complete:
+                            break
+                        }
+                    }
                     isGeneDataSelected = true
                     print("✅ Gene data loaded successfully")
                 } else {
@@ -306,6 +402,39 @@ struct ChatView: View {
         }
     }
 
+    // MARK: - Quick Reply Extraction
+
+    /// 最後のAIメッセージから選択肢を抽出
+    private func extractQuickReplyOptions() {
+        guard let lastMessage = chatHistory.last(where: { $0.role == "assistant" }) else {
+            quickReplyOptions = []
+            return
+        }
+
+        let content = lastMessage.content
+        var options: [String] = []
+
+        // 1️⃣ 2️⃣ 3️⃣ 4️⃣ パターンを検出
+        let emojiPattern = "([1-4])️⃣\\s*(.+?)(?=\\n|[1-4]️⃣|$)"
+        if let regex = try? NSRegularExpression(pattern: emojiPattern, options: []) {
+            let nsString = content as NSString
+            let matches = regex.matches(in: content, options: [], range: NSRange(location: 0, length: nsString.length))
+
+            for match in matches {
+                if match.numberOfRanges >= 3 {
+                    let optionText = nsString.substring(with: match.range(at: 2))
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !optionText.isEmpty {
+                        options.append(optionText)
+                    }
+                }
+            }
+        }
+
+        quickReplyOptions = options
+        print("🔘 Quick reply options extracted: \(options.count) options")
+    }
+
     private func sendMessage() {
         let userMessage = message
         message = ""
@@ -322,7 +451,23 @@ struct ChatView: View {
                 var debugLines: [String] = []
                 debugLines.append("📤 送信データ:")
                 debugLines.append("血液: ボタン=\(isBloodDataSelected ? "ON" : "OFF"), データ=\(bloodData != nil ? "あり(\(bloodData?.count ?? 0)項目)" : "なし")")
-                debugLines.append("遺伝子: ボタン=\(isGeneDataSelected ? "ON" : "OFF")")
+
+                // 遺伝子データの詳細ステータスを表示
+                if isGeneDataSelected {
+                    if let geneData = GeneDataService.shared.geneData {
+                        let status = geneData.geneDataStatus
+                        debugLines.append("遺伝子: ボタン=ON, ステータス=\(status.displayText)")
+                        debugLines.append("  カテゴリ数: \(geneData.categories.count)")
+                        debugLines.append("  マーカー数: \(geneData.totalMarkers)")
+                        debugLines.append("  総SNP数: \(geneData.totalSNPs)")
+                        debugLines.append("  品質スコア: \(String(format: "%.1f", geneData.dataQualityScore * 100))%")
+                    } else {
+                        debugLines.append("遺伝子: ボタン=ON, データ=なし（カテゴリリストのみ送信）")
+                    }
+                } else {
+                    debugLines.append("遺伝子: ボタン=OFF")
+                }
+
                 debugLines.append("バイタル: ボタン=\(isVitalDataSelected ? "ON" : "OFF"), データ=\(vitalData != nil ? "あり" : "なし")")
 
                 if let blood = bloodData, let first = blood.first {
@@ -381,6 +526,9 @@ struct ChatView: View {
                     // AI応答から遺伝子データ要求を検出（次回送信用）
                     requestedGeneRequests = ChatService.shared.extractRequestedGeneCategories(from: response)
 
+                    // AI応答からクイックリプライ選択肢を抽出
+                    extractQuickReplyOptions()
+
                     // 遺伝子データを蓄積（requestedGeneRequestsに基づいて）
                     if !requestedGeneRequests.isEmpty {
                         for request in requestedGeneRequests {
@@ -406,18 +554,16 @@ struct ChatView: View {
                     if !sentDataParts.isEmpty {
                         sendToastMessage = "✅ 送信完了\n" + sentDataParts.joined(separator: "\n")
                         showSendToast = true
+
+                        // トースト非表示とデバッグパネル自動折りたたみを同時実行
                         Task {
                             try? await Task.sleep(nanoseconds: 3_000_000_000)
                             await MainActor.run {
                                 showSendToast = false
+                                showDebugInfo = false  // 3秒後に自動折りたたみ
                             }
                         }
                     }
-
-                    // データ選択ボタンをリセット
-                    isBloodDataSelected = false
-                    isGeneDataSelected = false
-                    isVitalDataSelected = false
 
                     // データ可用性を再チェック
                     checkDataAvailability()
@@ -809,5 +955,87 @@ struct SendToast: View {
             )
             .shadow(color: Color.black.opacity(0.3), radius: 12, x: 0, y: 4)
             .padding(.horizontal, VirgilSpacing.md)
+    }
+}
+
+// MARK: - Context Bar
+
+/// 選択中のデータを表示するコンテキストバー
+struct ContextBar: View {
+    let isBloodDataSelected: Bool
+    let isGeneDataSelected: Bool
+    let isVitalDataSelected: Bool
+    let bloodDataCount: Int
+    let geneDataStatus: String?
+
+    var body: some View {
+        HStack(spacing: VirgilSpacing.sm) {
+            // アイコン
+            Image(systemName: "paperclip")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundColor(.virgilTextSecondary)
+
+            // 選択中のデータバッジ
+            HStack(spacing: VirgilSpacing.xs) {
+                if isBloodDataSelected {
+                    ContextBadge(
+                        icon: "drop.fill",
+                        text: "血液 \(bloodDataCount)項目",
+                        color: Color(hex: "ED1C24")
+                    )
+                }
+
+                if isGeneDataSelected {
+                    ContextBadge(
+                        icon: "dna",
+                        text: geneDataStatus ?? "遺伝子",
+                        color: Color(hex: "0088CC")
+                    )
+                }
+
+                if isVitalDataSelected {
+                    ContextBadge(
+                        icon: "heart.fill",
+                        text: "バイタル",
+                        color: Color(hex: "FF6B35")
+                    )
+                }
+            }
+
+            Spacer()
+        }
+        .padding(.horizontal, VirgilSpacing.md)
+        .padding(.vertical, VirgilSpacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: VirgilSpacing.radiusMedium)
+                .fill(Color.white.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: VirgilSpacing.radiusMedium)
+                        .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                )
+        )
+    }
+}
+
+/// コンテキストバーのバッジ
+struct ContextBadge: View {
+    let icon: String
+    let text: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 8, weight: .semibold))
+            Text(text)
+                .font(.system(size: 9, weight: .medium))
+        }
+        .foregroundColor(color)
+        .padding(.horizontal, VirgilSpacing.xs)
+        .padding(.vertical, 4)
+        .background(
+            RoundedRectangle(cornerRadius: VirgilSpacing.radiusSmall)
+                .fill(color.opacity(0.1))
+        )
     }
 }
