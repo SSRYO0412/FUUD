@@ -13,6 +13,10 @@ struct DataView: View {
     @StateObject private var bloodTestService = BloodTestService.shared
     @StateObject private var geneDataService = GeneDataService.shared
 
+    // 遺伝子詳細オーバーレイ用の状態管理
+    @State private var selectedGeneCategory: GeneCategoryGroup?
+    @State private var isGeneDetailExpanded = false
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -52,7 +56,12 @@ struct DataView: View {
                         case .lifestyle:
                             LifestyleTab()
                         case .gene:
-                            GeneTab()
+                            GeneTab(onCategorySelected: { category in
+                                selectedGeneCategory = category
+                                withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                                    isGeneDetailExpanded = true
+                                }
+                            })
                         }
                         }
                     }
@@ -66,10 +75,26 @@ struct DataView: View {
                         await geneDataService.refreshData()
                     }
                 }
+                .blur(radius: isGeneDetailExpanded ? 8 : 0)
+                .animation(.easeInOut(duration: 0.3), value: isGeneDetailExpanded)
             }
             .navigationTitle("data")
             .floatingChatButton()
             .navigationBarTitleDisplayMode(.large)
+            .overlay {
+                // 遺伝子詳細オーバーレイ（NavigationView直下で全画面表示）
+                if isGeneDetailExpanded, let category = selectedGeneCategory {
+                    GeneCategoryDetailOverlay(
+                        category: category,
+                        isPresented: $isGeneDetailExpanded
+                    )
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 0.9).combined(with: .opacity),
+                        removal: .scale(scale: 0.9).combined(with: .opacity)
+                    ))
+                }
+            }
+            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: isGeneDetailExpanded)
         }
     }
 }
@@ -232,10 +257,11 @@ private struct LifestyleTab: View {
 
 private struct GeneTab: View {
     @StateObject private var geneDataService = GeneDataService.shared
+    var onCategorySelected: ((GeneCategoryGroup) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
-            GeneDataView()
+            GeneDataView(onCategorySelected: onCategorySelected)
         }
         .task {
             // 初回表示時にデータ取得

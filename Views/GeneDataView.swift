@@ -9,40 +9,22 @@ import SwiftUI
 
 struct GeneDataView: View {
     @StateObject private var geneDataService = GeneDataService.shared
-    @State private var selectedCategory: GeneCategoryGroup?
-    @State private var isDetailPresented = false
-    @Namespace private var animation
+
+    /// カテゴリー選択時のコールバック（親で処理）
+    var onCategorySelected: ((GeneCategoryGroup) -> Void)?
 
     var body: some View {
-        ZStack {
-            // メインコンテンツ
-            Group {
-                if geneDataService.isLoading {
-                    loadingView
-                } else if !geneDataService.errorMessage.isEmpty {
-                    errorView
-                } else if geneDataService.geneData != nil {
-                    geneDataContent
-                } else {
-                    emptyStateView
-                }
-            }
-            .blur(radius: isDetailPresented ? 8 : 0)
-            .animation(.easeInOut(duration: 0.3), value: isDetailPresented)
-
-            // 詳細モーダルオーバーレイ
-            if isDetailPresented, let category = selectedCategory {
-                GeneCategoryDetailOverlay(
-                    category: category,
-                    isPresented: $isDetailPresented
-                )
-                .transition(.asymmetric(
-                    insertion: .scale(scale: 0.9).combined(with: .opacity),
-                    removal: .scale(scale: 0.9).combined(with: .opacity)
-                ))
+        Group {
+            if geneDataService.isLoading {
+                loadingView
+            } else if !geneDataService.errorMessage.isEmpty {
+                errorView
+            } else if geneDataService.geneData != nil {
+                geneDataContent
+            } else {
+                emptyStateView
             }
         }
-        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: isDetailPresented)
     }
 
     // MARK: - Gene Data Content (大カテゴリーカード一覧)
@@ -53,10 +35,7 @@ struct GeneDataView: View {
             ForEach(geneDataService.generateCategoryGroups()) { group in
                 GeneCategoryCard(category: group)
                     .onTapGesture {
-                        selectedCategory = group
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-                            isDetailPresented = true
-                        }
+                        onCategorySelected?(group)
                     }
             }
         }
@@ -211,65 +190,81 @@ struct GeneCategoryDetailOverlay: View {
     @State private var opacity: Double = 1
 
     var body: some View {
-        ZStack {
-            // 背景タップで閉じる
-            Color.black.opacity(0.3 * opacity)
-                .ignoresSafeArea()
-                .onTapGesture {
-                    closeDetail()
-                }
-
-            // 詳細カード
-            VStack(spacing: 0) {
-                // ドラッグインジケーター
-                RoundedRectangle(cornerRadius: 2.5)
-                    .fill(Color.gray.opacity(0.5))
-                    .frame(width: 40, height: 5)
-                    .padding(.top, VirgilSpacing.sm)
-                    .padding(.bottom, VirgilSpacing.md)
-
-                ScrollView {
-                    VStack(alignment: .leading, spacing: VirgilSpacing.lg) {
-                        // ヘッダー
-                        detailHeader
-
-                        // 遺伝子説明
-                        descriptionSection
-
-                        // 小カテゴリーカード一覧
-                        markersSection
+        GeometryReader { geometry in
+            ZStack {
+                // 背景タップで閉じる（透明）
+                Color.clear
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        closeDetail()
                     }
-                    .padding(.horizontal, VirgilSpacing.md)
-                    .padding(.bottom, VirgilSpacing.xl)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(maxHeight: UIScreen.main.bounds.height * 0.8)
-            .background(Color(.secondarySystemBackground))
-            .cornerRadius(24)
-            .offset(y: dragOffset)
-            .opacity(opacity)
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        if value.translation.height > 0 {
-                            dragOffset = value.translation.height
-                            opacity = max(0.0, 1.0 - Double(dragOffset / 200))
+
+                // 詳細カード（画面全体）
+                VStack(spacing: 0) {
+                    // ドラッグインジケーター
+                    RoundedRectangle(cornerRadius: 2.5)
+                        .fill(Color.gray.opacity(0.5))
+                        .frame(width: 40, height: 5)
+                        .padding(.top, VirgilSpacing.sm)
+                        .padding(.bottom, VirgilSpacing.md)
+
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: VirgilSpacing.lg) {
+                            // ヘッダー
+                            detailHeader
+
+                            // 遺伝子説明
+                            descriptionSection
+
+                            // 小カテゴリーカード一覧
+                            markersSection
                         }
+                        .padding(.horizontal, VirgilSpacing.md)
+                        .padding(.top, 60)
+                        .padding(.bottom, VirgilSpacing.xl)
                     }
-                    .onEnded { value in
-                        if value.translation.height > 150 {
-                            closeDetail()
-                        } else {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                dragOffset = 0
-                                opacity = 1
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.clear)
+                // 上部フェードオーバーレイ（VStackの上に重ねる）
+                .overlay(alignment: .top) {
+                    LinearGradient(
+                        colors: [
+                            Color(.secondarySystemBackground),
+                            Color(.secondarySystemBackground).opacity(0)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 60)
+                    .blur(radius: 8)
+                    .allowsHitTesting(false)
+                }
+                .offset(y: dragOffset)
+                .opacity(opacity)
+                .simultaneousGesture(
+                    DragGesture()
+                        .onChanged { value in
+                            if value.translation.height > 0 {
+                                dragOffset = value.translation.height
+                                opacity = max(0.0, 1.0 - Double(dragOffset / 200))
                             }
                         }
-                    }
-            )
-            .padding(.horizontal, VirgilSpacing.md)
+                        .onEnded { value in
+                            if value.translation.height > 300 {
+                                closeDetail()
+                            } else {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                    dragOffset = 0
+                                    opacity = 1
+                                }
+                            }
+                        }
+                )
+            }
+            .padding(.top, geometry.safeAreaInsets.top * 0.5) // SafeAreaの半分の位置
         }
+        .ignoresSafeArea()
     }
 
     // MARK: - Header
