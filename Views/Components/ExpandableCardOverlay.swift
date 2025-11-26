@@ -33,12 +33,9 @@ struct ExpandableCardOverlay: View {
                 GeometryReader { geometry in
                     ZStack(alignment: .top) {
                         HealthMetricDetailCard(detail: detail, onClose: closeCard)
-                            .frame(width: geometry.size.width * 0.95, height: geometry.size.height * 0.90)
-                            .offset(
-                                x: (geometry.size.width - geometry.size.width * 0.95) / 2,
-                                y: geometry.safeAreaInsets.top + 20 + dragOffset
-                            )
-                            .gesture(
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .offset(y: dragOffset)
+                            .simultaneousGesture(
                                 DragGesture()
                                     .onChanged { value in
                                         // 下方向のドラッグのみ許可
@@ -50,7 +47,7 @@ struct ExpandableCardOverlay: View {
                                     }
                                     .onEnded { value in
                                         // 閾値を超えたら閉じる
-                                        if value.translation.height > 150 {
+                                        if value.translation.height > 300 {
                                             closeCard()
                                         } else {
                                             // 閾値未満なら元の位置に戻す
@@ -61,22 +58,24 @@ struct ExpandableCardOverlay: View {
                                         }
                                     }
                             )
-
-                        // 上部フェードオーバーレイ（カード表示領域の上端境界をぼかす）
+                    }
+                    .padding(.top, geometry.safeAreaInsets.top * 0.5)
+                    // 上部フェードオーバーレイ
+                    .overlay(alignment: .top) {
                         LinearGradient(
                             colors: [
-                                Color(.systemBackground),
-                                Color(.systemBackground).opacity(0)
+                                Color(.secondarySystemBackground),
+                                Color(.secondarySystemBackground).opacity(0)
                             ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
-                        .frame(width: geometry.size.width, height: 60)
-                        .blur(radius: 10)
-                        .offset(y: geometry.safeAreaInsets.top + 20 + dragOffset - 30)
+                        .frame(height: 60)
+                        .blur(radius: 8)
                         .allowsHitTesting(false)
                     }
                 }
+                .ignoresSafeArea()
                 .transition(.asymmetric(
                     insertion: .scale(scale: 0.9).combined(with: .opacity),
                     removal: .scale(scale: 0.9).combined(with: .opacity)
