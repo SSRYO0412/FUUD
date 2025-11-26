@@ -630,4 +630,63 @@ extension GeneDataService {
         print("🧬 extractMultipleCategoriesData: \(result.count)/\(categoryNames.count) カテゴリーを抽出")
         return result
     }
+
+    /// 小カテゴリー名の配列から直接SNPsデータを抽出（大カテゴリー不要）
+    /// - Parameter subcategoryNames: 小カテゴリー名の配列
+    /// - Returns: 小カテゴリー名をキーとしたマーカーデータ
+    func extractBySubcategoryNames(_ subcategoryNames: [String]) -> [String: [String: Any]]? {
+        guard let data = geneData else {
+            print("🧬 extractBySubcategoryNames: geneData is nil")
+            return nil
+        }
+
+        var result: [String: [String: Any]] = [:]
+
+        for subcategoryName in subcategoryNames {
+            // 全大カテゴリーから該当するマーカーを検索
+            for (_, markers) in data.geneticMarkersWithGenotypes {
+                for marker in markers {
+                    // 柔軟なマッチング（完全一致 or 部分一致）
+                    let normalizedMarkerTitle = marker.title
+                        .replacingOccurrences(of: "（", with: "(")
+                        .replacingOccurrences(of: "）", with: ")")
+                    let normalizedSubcategoryName = subcategoryName
+                        .replacingOccurrences(of: "（", with: "(")
+                        .replacingOccurrences(of: "）", with: ")")
+
+                    if normalizedMarkerTitle == normalizedSubcategoryName ||
+                       normalizedMarkerTitle.contains(normalizedSubcategoryName) ||
+                       normalizedSubcategoryName.contains(normalizedMarkerTitle) {
+
+                        var markerDict: [String: Any] = [
+                            "title": marker.title,
+                            "genotypes": marker.genotypes
+                        ]
+
+                        // 影響スコアがキャッシュされている場合は含める
+                        if let impact = marker.cachedImpact {
+                            markerDict["impact"] = [
+                                "protective": impact.protective,
+                                "risk": impact.risk,
+                                "neutral": impact.neutral,
+                                "score": impact.score
+                            ]
+                        }
+
+                        result[marker.title] = markerDict
+                        break // 見つかったらループを抜ける
+                    }
+                }
+            }
+        }
+
+        if result.isEmpty {
+            print("🧬 extractBySubcategoryNames: マッチする小カテゴリーが見つかりません")
+            print("🔍 要求された小カテゴリー: \(subcategoryNames.joined(separator: ", "))")
+            return nil
+        }
+
+        print("🧬 extractBySubcategoryNames: \(result.count)/\(subcategoryNames.count) 小カテゴリーを抽出")
+        return result
+    }
 }

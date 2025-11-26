@@ -643,8 +643,54 @@ struct UserMessageBubble: View {
 struct AIMessageBubble: View {
     let content: String
 
+    /// タイトル行かどうかを判定（絵文字+**タイトル** または 行頭**タイトル**）
+    private func isTitleLine(_ line: String) -> Bool {
+        let trimmed = line.trimmingCharacters(in: .whitespaces)
+        // パターン1: 絵文字 + **タイトル** (例: 🍽️**今日からのクイックアクション**)
+        // パターン2: 行頭が**で始まり**で終わる (例: **あなたの分析**)
+        let emojiTitlePattern = "^[\\p{Emoji}]+\\*\\*.+\\*\\*$"
+        let boldOnlyPattern = "^\\*\\*.+\\*\\*$"
+
+        return trimmed.range(of: emojiTitlePattern, options: .regularExpression) != nil ||
+               trimmed.range(of: boldOnlyPattern, options: .regularExpression) != nil
+    }
+
+    /// マークダウンをパースしてAttributedStringを生成
+    private func parseMarkdown(_ text: String) -> AttributedString {
+        var result = AttributedString()
+        let lines = text.components(separatedBy: "\n")
+
+        for (index, line) in lines.enumerated() {
+            if isTitleLine(line) {
+                // タイトル行: フォントサイズ大きめ + 太字
+                let cleanedLine = line
+                    .replacingOccurrences(of: "**", with: "")
+                var attrLine = AttributedString(cleanedLine)
+                attrLine.font = .system(size: 20, weight: .bold)
+                result.append(attrLine)
+            } else {
+                // 通常行: マークダウンパース
+                if let parsed = try? AttributedString(
+                    markdown: line,
+                    options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+                ) {
+                    result.append(parsed)
+                } else {
+                    result.append(AttributedString(line))
+                }
+            }
+
+            // 改行を追加（最後の行以外）
+            if index < lines.count - 1 {
+                result.append(AttributedString("\n"))
+            }
+        }
+
+        return result
+    }
+
     var body: some View {
-        Text(content)
+        Text(parseMarkdown(content))
             .font(.system(size: 17, weight: .regular))
             .foregroundColor(.virgilTextPrimary)
             .padding(VirgilSpacing.md)

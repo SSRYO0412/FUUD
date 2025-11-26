@@ -121,6 +121,7 @@ class ChatService {
     ///   - bloodData: 血液データ（ユーザーが選択した場合のみ）
     ///   - vitalData: バイタルデータ/HealthKitデータ（ユーザーが選択した場合のみ）
     ///   - geneData: 遺伝子データ（ユーザーが選択した場合のみ）
+    ///   - autoDetectGene: 遺伝子データの自動検出（メッセージから関連カテゴリーを推測）
     /// - Returns: AIからの応答（ChatResponse構造体、chunksを含む）
     func sendEnhancedMessage(
         _ message: String,
@@ -129,7 +130,8 @@ class ChatService {
         requestedGeneRequests: [GeneRequest] = [],
         bloodData: [[String: Any]]? = nil,
         vitalData: HealthKitData? = nil,
-        geneData: [String: Any]? = nil
+        geneData: [String: Any]? = nil,
+        autoDetectGene: Bool = true
     ) async throws -> ChatResponse {
         // [DUMMY] デモモード: 固定Q&Aチェック
         if DemoChatData.isEnabled {
@@ -203,8 +205,40 @@ class ChatService {
             }
         }
 
-        // 遺伝子データを送信（ユーザーが選択した場合）
-        if let gene = geneData {
+        // 遺伝子データを送信（自動検出を常に実行）
+        var finalGeneData: [String: Any]? = nil
+
+        // 自動検出: autoDetectGeneが有効かつrequstedGeneRequestsが空の場合
+        // 遺伝子ボタンON/OFFに関わらず、メッセージに基づいて関連データを自動抽出
+        print("🧬 [AutoDetect] Checking conditions: autoDetectGene=\(autoDetectGene), requestedGeneRequests=\(requestedGeneRequests.count)")
+        print("🧬 [AutoDetect] GeneDataService.shared.geneData=\(GeneDataService.shared.geneData == nil ? "nil" : "exists")")
+
+        if autoDetectGene && requestedGeneRequests.isEmpty {
+            print("🧬 [AutoDetect] Conditions met, starting auto-detection...")
+
+            // メッセージ + トピックから関連小カテゴリーを検出（ハイブリッド方式）
+            let relevantSubcategories = GeneCategoryGroup.detectRelevantSubcategories(
+                from: message,
+                selectedTopic: topic
+            )
+            print("🧬 [AutoDetect] Detected subcategories: \(relevantSubcategories)")
+
+            if !relevantSubcategories.isEmpty {
+                // 関連する小カテゴリーのSNPsデータを抽出
+                if let extractedData = GeneDataService.shared.extractBySubcategoryNames(relevantSubcategories) {
+                    finalGeneData = extractedData
+                    print("🧬 Auto-detected \(extractedData.count) gene subcategories: \(relevantSubcategories.joined(separator: ", "))")
+                } else {
+                    print("🔍 Auto-detect: No matching gene data found for: \(relevantSubcategories.joined(separator: ", "))")
+                }
+            } else {
+                print("🔍 Auto-detect: No relevant subcategories detected from message")
+            }
+        } else {
+            print("🧬 [AutoDetect] Skipped - conditions not met")
+        }
+
+        if let gene = finalGeneData {
             requestBody["geneData"] = gene
             print("🧬 Sending gene data: \(gene.keys.count) keys, type: \(type(of: gene))")
         } else if !requestedGeneRequests.isEmpty {
