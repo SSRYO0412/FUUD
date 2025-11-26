@@ -204,22 +204,16 @@ struct HealthMetricDetailCard: View {
             .ignoresSafeArea()
     }
 
+    @ViewBuilder
     private var liquidGlassCard: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Color.black.opacity(0.08))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(
-                        LinearGradient(
-                            colors: [Color.black.opacity(0.3), Color.black.opacity(0.1)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-            )
-            .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
-            .shadow(color: Color.black.opacity(0.05), radius: 20, x: 0, y: 10)
+        if #available(iOS 26.0, *) {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.clear)
+                .glassEffect(.regular.tint(.white.opacity(0.05)), in: .rect(cornerRadius: 16, style: .continuous))
+        } else {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.ultraThinMaterial)
+        }
     }
 }
 
@@ -343,14 +337,19 @@ struct ActionCard: View {
             }
         }
         .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.06))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.black.opacity(0.15), lineWidth: 1)
-                )
-        )
+        .background(actionCardBackground)
+    }
+
+    @ViewBuilder
+    private var actionCardBackground: some View {
+        if #available(iOS 26.0, *) {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(.clear)
+                .glassEffect(.regular.tint(.white.opacity(0.03)), in: .rect(cornerRadius: 12, style: .continuous))
+        } else {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(.ultraThinMaterial)
+        }
     }
 }
 

@@ -233,19 +233,7 @@ struct AthleticDetailView: View {
             .padding(.top, VirgilSpacing.md)
             .padding(.bottom, 100)
         }
-        .background(
-            ZStack {
-                LinearGradient(
-                    colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
-
-                OrbBackground()
-                GridOverlay()
-            }
-        )
+        .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("運動能力")
         .navigationBarTitleDisplayMode(.large)
         .toolbar { // [DUMMY] NavigationBarに全体共有ボタン追加

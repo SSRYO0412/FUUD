@@ -24,22 +24,8 @@ struct HomeView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                // Background gradient
-                LinearGradient(
-                    colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
-
-                // Background Orbs
-                OrbBackground()
-
-                // Blur sheet between Orbs and Cards
-                Rectangle()
-                    .fill(Color.clear)
-                    .background(.ultraThinMaterial)
-                    .blur(radius: 120)
+                // Background
+                Color(.secondarySystemBackground)
                     .ignoresSafeArea()
 
                 ScrollView {

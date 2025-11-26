@@ -243,19 +243,7 @@ struct AntioxidantDetailView: View {
             .padding(.top, VirgilSpacing.md)
             .padding(.bottom, 100)
         }
-        .background(
-            ZStack {
-                LinearGradient(
-                    colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
-
-                OrbBackground()
-                GridOverlay()
-            }
-        )
+        .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("抗酸化")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {

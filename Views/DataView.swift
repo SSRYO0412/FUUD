@@ -16,16 +16,9 @@ struct DataView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                // Background gradient
-                LinearGradient(
-                    colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
-
-                // Background Orbs
-                OrbBackground()
+                // Background
+                Color(.secondarySystemBackground)
+                    .ignoresSafeArea()
 
                 ScrollView {
                     ScrollViewBackgroundClearer()
