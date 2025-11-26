@@ -385,6 +385,64 @@ enum GeneDataError: LocalizedError {
     }
 }
 
+// MARK: - Gene Category Group Support
+
+extension GeneDataService {
+
+    /// 大カテゴリーグループを生成（ダイエット・生活習慣・運動・長寿）
+    /// - Returns: 大カテゴリーグループの配列
+    func generateCategoryGroups() -> [GeneCategoryGroup] {
+        guard let data = geneData else {
+            print("🧬 generateCategoryGroups: geneData is nil")
+            return []
+        }
+
+        var groups: [GeneCategoryGroup] = []
+
+        // 定義された順序で大カテゴリーを生成
+        for categoryName in GeneCategoryGroup.categoryOrder {
+            guard let subCategories = GeneCategoryGroup.categoryMapping[categoryName] else {
+                continue
+            }
+
+            // 小カテゴリーに該当するマーカーを収集
+            var matchedMarkers: [GeneticMarker] = []
+
+            for subCategory in subCategories {
+                // 全カテゴリーから該当するマーカーを検索
+                for (_, markers) in data.geneticMarkersWithGenotypes {
+                    for marker in markers {
+                        // マーカータイトルが小カテゴリー名と一致するか確認
+                        if marker.title == subCategory ||
+                           marker.title.contains(subCategory) ||
+                           subCategory.contains(marker.title.replacingOccurrences(of: "（", with: "(").replacingOccurrences(of: "）", with: ")")) {
+                            // 重複チェック
+                            if !matchedMarkers.contains(where: { $0.title == marker.title }) {
+                                matchedMarkers.append(marker)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // マーカーが1つ以上あれば大カテゴリーグループを作成
+            if !matchedMarkers.isEmpty {
+                let icon = GeneCategoryGroup.categoryIcons[categoryName] ?? "questionmark.circle"
+                let group = GeneCategoryGroup(
+                    name: categoryName,
+                    icon: icon,
+                    markers: matchedMarkers
+                )
+                groups.append(group)
+                print("🧬 大カテゴリー '\(categoryName)' 生成: \(matchedMarkers.count)項目, 平均スコア: \(group.averageScore), タイプ: \(group.typeName)")
+            }
+        }
+
+        print("🧬 generateCategoryGroups: \(groups.count) 大カテゴリーを生成")
+        return groups
+    }
+}
+
 // MARK: - AI Chat Support Extensions
 
 extension GeneDataService {

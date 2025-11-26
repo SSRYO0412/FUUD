@@ -2,38 +2,62 @@
 //  GeneDataView.swift
 //  AWStest
 //
-//  遺伝子データ表示画面（v6.0対応）
+//  遺伝子データ表示画面（大カテゴリーカード + 詳細モーダル）
 //
 
 import SwiftUI
 
 struct GeneDataView: View {
     @StateObject private var geneDataService = GeneDataService.shared
+    @State private var selectedCategory: GeneCategoryGroup?
+    @State private var isDetailPresented = false
+    @Namespace private var animation
 
     var body: some View {
-        Group {
-            if geneDataService.isLoading {
-                loadingView
-            } else if !geneDataService.errorMessage.isEmpty {
-                errorView
-            } else if let geneData = geneDataService.geneData {
-                geneDataContent(geneData: geneData)
-            } else {
-                emptyStateView
+        ZStack {
+            // メインコンテンツ
+            Group {
+                if geneDataService.isLoading {
+                    loadingView
+                } else if !geneDataService.errorMessage.isEmpty {
+                    errorView
+                } else if geneDataService.geneData != nil {
+                    geneDataContent
+                } else {
+                    emptyStateView
+                }
+            }
+            .blur(radius: isDetailPresented ? 8 : 0)
+            .animation(.easeInOut(duration: 0.3), value: isDetailPresented)
+
+            // 詳細モーダルオーバーレイ
+            if isDetailPresented, let category = selectedCategory {
+                GeneCategoryDetailOverlay(
+                    category: category,
+                    isPresented: $isDetailPresented
+                )
+                .transition(.asymmetric(
+                    insertion: .scale(scale: 0.9).combined(with: .opacity),
+                    removal: .scale(scale: 0.9).combined(with: .opacity)
+                ))
             }
         }
+        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: isDetailPresented)
     }
 
-    // MARK: - Gene Data Content
+    // MARK: - Gene Data Content (大カテゴリーカード一覧)
 
-    @ViewBuilder
-    private func geneDataContent(geneData: GeneDataService.GeneData) -> some View {
-        VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
-            // 全マーカーを縦に並べる（カテゴリータイトルなし）
-            ForEach(geneData.categories, id: \.self) { category in
-                ForEach(geneData.markers(for: category)) { marker in
-                    GeneMarkerCard(marker: marker)
-                }
+    private var geneDataContent: some View {
+        VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+            // 大カテゴリーカードを表示
+            ForEach(geneDataService.generateCategoryGroups()) { group in
+                GeneCategoryCard(category: group)
+                    .onTapGesture {
+                        selectedCategory = group
+                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                            isDetailPresented = true
+                        }
+                    }
             }
         }
     }
@@ -122,12 +146,224 @@ struct GeneDataView: View {
         .padding(VirgilSpacing.xl)
         .liquidGlassCard()
     }
-
 }
 
-// MARK: - Preview
+// MARK: - Gene Category Card (大カテゴリーカード)
 
-// MARK: - Gene Marker Card
+struct GeneCategoryCard: View {
+    let category: GeneCategoryGroup
+
+    // スコアに応じた色
+    private var scoreColor: Color {
+        switch category.averageScore {
+        case 20...100:
+            return Color(hex: "00C853") // 緑（良好）
+        case 1...19:
+            return Color(hex: "66BB6A") // 薄緑
+        case -19...0:
+            return Color(hex: "FFCB05") // 黄色（中立）
+        case -99...(-20):
+            return Color(hex: "FF9800") // オレンジ（注意）
+        default:
+            return Color(hex: "ED1C24") // 赤（要注意）
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: VirgilSpacing.md) {
+            // アイコン
+            Image(systemName: category.icon)
+                .font(.system(size: 24))
+                .foregroundColor(scoreColor)
+                .frame(width: 40, height: 40)
+
+            VStack(alignment: .leading, spacing: 4) {
+                // 大カテゴリー名
+                Text(category.name)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.virgilTextPrimary)
+
+                // タイプ名
+                Text(category.typeName)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.virgilTextSecondary)
+            }
+
+            Spacer()
+
+            // 矢印アイコン
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.virgilTextSecondary)
+        }
+        .padding(VirgilSpacing.md)
+        .frame(maxWidth: .infinity)
+        .liquidGlassCard()
+    }
+}
+
+// MARK: - Gene Category Detail Overlay (詳細モーダル)
+
+struct GeneCategoryDetailOverlay: View {
+    let category: GeneCategoryGroup
+    @Binding var isPresented: Bool
+    @State private var dragOffset: CGFloat = 0
+    @State private var opacity: Double = 1
+
+    var body: some View {
+        ZStack {
+            // 背景タップで閉じる
+            Color.black.opacity(0.3 * opacity)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    closeDetail()
+                }
+
+            // 詳細カード
+            VStack(spacing: 0) {
+                // ドラッグインジケーター
+                RoundedRectangle(cornerRadius: 2.5)
+                    .fill(Color.gray.opacity(0.5))
+                    .frame(width: 40, height: 5)
+                    .padding(.top, VirgilSpacing.sm)
+                    .padding(.bottom, VirgilSpacing.md)
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: VirgilSpacing.lg) {
+                        // ヘッダー
+                        detailHeader
+
+                        // 遺伝子説明
+                        descriptionSection
+
+                        // 小カテゴリーカード一覧
+                        markersSection
+                    }
+                    .padding(.horizontal, VirgilSpacing.md)
+                    .padding(.bottom, VirgilSpacing.xl)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(maxHeight: UIScreen.main.bounds.height * 0.8)
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(24)
+            .offset(y: dragOffset)
+            .opacity(opacity)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        if value.translation.height > 0 {
+                            dragOffset = value.translation.height
+                            opacity = max(0.0, 1.0 - Double(dragOffset / 200))
+                        }
+                    }
+                    .onEnded { value in
+                        if value.translation.height > 150 {
+                            closeDetail()
+                        } else {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                dragOffset = 0
+                                opacity = 1
+                            }
+                        }
+                    }
+            )
+            .padding(.horizontal, VirgilSpacing.md)
+        }
+    }
+
+    // MARK: - Header
+
+    private var detailHeader: some View {
+        HStack(spacing: VirgilSpacing.md) {
+            // アイコン
+            Image(systemName: category.icon)
+                .font(.system(size: 32))
+                .foregroundColor(scoreColor)
+                .frame(width: 50, height: 50)
+
+            VStack(alignment: .leading, spacing: 4) {
+                // 大カテゴリー名
+                Text(category.name)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(.virgilTextPrimary)
+
+                // タイプ名
+                Text(category.typeName)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(scoreColor)
+            }
+
+            Spacer()
+
+            // 閉じるボタン
+            Button(action: { closeDetail() }) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 28))
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+
+    // MARK: - Description Section
+
+    private var descriptionSection: some View {
+        VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
+            Text("あなたの遺伝子")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.virgilTextSecondary)
+
+            Text(category.description)
+                .font(.system(size: 15, weight: .regular))
+                .foregroundColor(.virgilTextPrimary)
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(VirgilSpacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.tertiarySystemBackground))
+        .cornerRadius(VirgilSpacing.radiusMedium)
+    }
+
+    // MARK: - Markers Section
+
+    private var markersSection: some View {
+        VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
+            Text("詳細項目")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.virgilTextSecondary)
+
+            ForEach(category.markers) { marker in
+                GeneMarkerCard(marker: marker)
+            }
+        }
+    }
+
+    // MARK: - Helpers
+
+    private var scoreColor: Color {
+        switch category.averageScore {
+        case 20...100:
+            return Color(hex: "00C853")
+        case 1...19:
+            return Color(hex: "66BB6A")
+        case -19...0:
+            return Color(hex: "FFCB05")
+        case -99...(-20):
+            return Color(hex: "FF9800")
+        default:
+            return Color(hex: "ED1C24")
+        }
+    }
+
+    private func closeDetail() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            isPresented = false
+        }
+    }
+}
+
+// MARK: - Gene Marker Card (小カテゴリーカード)
 
 struct GeneMarkerCard: View {
     let marker: GeneDataService.GeneticMarker
