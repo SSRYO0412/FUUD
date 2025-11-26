@@ -49,7 +49,7 @@ struct GeneDataView: View {
                 .foregroundColor(.virgilTextSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 
     // MARK: - Error View
@@ -85,7 +85,7 @@ struct GeneDataView: View {
             }
         }
         .padding(VirgilSpacing.xl)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 
     // MARK: - Empty State View
@@ -120,7 +120,7 @@ struct GeneDataView: View {
             }
         }
         .padding(VirgilSpacing.xl)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 
 }
@@ -180,7 +180,7 @@ struct GeneMarkerCard: View {
         .padding(.horizontal, VirgilSpacing.md)
         .padding(.vertical, VirgilSpacing.sm)
         .frame(maxWidth: .infinity)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 }
 

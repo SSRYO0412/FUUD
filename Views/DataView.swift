@@ -153,7 +153,7 @@ private struct MicrobiomeTab: View {
             }
             .frame(maxWidth: .infinity)
             .padding(VirgilSpacing.xl)
-            .virgilGlassCard()
+            .liquidGlassCard()
 
             // Bacteria List
             VStack(spacing: VirgilSpacing.sm) {

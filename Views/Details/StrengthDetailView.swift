@@ -50,7 +50,7 @@ struct StrengthDetailView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
 
                 // Tuuning Intelligence
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -68,7 +68,7 @@ struct StrengthDetailView: View {
                         .lineSpacing(4)
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
 
                 // Related Genes - MVP: 遺伝子情報を非表示
                 /*
@@ -114,7 +114,7 @@ struct StrengthDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
                 */
 
                 // Related Blood Markers
@@ -144,7 +144,7 @@ struct StrengthDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
 
                 // Recommendations
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -177,7 +177,7 @@ struct StrengthDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
             }
             .padding(.horizontal, VirgilSpacing.md)
             .padding(.top, VirgilSpacing.md)

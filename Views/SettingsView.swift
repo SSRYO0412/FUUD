@@ -65,7 +65,7 @@ struct SettingsView: View {
             }
         }
         .padding(VirgilSpacing.md)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 
     // MARK: - Data Management Section
@@ -196,7 +196,7 @@ struct SettingsView: View {
                 }
                 .padding(VirgilSpacing.md)
             }
-            .virgilGlassCard()
+            .liquidGlassCard()
         }
     }
 
@@ -243,7 +243,7 @@ private struct SettingsRow: View {
                 .foregroundColor(.virgilTextSecondary)
         }
         .padding(VirgilSpacing.md)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 }
 

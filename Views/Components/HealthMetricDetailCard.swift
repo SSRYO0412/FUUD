@@ -13,27 +13,42 @@ struct HealthMetricDetailCard: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
-                    // ヘッダーセクション
-                    headerSection
+            ZStack(alignment: .top) {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 24) {
+                        // ヘッダーセクション
+                        headerSection
 
-                    // スコアブレークダウン
-                    breakdownSection
+                        // スコアブレークダウン
+                        breakdownSection
 
-                    // 主要マーカーTOP5
-                    topMarkersSection
+                        // 主要マーカーTOP5
+                        topMarkersSection
 
-                    // 7日間トレンド
-                    trendSection
+                        // 7日間トレンド
+                        trendSection
 
-                    // 推奨アクション
-                    actionsSection
+                        // 推奨アクション
+                        actionsSection
+                    }
+                    .padding(24)
+                    .padding(.top, 16)
                 }
-                .padding(24)
-                .padding(.top, 16)
+
+                // 上部フェードオーバーレイ
+                LinearGradient(
+                    colors: [
+                        Color(.secondarySystemBackground),
+                        Color(.secondarySystemBackground).opacity(0)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 40)
+                .blur(radius: 8)
+                .allowsHitTesting(false)
             }
-            .background(liquidGlassBackground)
+            .background(Color.clear)
             .overlay(alignment: .topTrailing) {
                 closeButton
             }
@@ -107,7 +122,7 @@ struct HealthMetricDetailCard: View {
             }
         }
         .padding(20)
-        .background(liquidGlassCard)
+        .liquidGlassCard()
     }
 
     // MARK: - Top Markers Section
@@ -130,7 +145,7 @@ struct HealthMetricDetailCard: View {
             }
         }
         .padding(20)
-        .background(liquidGlassCard)
+        .liquidGlassCard()
     }
 
     // MARK: - Trend Section
@@ -164,7 +179,7 @@ struct HealthMetricDetailCard: View {
             .frame(maxWidth: .infinity)
         }
         .padding(20)
-        .background(liquidGlassCard)
+        .liquidGlassCard()
     }
 
     // MARK: - Actions Section
@@ -183,7 +198,7 @@ struct HealthMetricDetailCard: View {
             }
         }
         .padding(20)
-        .background(liquidGlassCard)
+        .liquidGlassCard()
     }
 
     // MARK: - Close Button
@@ -197,24 +212,6 @@ struct HealthMetricDetailCard: View {
         .padding(24)
     }
 
-    // MARK: - Liquid Glass Styles
-
-    private var liquidGlassBackground: some View {
-        Color.clear
-            .ignoresSafeArea()
-    }
-
-    @ViewBuilder
-    private var liquidGlassCard: some View {
-        if #available(iOS 26.0, *) {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.clear)
-                .glassEffect(.regular, in: .rect(cornerRadius: 16, style: .continuous))
-        } else {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.ultraThinMaterial)
-        }
-    }
 }
 
 // MARK: - Breakdown Row Component
@@ -337,19 +334,7 @@ struct ActionCard: View {
             }
         }
         .padding(16)
-        .background(actionCardBackground)
-    }
-
-    @ViewBuilder
-    private var actionCardBackground: some View {
-        if #available(iOS 26.0, *) {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.clear)
-                .glassEffect(.regular, in: .rect(cornerRadius: 12, style: .continuous))
-        } else {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.ultraThinMaterial)
-        }
+        .liquidGlassCard(cornerRadius: 12)
     }
 }
 

@@ -74,7 +74,7 @@ struct ProfileView: View {
             }
         }
         .padding(VirgilSpacing.md)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 
     // MARK: - Data Management Section
@@ -153,7 +153,7 @@ struct ProfileView: View {
                     .labelsHidden()
             }
             .padding(VirgilSpacing.md)
-            .virgilGlassCard()
+            .liquidGlassCard()
         }
     }
 
@@ -192,7 +192,7 @@ struct ProfileView: View {
                 }
                 .padding(VirgilSpacing.md)
             }
-            .virgilGlassCard()
+            .liquidGlassCard()
         }
     }
 
@@ -239,7 +239,7 @@ private struct ProfileRow: View {
                 .foregroundColor(.virgilTextSecondary)
         }
         .padding(VirgilSpacing.md)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 }
 

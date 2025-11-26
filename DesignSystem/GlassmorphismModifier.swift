@@ -106,6 +106,8 @@ extension View {
     }
 
     /// カード用ガラス効果（iOS 26+でLiquid Glass、iOS 15-25でレガシー実装）
+    /// - Note: 非推奨 - 代わりに`liquidGlassCard()`を使用してください
+    @available(*, deprecated, message: "Use liquidGlassCard() instead")
     @ViewBuilder
     func virgilGlassCard(interactive: Bool = false) -> some View {
         if #available(iOS 26.0, *) {

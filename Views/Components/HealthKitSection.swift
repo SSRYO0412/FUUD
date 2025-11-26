@@ -37,7 +37,7 @@ struct HealthKitSection: View {
             }
         }
         .padding(VirgilSpacing.md)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 }
 

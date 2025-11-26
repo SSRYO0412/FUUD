@@ -31,35 +31,51 @@ struct ExpandableCardOverlay: View {
             // 詳細カード
             if isExpanded {
                 GeometryReader { geometry in
-                    HealthMetricDetailCard(detail: detail, onClose: closeCard)
-                        .frame(width: geometry.size.width * 0.95, height: geometry.size.height * 0.90)
-                        .offset(
-                            x: (geometry.size.width - geometry.size.width * 0.95) / 2,
-                            y: geometry.safeAreaInsets.top + 20 + dragOffset
-                        )
-                        .gesture(
-                            DragGesture()
-                                .onChanged { value in
-                                    // 下方向のドラッグのみ許可
-                                    if value.translation.height > 0 {
-                                        dragOffset = value.translation.height
-                                        // ドラッグ量に応じて透明度を変更
-                                        opacity = max(0.0, 1.0 - Double(dragOffset / 200))
-                                    }
-                                }
-                                .onEnded { value in
-                                    // 閾値を超えたら閉じる
-                                    if value.translation.height > 150 {
-                                        closeCard()
-                                    } else {
-                                        // 閾値未満なら元の位置に戻す
-                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                            dragOffset = 0
-                                            opacity = 1
+                    ZStack(alignment: .top) {
+                        HealthMetricDetailCard(detail: detail, onClose: closeCard)
+                            .frame(width: geometry.size.width * 0.95, height: geometry.size.height * 0.90)
+                            .offset(
+                                x: (geometry.size.width - geometry.size.width * 0.95) / 2,
+                                y: geometry.safeAreaInsets.top + 20 + dragOffset
+                            )
+                            .gesture(
+                                DragGesture()
+                                    .onChanged { value in
+                                        // 下方向のドラッグのみ許可
+                                        if value.translation.height > 0 {
+                                            dragOffset = value.translation.height
+                                            // ドラッグ量に応じて透明度を変更
+                                            opacity = max(0.0, 1.0 - Double(dragOffset / 200))
                                         }
                                     }
-                                }
+                                    .onEnded { value in
+                                        // 閾値を超えたら閉じる
+                                        if value.translation.height > 150 {
+                                            closeCard()
+                                        } else {
+                                            // 閾値未満なら元の位置に戻す
+                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                                dragOffset = 0
+                                                opacity = 1
+                                            }
+                                        }
+                                    }
+                            )
+
+                        // 上部フェードオーバーレイ（カード表示領域の上端境界をぼかす）
+                        LinearGradient(
+                            colors: [
+                                Color(.systemBackground),
+                                Color(.systemBackground).opacity(0)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
+                        .frame(width: geometry.size.width, height: 60)
+                        .blur(radius: 10)
+                        .offset(y: geometry.safeAreaInsets.top + 20 + dragOffset - 30)
+                        .allowsHitTesting(false)
+                    }
                 }
                 .transition(.asymmetric(
                     insertion: .scale(scale: 0.9).combined(with: .opacity),

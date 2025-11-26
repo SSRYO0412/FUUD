@@ -209,7 +209,7 @@ struct TodaysPerformanceSection: View {
             .padding(.bottom, 20)
         }
         .background(Color.white.opacity(0.001)) // Hit testing用
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 
     private var formattedDate: String {

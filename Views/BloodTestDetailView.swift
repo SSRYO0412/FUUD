@@ -390,7 +390,7 @@ struct BloodTestDetailView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(VirgilSpacing.md)
-                .background(liquidGlassCard)
+                .liquidGlassCard()
 
                 // 説明セクション（詳細情報の上に追加）
                 if let descriptions = itemDescription {
@@ -414,7 +414,7 @@ struct BloodTestDetailView: View {
                         }
                     }
                     .padding(VirgilSpacing.md)
-                    .background(liquidGlassCard)
+                    .liquidGlassCard()
                 }
 
                 // 詳細情報カード
@@ -432,7 +432,7 @@ struct BloodTestDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .background(liquidGlassCard)
+                .liquidGlassCard()
 
                 // 推奨事項カード
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -451,7 +451,7 @@ struct BloodTestDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .background(liquidGlassCard)
+                .liquidGlassCard()
 
                 // 履歴トレンドカード
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -482,7 +482,7 @@ struct BloodTestDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .background(liquidGlassCard)
+                .liquidGlassCard()
             }
             .padding(.horizontal, VirgilSpacing.md)
             .padding(.top, VirgilSpacing.md)
@@ -545,30 +545,6 @@ struct BloodTestDetailView: View {
         .cornerRadius(12)
     }
 
-    // MARK: - Liquid Glass Styles
-
-    private var liquidGlassBackground: some View {
-        Color.clear
-            .ignoresSafeArea()
-    }
-
-    private var liquidGlassCard: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Color.black.opacity(0.08))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(
-                        LinearGradient(
-                            colors: [Color.black.opacity(0.3), Color.black.opacity(0.1)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-            )
-            .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
-            .shadow(color: Color.black.opacity(0.05), radius: 20, x: 0, y: 10)
-    }
 }
 
 // MARK: - Detail Info Row

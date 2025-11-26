@@ -67,7 +67,7 @@ struct SkinDetailView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
 
                 // Tuuning Intelligence
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -85,7 +85,7 @@ struct SkinDetailView: View {
                         .lineSpacing(4)
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
 
                 // Score Graph
                 VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -96,7 +96,7 @@ struct SkinDetailView: View {
                     ScoreTrendGraph(scores: [78, 80, 82, 84, 85, 86])  // [DUMMY] 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
 
                 // Related Genes - MVP: 遺伝子情報を非表示
                 /*
@@ -142,7 +142,7 @@ struct SkinDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
                 */
 
                 // Related Blood Markers
@@ -176,7 +176,7 @@ struct SkinDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
 
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
@@ -245,7 +245,7 @@ struct SkinDetailView: View {
                     }
                 }
                 .padding(VirgilSpacing.md)
-                .virgilGlassCard()
+                .liquidGlassCard()
             }
             .padding(.horizontal, VirgilSpacing.md)
             .padding(.top, VirgilSpacing.md)

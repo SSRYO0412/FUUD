@@ -38,7 +38,7 @@ struct MicrobiomeSection: View {
             }
         }
         .padding(VirgilSpacing.md)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 }
 

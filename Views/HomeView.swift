@@ -154,7 +154,7 @@ struct AICoreSection: View {
             ProcessingDots()
         }
         .padding(VirgilSpacing.md)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 }
 
@@ -316,7 +316,7 @@ struct BioAgeCard: View {
             .frame(maxWidth: .infinity)
         }
         .padding(VirgilSpacing.md)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 }
 
@@ -496,7 +496,7 @@ struct LongevityPaceCard: View {
                 }
             }
             .padding(VirgilSpacing.md)
-            .virgilGlassCard()
+            .liquidGlassCard()
 
             LongPressHint(helpText: "Longevity Paceは、あなたの老化速度を示す独自指標です。1.0が平均で、低いほど老化が遅いことを示します。")
                 .padding(8)
@@ -689,7 +689,7 @@ struct MetabolicPowerCard: View {
                 }
             }
             .padding(VirgilSpacing.md)
-            .virgilGlassCard()
+            .liquidGlassCard()
 
             LongPressHint(helpText: "Metabolic Powerは、エネルギー代謝とパフォーマンスの統合指標です。燃焼効率×行動の総合評価を示します。")
                 .padding(8)
@@ -863,7 +863,7 @@ struct RecoverySyncCard: View {
                 }
             }
             .padding(VirgilSpacing.md)
-            .virgilGlassCard()
+            .liquidGlassCard()
 
             LongPressHint(helpText: "Recovery Syncは、睡眠×自律神経×炎症×ホルモンの同調度を示す指標です。回復の質とリズムを評価します。")
                 .padding(8)
@@ -1375,7 +1375,7 @@ struct WeeklyPlanCard: View {
                     .foregroundColor(.virgilTextSecondary)
             }
             .padding(VirgilSpacing.md)
-            .virgilGlassCard()
+            .liquidGlassCard()
 
             LongPressHint(helpText: "\(day)の栄養プランと運動メニューです。体調に合わせて調整できます。")
                 .padding(6)

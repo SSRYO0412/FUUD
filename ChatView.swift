@@ -105,7 +105,7 @@ struct ChatView: View {
                         .font(.system(size: 11, weight: .medium))
                         .foregroundColor(Color(hex: "ED1C24"))
                         .padding(VirgilSpacing.sm)
-                        .virgilGlassCard()
+                        .liquidGlassCard()
                         .padding(.horizontal, VirgilSpacing.md)
                 }
 
@@ -648,7 +648,7 @@ struct AIMessageBubble: View {
             .font(.system(size: 17, weight: .regular))
             .foregroundColor(.virgilTextPrimary)
             .padding(VirgilSpacing.md)
-            .virgilGlassCard()
+            .liquidGlassCard()
     }
 }
 
@@ -667,7 +667,7 @@ struct TypingIndicator: View {
             }
         }
         .padding(VirgilSpacing.md)
-        .virgilGlassCard()
+        .liquidGlassCard()
         .onAppear {
             Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
                 withAnimation {
@@ -798,7 +798,7 @@ struct QuestionButtons: View {
             }
         }
         .padding(VirgilSpacing.md)
-        .virgilGlassCard()
+        .liquidGlassCard()
     }
 }
 
