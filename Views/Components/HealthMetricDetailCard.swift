@@ -209,7 +209,7 @@ struct HealthMetricDetailCard: View {
         if #available(iOS 26.0, *) {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(.clear)
-                .glassEffect(.regular.tint(.white.opacity(0.05)), in: .rect(cornerRadius: 16, style: .continuous))
+                .glassEffect(.regular, in: .rect(cornerRadius: 16, style: .continuous))
         } else {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(.ultraThinMaterial)
@@ -345,7 +345,7 @@ struct ActionCard: View {
         if #available(iOS 26.0, *) {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(.clear)
-                .glassEffect(.regular.tint(.white.opacity(0.03)), in: .rect(cornerRadius: 12, style: .continuous))
+                .glassEffect(.regular, in: .rect(cornerRadius: 12, style: .continuous))
         } else {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(.ultraThinMaterial)

@@ -33,7 +33,6 @@ struct ExpandableCardOverlay: View {
                 GeometryReader { geometry in
                     HealthMetricDetailCard(detail: detail, onClose: closeCard)
                         .frame(width: geometry.size.width * 0.95, height: geometry.size.height * 0.90)
-                        .clipShape(RoundedRectangle(cornerRadius: 24))
                         .offset(
                             x: (geometry.size.width - geometry.size.width * 0.95) / 2,
                             y: geometry.safeAreaInsets.top + 20 + dragOffset
