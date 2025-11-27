@@ -28,6 +28,9 @@ struct HomeView: View {
                 Color(.secondarySystemBackground)
                     .ignoresSafeArea()
 
+                // Orb Background Animation
+                OrbBackground()
+
                 ScrollView {
                     VStack(spacing: VirgilSpacing.lg) {
                         // Header - 左右paddingあり

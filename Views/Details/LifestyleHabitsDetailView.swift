@@ -54,7 +54,15 @@ struct LifestyleHabitsDetailView: View {
     ]
 
     var body: some View {
-        ScrollView {
+        ZStack {
+            // Background
+            Color(.secondarySystemBackground)
+                .ignoresSafeArea()
+
+            // Orb Background Animation
+            OrbBackground()
+
+            ScrollView {
             VStack(spacing: VirgilSpacing.lg) {
                 // Header Score
                 VStack(spacing: VirgilSpacing.sm) {
@@ -259,8 +267,8 @@ struct LifestyleHabitsDetailView: View {
             .padding(.horizontal, VirgilSpacing.md)
             .padding(.top, VirgilSpacing.md)
             .padding(.bottom, 100)
+            }
         }
-        .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("生活習慣")
         .navigationBarTitleDisplayMode(.large)
         .toolbar { // [DUMMY]

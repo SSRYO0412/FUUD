@@ -55,6 +55,9 @@ struct ChatView: View {
             Color(.secondarySystemBackground)
                 .ignoresSafeArea()
 
+            // Orb Background Animation
+            OrbBackground()
+
             VStack(spacing: 0) {
                 // トピック選択（カスタムタブ風）
                 TopicSelector(topics: topics, selectedTopic: $selectedTopic)
@@ -698,26 +701,113 @@ struct AIMessageBubble: View {
     }
 }
 
-// MARK: - Typing Indicator
+// MARK: - Typing Indicator (Fake Progress)
 
 struct TypingIndicator: View {
-    @State private var animationPhase = 0
+    @State private var progress: Double = 0.0
+    @State private var currentPhase: Int = 0
+    @State private var timer: Timer?
+
+    /// 進捗フェーズごとのメッセージと目標進捗
+    private let phases: [(message: String, targetProgress: Double, duration: Double)] = [
+        ("データを準備中...", 0.15, 1.0),
+        ("血液情報を分析中...", 0.35, 1.5),
+        ("遺伝子情報を照合中...", 0.55, 1.5),
+        ("バイタルデータを確認中...", 0.70, 1.2),
+        ("AIが回答を生成中...", 0.85, 2.0),
+        ("最終確認中...", 0.95, 1.5)
+    ]
+
+    private var currentMessage: String {
+        guard currentPhase < phases.count else { return "処理中..." }
+        return phases[currentPhase].message
+    }
 
     var body: some View {
-        HStack(spacing: 6) {
-            ForEach(0..<3, id: \.self) { index in
-                Circle()
-                    .fill(Color.virgilTextSecondary)
-                    .frame(width: 8, height: 8)
-                    .opacity(animationPhase == index ? 1.0 : 0.3)
+        VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
+            // ステータスメッセージ
+            HStack(spacing: VirgilSpacing.xs) {
+                // アニメーションドット
+                HStack(spacing: 4) {
+                    ForEach(0..<3, id: \.self) { index in
+                        Circle()
+                            .fill(Color(hex: "0088CC"))
+                            .frame(width: 6, height: 6)
+                            .opacity(dotOpacity(for: index))
+                    }
+                }
+
+                Text(currentMessage)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.virgilTextSecondary)
+                    .animation(.easeInOut(duration: 0.3), value: currentMessage)
             }
+
+            // プログレスバー
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    // 背景
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.white.opacity(0.2))
+                        .frame(height: 6)
+
+                    // 進捗バー
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(hex: "0088CC"), Color(hex: "00AAFF")],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: geometry.size.width * progress, height: 6)
+                        .animation(.easeInOut(duration: 0.3), value: progress)
+                }
+            }
+            .frame(height: 6)
         }
         .padding(VirgilSpacing.md)
+        .frame(maxWidth: 280)
         .liquidGlassCard()
         .onAppear {
-            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                withAnimation {
-                    animationPhase = (animationPhase + 1) % 3
+            startProgressAnimation()
+        }
+        .onDisappear {
+            timer?.invalidate()
+            timer = nil
+        }
+    }
+
+    /// ドットのアニメーション用不透明度
+    private func dotOpacity(for index: Int) -> Double {
+        let phase = Int(progress * 30) % 3
+        return phase == index ? 1.0 : 0.3
+    }
+
+    /// 進捗アニメーションを開始
+    private func startProgressAnimation() {
+        progress = 0.0
+        currentPhase = 0
+
+        // 各フェーズを順次実行
+        var totalDelay: Double = 0.0
+
+        for (index, phase) in phases.enumerated() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + totalDelay) {
+                withAnimation(.easeInOut(duration: phase.duration)) {
+                    self.currentPhase = index
+                    self.progress = phase.targetProgress
+                }
+            }
+            totalDelay += phase.duration
+        }
+
+        // ループ: 最後まで行ったら95%付近で待機
+        DispatchQueue.main.asyncAfter(deadline: .now() + totalDelay) {
+            // 95%で待機しつつ微妙に揺れる
+            timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self.progress = Double.random(in: 0.92...0.98)
                 }
             }
         }

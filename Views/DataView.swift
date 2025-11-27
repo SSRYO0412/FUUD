@@ -24,6 +24,9 @@ struct DataView: View {
                 Color(.secondarySystemBackground)
                     .ignoresSafeArea()
 
+                // Orb Background Animation
+                OrbBackground()
+
                 ScrollView {
                     ScrollViewBackgroundClearer()
                         .frame(height: 0)

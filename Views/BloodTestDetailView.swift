@@ -340,9 +340,17 @@ struct BloodTestDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: VirgilSpacing.lg) {
-                // ヘッダースコアカード
+        ZStack {
+            // Background
+            Color(.secondarySystemBackground)
+                .ignoresSafeArea()
+
+            // Orb Background Animation
+            OrbBackground()
+
+            ScrollView {
+                VStack(spacing: VirgilSpacing.lg) {
+                    // ヘッダースコアカード
                 VStack(spacing: VirgilSpacing.sm) {
                     // アイコン（肝臓系・腎臓系・HbA1cはカスタム画像、それ以外は絵文字）
                     if isLiverRelated {
@@ -487,8 +495,8 @@ struct BloodTestDetailView: View {
             .padding(.horizontal, VirgilSpacing.md)
             .padding(.top, VirgilSpacing.md)
             .padding(.bottom, 100)
+            }
         }
-        .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle(bloodItem.nameJp)
         .navigationBarTitleDisplayMode(.large)
     }

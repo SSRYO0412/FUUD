@@ -19,6 +19,9 @@ struct ProfileView: View {
                 Color(.secondarySystemBackground)
                     .ignoresSafeArea()
 
+                // Orb Background Animation
+                OrbBackground()
+
                 ScrollView {
                     VStack(spacing: VirgilSpacing.md) {
                         accountSection
