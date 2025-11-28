@@ -1339,4 +1339,29 @@ struct SNPImpactCount {
         let scoreRaw = (Double(netImpact) / Double(total)) * 100.0
         return Int(scoreRaw)
     }
+
+    /// 5段階評価レベル
+    enum ScoreLevel: String {
+        case high = "高い"
+        case slightlyHigh = "やや高い"
+        case normal = "普通"
+        case slightlyLow = "やや低い"
+        case low = "低い"
+    }
+
+    /// 5段階評価を取得
+    var scoreLevel: ScoreLevel {
+        switch score {
+        case 20...100:
+            return .high
+        case 1...19:
+            return .slightlyHigh
+        case -19...0:
+            return .normal
+        case -99...(-20):
+            return .slightlyLow
+        default:
+            return .low
+        }
+    }
 }

@@ -384,15 +384,6 @@ struct GeneMarkerCard: View {
         }
     }
 
-    // スコアのフォーマット
-    private var formattedScore: String {
-        if impact.score > 0 {
-            return "+\(impact.score)"
-        } else {
-            return "\(impact.score)"
-        }
-    }
-
     var body: some View {
         HStack {
             // 項目名（左寄せ）
@@ -403,9 +394,9 @@ struct GeneMarkerCard: View {
 
             Spacer()
 
-            // スコア（右寄せ）
-            Text(formattedScore)
-                .font(.system(size: 20, weight: .bold))
+            // 5段階評価（右寄せ）
+            Text(impact.scoreLevel.rawValue)
+                .font(.system(size: 16, weight: .bold))
                 .foregroundColor(scoreColor)
         }
         .padding(.horizontal, VirgilSpacing.md)
