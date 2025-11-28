@@ -50,6 +50,10 @@ struct HomeView: View {
 
                         // 以降のカード - 左右paddingあり
                         VStack(spacing: VirgilSpacing.lg) {
+                            // AI時間帯別インサイト（HealthMetricsGridSectionの上）
+                            AITimeBasedInsightSection()
+                                .padding(.bottom, VirgilSpacing.md)
+
                             // Health Metrics Grid (2x2) - Apple Watchスタイル
                             HealthMetricsGridSection(isExpanded: $isCardExpanded, expandedCardDetail: $expandedCardDetail)
 
