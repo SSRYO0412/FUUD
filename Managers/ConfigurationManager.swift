@@ -32,26 +32,38 @@ class ConfigurationManager {
         let createUser: String
         let chat: String
         let healthProfile: String
-        
+        let intelligence: String  // TUUNING Intelligence API
+        let bloodData: String     // 血液データAPI
+        let geneData: String      // 遺伝子データAPI
+
         static var current: APIEndpoints {
             switch Environment.current {
             case .development:
                 return APIEndpoints(
                     createUser: "https://02fc5gnwoi.execute-api.ap-northeast-1.amazonaws.com/dev/users",
-                    chat: "https://kbodeqy5wa.execute-api.ap-northeast-1.amazonaws.com/prod/chat",
-                    healthProfile: "https://70ubpe7e14.execute-api.ap-northeast-1.amazonaws.com/prod/profile"
+                    chat: "https://api.tuun-api.com/chat",  // Cloudflare経由（base path mappingで/prodにルーティング）
+                    healthProfile: "https://70ubpe7e14.execute-api.ap-northeast-1.amazonaws.com/prod/profile",
+                    intelligence: "",  // TODO: Phase 3でエンドポイント設定
+                    bloodData: "https://7rk2qibxm6.execute-api.ap-northeast-1.amazonaws.com/prod",
+                    geneData: "https://kxuyul35l4.execute-api.ap-northeast-1.amazonaws.com/prod"
                 )
             case .staging:
                 return APIEndpoints(
                     createUser: "https://02fc5gnwoi.execute-api.ap-northeast-1.amazonaws.com/staging/users",
-                    chat: "https://kbodeqy5wa.execute-api.ap-northeast-1.amazonaws.com/staging/chat",
-                    healthProfile: "https://70ubpe7e14.execute-api.ap-northeast-1.amazonaws.com/staging/profile"
+                    chat: "https://api.tuun-api.com/chat",  // Cloudflare経由（base path mappingで/prodにルーティング）
+                    healthProfile: "https://70ubpe7e14.execute-api.ap-northeast-1.amazonaws.com/staging/profile",
+                    intelligence: "",  // TODO: Phase 3でエンドポイント設定
+                    bloodData: "https://7rk2qibxm6.execute-api.ap-northeast-1.amazonaws.com/prod",
+                    geneData: "https://kxuyul35l4.execute-api.ap-northeast-1.amazonaws.com/prod"
                 )
             case .production:
                 return APIEndpoints(
                     createUser: "https://02fc5gnwoi.execute-api.ap-northeast-1.amazonaws.com/prod/users",
-                    chat: "https://kbodeqy5wa.execute-api.ap-northeast-1.amazonaws.com/prod/chat",
-                    healthProfile: "https://70ubpe7e14.execute-api.ap-northeast-1.amazonaws.com/prod/profile"
+                    chat: "https://api.tuun-api.com/chat",  // Cloudflare経由（base path mappingで/prodにルーティング）
+                    healthProfile: "https://70ubpe7e14.execute-api.ap-northeast-1.amazonaws.com/prod/profile",
+                    intelligence: "",  // TODO: Phase 3でエンドポイント設定
+                    bloodData: "https://7rk2qibxm6.execute-api.ap-northeast-1.amazonaws.com/prod",
+                    geneData: "https://kxuyul35l4.execute-api.ap-northeast-1.amazonaws.com/prod"
                 )
             }
         }

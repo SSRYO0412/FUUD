@@ -245,7 +245,8 @@ extension GeneDataService {
             }
             
             let encodedEmail = userEmail.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? userEmail
-            let endpoint = "https://kxuyul35l4.execute-api.ap-northeast-1.amazonaws.com/prod?userId=\(encodedEmail)"
+            let baseUrl = ConfigurationManager.shared.apiEndpoints.geneData
+            let endpoint = "\(baseUrl)?userId=\(encodedEmail)"
             
             print("🧬 GeneData API Request: \(endpoint)")
             
@@ -521,7 +522,8 @@ extension GeneDataService {
                     "protective": impact.protective,
                     "risk": impact.risk,
                     "neutral": impact.neutral,
-                    "score": impact.score
+                    "score": impact.score,
+                    "scoreLevel": impact.scoreLevel.rawValue  // "高い", "やや高い", "普通", "やや低い", "低い"
                 ]
             }
 
@@ -669,7 +671,8 @@ extension GeneDataService {
                                 "protective": impact.protective,
                                 "risk": impact.risk,
                                 "neutral": impact.neutral,
-                                "score": impact.score
+                                "score": impact.score,
+                                "scoreLevel": impact.scoreLevel.rawValue  // "高い", "やや高い", "普通", "やや低い", "低い"
                             ]
                         }
 
