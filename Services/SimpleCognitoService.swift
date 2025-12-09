@@ -23,12 +23,22 @@ class SimpleCognitoService: ObservableObject {
     @Published var isSignedIn = false
     @Published var message = ""
     @Published var currentUserEmail: String?
-    
+
+    // MARK: - MFA Properties
+    @Published var mfaRequired = false
+    @Published var mfaSetupRequired = false
+    @Published var mfaSecretCode: String?
+
+    // MARK: - New Password Properties
+    @Published var newPasswordRequired = false
+
     // MARK: - Private Properties
     private var accessToken: String?
     private var idToken: String?
     private var refreshToken: String?
     private var tokenExpirationDate: Date?
+    private var mfaSession: String?
+    private(set) var pendingUsername: String?
     
     private init() {
         // Previews環境ではKeychainアクセス等を行わず即戻る（Canvas安定化）
@@ -136,26 +146,10 @@ class SimpleCognitoService: ObservableObject {
             )
             
             struct CognitoAuthResponse: Codable {
-                let authenticationResult: AuthenticationResult?
+                let authenticationResult: CognitoAuthResult?
                 let challengeName: String?
                 let session: String?
-                
-                struct AuthenticationResult: Codable {
-                    let accessToken: String
-                    let idToken: String
-                    let refreshToken: String?
-                    let expiresIn: Int?
-                    let tokenType: String?
-                    
-                    private enum CodingKeys: String, CodingKey {
-                        case accessToken = "AccessToken"
-                        case idToken = "IdToken"
-                        case refreshToken = "RefreshToken"
-                        case expiresIn = "ExpiresIn"
-                        case tokenType = "TokenType"
-                    }
-                }
-                
+
                 private enum CodingKeys: String, CodingKey {
                     case authenticationResult = "AuthenticationResult"
                     case challengeName = "ChallengeName"
@@ -170,35 +164,14 @@ class SimpleCognitoService: ObservableObject {
             
             if let authResult = response.authenticationResult {
                 // 認証成功
-                self.accessToken = authResult.accessToken
-                self.idToken = authResult.idToken
-                self.refreshToken = authResult.refreshToken
-                
-                // トークンの有効期限を設定（デフォルト1時間、少し余裕を持って50分後に期限切れとする）
-                let expiresInSeconds = authResult.expiresIn ?? 3600
-                self.tokenExpirationDate = Date().addingTimeInterval(TimeInterval(expiresInSeconds - 600))
-                
-                // Keychainにトークンを保存
-                KeychainHelper.shared.saveTokens(
-                    accessToken: authResult.accessToken,
-                    idToken: authResult.idToken,
-                    refreshToken: authResult.refreshToken,
-                    userEmail: email,
-                    expirationDate: self.tokenExpirationDate!
-                )
-                
-                print("🔐 Tokens saved, expires at: \(self.tokenExpirationDate?.description ?? "unknown")")
-                
-                await MainActor.run {
-                    self.currentUserEmail = email
-                    self.isSignedIn = true
-                    self.message = "ログイン成功！"
-                }
+                await handleAuthenticationSuccess(authResult: authResult, email: email)
             } else if let challengeName = response.challengeName {
                 // チャレンジが必要
-                await MainActor.run {
-                    self.message = "追加認証が必要です: \(challengeName)"
-                }
+                await handleAuthChallenge(
+                    challengeName: challengeName,
+                    session: response.session,
+                    username: email
+                )
             } else {
                 await MainActor.run {
                     self.message = "認証に失敗しました"
@@ -309,6 +282,453 @@ class SimpleCognitoService: ObservableObject {
         }
     }
     
+    // MARK: - MFA Methods
+
+    /// MFAチャレンジの処理
+    private func handleAuthChallenge(challengeName: String, session: String?, username: String) async {
+        await MainActor.run {
+            self.mfaSession = session
+            self.pendingUsername = username
+        }
+
+        switch challengeName {
+        case "SOFTWARE_TOKEN_MFA":
+            // TOTP MFA認証が必要
+            print("🔐 MFA required: SOFTWARE_TOKEN_MFA")
+            await MainActor.run {
+                self.mfaRequired = true
+                self.mfaSetupRequired = false
+                self.message = "認証アプリのコードを入力してください"
+            }
+
+        case "MFA_SETUP":
+            // MFAセットアップが必要（初回）
+            print("🔐 MFA setup required")
+            await setupMFA()
+
+        case "NEW_PASSWORD_REQUIRED":
+            print("🔐 New password required")
+            await MainActor.run {
+                self.message = ""  // アラートを表示せずシートのみ表示
+                self.newPasswordRequired = true
+            }
+
+        default:
+            await MainActor.run {
+                self.message = "追加認証が必要です: \(challengeName)"
+            }
+        }
+    }
+
+    /// 認証成功時の処理
+    private func handleAuthenticationSuccess(authResult: CognitoAuthResult, email: String) async {
+        self.accessToken = authResult.accessToken
+        self.idToken = authResult.idToken
+        self.refreshToken = authResult.refreshToken
+
+        // トークンの有効期限を設定（デフォルト1時間、少し余裕を持って50分後に期限切れとする）
+        let expiresInSeconds = authResult.expiresIn ?? 3600
+        self.tokenExpirationDate = Date().addingTimeInterval(TimeInterval(expiresInSeconds - 600))
+
+        // Keychainにトークンを保存
+        KeychainHelper.shared.saveTokens(
+            accessToken: authResult.accessToken,
+            idToken: authResult.idToken,
+            refreshToken: authResult.refreshToken,
+            userEmail: email,
+            expirationDate: self.tokenExpirationDate!
+        )
+
+        print("🔐 Tokens saved, expires at: \(self.tokenExpirationDate?.description ?? "unknown")")
+
+        await MainActor.run {
+            self.currentUserEmail = email
+            self.isSignedIn = true
+            self.mfaRequired = false
+            self.mfaSetupRequired = false
+            self.mfaSession = nil
+            self.pendingUsername = nil
+            self.message = "ログイン成功！"
+        }
+    }
+
+    /// 新パスワード設定チャレンジに応答（RespondToAuthChallenge API）
+    func respondToNewPasswordChallenge(newPassword: String) async {
+        guard let session = mfaSession, let username = pendingUsername else {
+            await MainActor.run {
+                self.message = "セッションが無効です。再度ログインしてください。"
+                self.newPasswordRequired = false
+            }
+            return
+        }
+
+        do {
+            let cognitoUrl = "https://cognito-idp.\(config.region).amazonaws.com/"
+
+            let requestBody = [
+                "ClientId": config.clientId,
+                "ChallengeName": "NEW_PASSWORD_REQUIRED",
+                "Session": session,
+                "ChallengeResponses": [
+                    "USERNAME": username,
+                    "NEW_PASSWORD": newPassword
+                ]
+            ] as [String: Any]
+
+            let requestConfig = NetworkManager.RequestConfig(
+                url: cognitoUrl,
+                method: .POST,
+                body: requestBody,
+                requiresAWSSignature: true,
+                customHeaders: [
+                    "X-Amz-Target": "AWSCognitoIdentityProviderService.RespondToAuthChallenge",
+                    "Content-Type": "application/x-amz-json-1.1"
+                ]
+            )
+
+            struct RespondToAuthChallengeResponse: Codable {
+                let authenticationResult: CognitoAuthResult?
+                let challengeName: String?
+                let session: String?
+
+                private enum CodingKeys: String, CodingKey {
+                    case authenticationResult = "AuthenticationResult"
+                    case challengeName = "ChallengeName"
+                    case session = "Session"
+                }
+            }
+
+            let response: RespondToAuthChallengeResponse = try await NetworkManager.shared.sendRequest(
+                config: requestConfig,
+                responseType: RespondToAuthChallengeResponse.self
+            )
+
+            if let authResult = response.authenticationResult {
+                // 認証成功
+                print("✅ New password set successfully")
+                await handleAuthenticationSuccess(authResult: authResult, email: username)
+                await MainActor.run {
+                    self.newPasswordRequired = false
+                }
+            } else if let challengeName = response.challengeName {
+                // 追加のチャレンジが必要（MFA等）
+                await MainActor.run {
+                    self.mfaSession = response.session
+                    self.newPasswordRequired = false
+                }
+                await handleAuthChallenge(
+                    challengeName: challengeName,
+                    session: response.session,
+                    username: username
+                )
+            } else {
+                await MainActor.run {
+                    self.message = "パスワード設定に失敗しました"
+                    self.newPasswordRequired = false
+                }
+            }
+
+        } catch {
+            let appError = ErrorManager.shared.convertToAppError(error)
+            ErrorManager.shared.logError(appError, context: "SimpleCognitoService.respondToNewPasswordChallenge")
+
+            await MainActor.run {
+                self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
+            }
+        }
+    }
+
+    /// MFAセットアップ開始（AssociateSoftwareToken API）
+    func setupMFA() async {
+        guard let session = mfaSession else {
+            await MainActor.run {
+                self.message = "セッションが無効です。再度ログインしてください。"
+            }
+            return
+        }
+
+        do {
+            let cognitoUrl = "https://cognito-idp.\(config.region).amazonaws.com/"
+
+            let requestBody = [
+                "Session": session
+            ] as [String: Any]
+
+            let requestConfig = NetworkManager.RequestConfig(
+                url: cognitoUrl,
+                method: .POST,
+                body: requestBody,
+                requiresAWSSignature: true,
+                customHeaders: [
+                    "X-Amz-Target": "AWSCognitoIdentityProviderService.AssociateSoftwareToken",
+                    "Content-Type": "application/x-amz-json-1.1"
+                ]
+            )
+
+            struct AssociateSoftwareTokenResponse: Codable {
+                let secretCode: String
+                let session: String?
+
+                private enum CodingKeys: String, CodingKey {
+                    case secretCode = "SecretCode"
+                    case session = "Session"
+                }
+            }
+
+            let response: AssociateSoftwareTokenResponse = try await NetworkManager.shared.sendRequest(
+                config: requestConfig,
+                responseType: AssociateSoftwareTokenResponse.self
+            )
+
+            print("🔐 MFA secret code received")
+
+            await MainActor.run {
+                self.mfaSecretCode = response.secretCode
+                self.mfaSession = response.session
+                self.mfaSetupRequired = true
+                self.mfaRequired = false
+                self.message = "認証アプリでQRコードをスキャンしてください"
+            }
+
+        } catch {
+            let appError = ErrorManager.shared.convertToAppError(error)
+            ErrorManager.shared.logError(appError, context: "SimpleCognitoService.setupMFA")
+
+            await MainActor.run {
+                self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
+            }
+        }
+    }
+
+    /// MFAセットアップ検証（VerifySoftwareToken API）
+    func verifyMFASetup(totpCode: String) async {
+        guard let session = mfaSession else {
+            await MainActor.run {
+                self.message = "セッションが無効です。再度ログインしてください。"
+            }
+            return
+        }
+
+        do {
+            let cognitoUrl = "https://cognito-idp.\(config.region).amazonaws.com/"
+
+            let requestBody = [
+                "Session": session,
+                "UserCode": totpCode,
+                "FriendlyDeviceName": "TUUN iOS App"
+            ] as [String: Any]
+
+            let requestConfig = NetworkManager.RequestConfig(
+                url: cognitoUrl,
+                method: .POST,
+                body: requestBody,
+                requiresAWSSignature: true,
+                customHeaders: [
+                    "X-Amz-Target": "AWSCognitoIdentityProviderService.VerifySoftwareToken",
+                    "Content-Type": "application/x-amz-json-1.1"
+                ]
+            )
+
+            struct VerifySoftwareTokenResponse: Codable {
+                let status: String
+                let session: String?
+
+                private enum CodingKeys: String, CodingKey {
+                    case status = "Status"
+                    case session = "Session"
+                }
+            }
+
+            let response: VerifySoftwareTokenResponse = try await NetworkManager.shared.sendRequest(
+                config: requestConfig,
+                responseType: VerifySoftwareTokenResponse.self
+            )
+
+            if response.status == "SUCCESS" {
+                print("🔐 MFA setup verified successfully")
+
+                // セッションを更新
+                await MainActor.run {
+                    self.mfaSession = response.session
+                }
+
+                // MFA設定完了後、再度ログイン処理（RespondToAuthChallenge）
+                await respondToMFASetupChallenge()
+            } else {
+                await MainActor.run {
+                    self.message = "MFAセットアップに失敗しました: \(response.status)"
+                }
+            }
+
+        } catch {
+            let appError = ErrorManager.shared.convertToAppError(error)
+            ErrorManager.shared.logError(appError, context: "SimpleCognitoService.verifyMFASetup")
+
+            await MainActor.run {
+                self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
+            }
+        }
+    }
+
+    /// MFAセットアップ完了後のチャレンジレスポンス
+    private func respondToMFASetupChallenge() async {
+        guard let session = mfaSession, let username = pendingUsername else {
+            await MainActor.run {
+                self.message = "セッションが無効です。再度ログインしてください。"
+            }
+            return
+        }
+
+        do {
+            let cognitoUrl = "https://cognito-idp.\(config.region).amazonaws.com/"
+
+            let requestBody = [
+                "ClientId": config.clientId,
+                "ChallengeName": "MFA_SETUP",
+                "Session": session,
+                "ChallengeResponses": [
+                    "USERNAME": username
+                ]
+            ] as [String: Any]
+
+            let requestConfig = NetworkManager.RequestConfig(
+                url: cognitoUrl,
+                method: .POST,
+                body: requestBody,
+                requiresAWSSignature: true,
+                customHeaders: [
+                    "X-Amz-Target": "AWSCognitoIdentityProviderService.RespondToAuthChallenge",
+                    "Content-Type": "application/x-amz-json-1.1"
+                ]
+            )
+
+            struct RespondToAuthChallengeResponse: Codable {
+                let authenticationResult: CognitoAuthResult?
+                let challengeName: String?
+                let session: String?
+
+                private enum CodingKeys: String, CodingKey {
+                    case authenticationResult = "AuthenticationResult"
+                    case challengeName = "ChallengeName"
+                    case session = "Session"
+                }
+            }
+
+            let response: RespondToAuthChallengeResponse = try await NetworkManager.shared.sendRequest(
+                config: requestConfig,
+                responseType: RespondToAuthChallengeResponse.self
+            )
+
+            if let authResult = response.authenticationResult {
+                await handleAuthenticationSuccess(authResult: authResult, email: username)
+            } else if let challengeName = response.challengeName {
+                await handleAuthChallenge(
+                    challengeName: challengeName,
+                    session: response.session,
+                    username: username
+                )
+            } else {
+                await MainActor.run {
+                    self.message = "MFAセットアップ完了。再度ログインしてください。"
+                    self.mfaSetupRequired = false
+                    self.mfaRequired = false
+                }
+            }
+
+        } catch {
+            let appError = ErrorManager.shared.convertToAppError(error)
+            ErrorManager.shared.logError(appError, context: "SimpleCognitoService.respondToMFASetupChallenge")
+
+            await MainActor.run {
+                self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
+            }
+        }
+    }
+
+    /// MFA認証（RespondToAuthChallenge API - SOFTWARE_TOKEN_MFA）
+    func verifyMFA(totpCode: String) async {
+        guard let session = mfaSession, let username = pendingUsername else {
+            await MainActor.run {
+                self.message = "セッションが無効です。再度ログインしてください。"
+            }
+            return
+        }
+
+        do {
+            let cognitoUrl = "https://cognito-idp.\(config.region).amazonaws.com/"
+
+            let requestBody = [
+                "ClientId": config.clientId,
+                "ChallengeName": "SOFTWARE_TOKEN_MFA",
+                "Session": session,
+                "ChallengeResponses": [
+                    "USERNAME": username,
+                    "SOFTWARE_TOKEN_MFA_CODE": totpCode
+                ]
+            ] as [String: Any]
+
+            let requestConfig = NetworkManager.RequestConfig(
+                url: cognitoUrl,
+                method: .POST,
+                body: requestBody,
+                requiresAWSSignature: true,
+                customHeaders: [
+                    "X-Amz-Target": "AWSCognitoIdentityProviderService.RespondToAuthChallenge",
+                    "Content-Type": "application/x-amz-json-1.1"
+                ]
+            )
+
+            struct RespondToAuthChallengeResponse: Codable {
+                let authenticationResult: CognitoAuthResult?
+                let challengeName: String?
+                let session: String?
+
+                private enum CodingKeys: String, CodingKey {
+                    case authenticationResult = "AuthenticationResult"
+                    case challengeName = "ChallengeName"
+                    case session = "Session"
+                }
+            }
+
+            let response: RespondToAuthChallengeResponse = try await NetworkManager.shared.sendRequest(
+                config: requestConfig,
+                responseType: RespondToAuthChallengeResponse.self
+            )
+
+            if let authResult = response.authenticationResult {
+                await handleAuthenticationSuccess(authResult: authResult, email: username)
+            } else if let challengeName = response.challengeName {
+                await handleAuthChallenge(
+                    challengeName: challengeName,
+                    session: response.session,
+                    username: username
+                )
+            } else {
+                await MainActor.run {
+                    self.message = "MFA認証に失敗しました"
+                }
+            }
+
+        } catch {
+            let appError = ErrorManager.shared.convertToAppError(error)
+            ErrorManager.shared.logError(appError, context: "SimpleCognitoService.verifyMFA")
+
+            await MainActor.run {
+                self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
+            }
+        }
+    }
+
+    /// MFA状態をリセット
+    func resetMFAState() {
+        mfaRequired = false
+        mfaSetupRequired = false
+        mfaSecretCode = nil
+        mfaSession = nil
+        pendingUsername = nil
+        message = ""
+    }
+
     /// ログアウト
     func signOut() async {
         // トークンをクリア
@@ -465,5 +885,24 @@ class SimpleCognitoService: ObservableObject {
     /// 手動でトークンをリロード（デバッグ用）
     func reloadStoredTokens() {
         loadStoredTokens()
+    }
+}
+
+// MARK: - Cognito Response Types
+
+/// Cognito認証結果（共通型）
+struct CognitoAuthResult: Codable {
+    let accessToken: String
+    let idToken: String
+    let refreshToken: String?
+    let expiresIn: Int?
+    let tokenType: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case accessToken = "AccessToken"
+        case idToken = "IdToken"
+        case refreshToken = "RefreshToken"
+        case expiresIn = "ExpiresIn"
+        case tokenType = "TokenType"
     }
 }

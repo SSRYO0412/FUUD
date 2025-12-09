@@ -1,0 +1,26 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CognitoAccess",
+            "Effect": "Allow",
+            "Action": "cognito-idp:AdminCreateUser",
+            "Resource": "arn:aws:cognito-idp:ap-northeast-1:295250016740:userpool/ap-northeast-1_cwAKljjzb"
+        },
+        {
+            "Sid": "DynamoDBAccess",
+            "Effect": "Allow",
+            "Action": "dynamodb:PutItem",
+            "Resource": "arn:aws:dynamodb:ap-northeast-1:295250016740:table/Users"
+        },
+        {
+            "Sid": "S3Access",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:::tuunapp-gene-data-a7x9k3/*"
+        }
+    ]
+}
