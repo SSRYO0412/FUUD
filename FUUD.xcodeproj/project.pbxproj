@@ -350,7 +350,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 35A15C262E31EA8100678A42 /* Build configuration list for PBXProject "TUUN" */;
+			buildConfigurationList = 35A15C262E31EA8100678A42 /* Build configuration list for PBXProject "FUUD" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -721,7 +721,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		35A15C262E31EA8100678A42 /* Build configuration list for PBXProject "TUUN" */ = {
+		35A15C262E31EA8100678A42 /* Build configuration list for PBXProject "FUUD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				35A15C4A2E31EA8200678A42 /* Debug */,

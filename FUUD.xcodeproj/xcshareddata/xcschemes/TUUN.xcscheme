@@ -18,7 +18,7 @@
                BlueprintIdentifier = "35A15C2A2E31EA8100678A42"
                BuildableName = "AWStest.app"
                BlueprintName = "AWStest"
-               ReferencedContainer = "container:TUUN.xcodeproj">
+               ReferencedContainer = "container:FUUD.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -38,7 +38,7 @@
                BlueprintIdentifier = "35A15C372E31EA8200678A42"
                BuildableName = "AWStestTests.xctest"
                BlueprintName = "AWStestTests"
-               ReferencedContainer = "container:TUUN.xcodeproj">
+               ReferencedContainer = "container:FUUD.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -49,7 +49,7 @@
                BlueprintIdentifier = "35A15C412E31EA8200678A42"
                BuildableName = "AWStestUITests.xctest"
                BlueprintName = "AWStestUITests"
-               ReferencedContainer = "container:TUUN.xcodeproj">
+               ReferencedContainer = "container:FUUD.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -71,7 +71,7 @@
             BlueprintIdentifier = "35A15C2A2E31EA8100678A42"
             BuildableName = "AWStest.app"
             BlueprintName = "AWStest"
-            ReferencedContainer = "container:TUUN.xcodeproj">
+            ReferencedContainer = "container:FUUD.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -88,7 +88,7 @@
             BlueprintIdentifier = "35A15C2A2E31EA8100678A42"
             BuildableName = "AWStest.app"
             BlueprintName = "AWStest"
-            ReferencedContainer = "container:TUUN.xcodeproj">
+            ReferencedContainer = "container:FUUD.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
