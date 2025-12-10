@@ -9,6 +9,9 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var cognitoService: SimpleCognitoService
+    @StateObject private var personalizer = NutritionPersonalizer.shared
+    @StateObject private var mealService = MealLogService.shared
+    @StateObject private var healthKitService = HealthKitService.shared
     @State private var aiInsightIndex = 0
     @State private var isCardExpanded = false
     @State private var expandedCardDetail: HealthMetricDetail? = nil
@@ -21,6 +24,38 @@ struct HomeView: View {
         "hrv朝測定値が68msに改善。自律神経バランスが最適範囲です..." // [DUMMY] 仮のAIインサイト
     ]
 
+    private var backgroundTargetCalories: Int {
+        personalizer.adjustedCalories?.adjustedTarget ?? 1800
+    }
+
+    private var backgroundEatenCalories: Int {
+        mealService.todayTotals.calories
+    }
+
+    private var backgroundBurnedCalories: Int {
+        Int(healthKitService.healthData?.activeEnergyBurned ?? 0)
+    }
+
+    private var backgroundRemainingCalories: Int {
+        backgroundTargetCalories - backgroundEatenCalories + backgroundBurnedCalories
+    }
+
+    private var orbColorStyle: OrbBackground.ColorStyle {
+        guard backgroundTargetCalories > 0 else { return .neutral }
+
+        let ratio = Double(backgroundRemainingCalories) / Double(backgroundTargetCalories)
+
+        if ratio <= 0 {
+            return .red
+        } else if ratio < 0.3 {
+            return .yellow
+        } else if ratio < 0.7 {
+            return .green
+        } else {
+            return .blue
+        }
+    }
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -29,61 +64,84 @@ struct HomeView: View {
                     .ignoresSafeArea()
 
                 // Orb Background Animation
-                OrbBackground()
+                OrbBackground(style: orbColorStyle)
 
                 ScrollView {
                     VStack(spacing: VirgilSpacing.lg) {
                         // Header - 左右paddingあり
                         VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
-                            Text("TUUN")
+                            Text("FUUD")
                                 .font(.system(size: 36, weight: .black))
 
-                            Text("body operating system")
+                            Text("スマート栄養管理")
                                 .font(.system(size: 10, weight: .medium))
                                 .foregroundColor(.virgilTextSecondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, VirgilSpacing.md)
 
-                        // HealthKit LIVE Section - 画面幅いっぱい（paddingなし）
-                        HealthKitLiveSection()
+                        // ===== FUUD 新セクション =====
 
-                        // 以降のカード - 左右paddingあり
+                        // 以下のカード - 左右paddingあり
                         VStack(spacing: VirgilSpacing.lg) {
-                            // AI時間帯別インサイト（HealthMetricsGridSectionの上）
-                            AITimeBasedInsightSection()
-                                .padding(.bottom, VirgilSpacing.md)
+                            // 1. Nutrition Today（Lifesum風 - 大型円形リング + PFCバー）
+                            NutritionTodaySection()
 
-                            // Health Metrics Grid (2x2) - Apple Watchスタイル
-                            HealthMetricsGridSection(isExpanded: $isCardExpanded, expandedCardDetail: $expandedCardDetail)
-                                .padding(.bottom, VirgilSpacing.md)
+                            // 2. Insights & Analytics（MacroFactor風 - TDEE/体重トレンド/Goal Progress）
+                            InsightsAnalyticsSection()
 
-                            // Daily Action Plan（HealthMetricsGridSectionの下）
-                            DailyActionSection()
-                                .padding(.top, VirgilSpacing.xl)
+                            // 3. Data & Habits（MacroFactor風 - Scale Weight/Nutrition/Body Metrics）
+                            DataHabitsSection()
 
-                            // Real-Time Performance Section - 一時的に非表示
-                            // TodaysPerformanceSection()
+                            // 4. Nutrient Explorer（MacroFactor風 - 2×2グリッド）
+                            NutrientExplorerSection()
 
-                            // AI Core Section - 一時的に非表示
-                            // AICoreSection(currentInsight: aiInsights[aiInsightIndex])
-
-                            // Bio Age Card - 一時的に非表示
-                            // BioAgeCard()
-
-                            // Longevity Pace Card - 一時的に非表示
-                            // LongevityPaceCard()
-
-                            // Metabolic Power Card - 一時的に非表示
-                            // MetabolicPowerCard()
-
-                            // Recovery Sync Card - 一時的に非表示
-                            // RecoverySyncCard()
-
-                            // Weekly Plan Section - 一時的に非表示
-                            // WeeklyPlanSection()
+                            // 5. Steps（HealthKit歩数プログレス）
+                            StepsSection()
                         }
                         .padding(.horizontal, VirgilSpacing.md)
+
+                        // ===== TUUN 旧セクション（非表示） =====
+
+                        // HealthKit LIVE Section - 画面幅いっぱい（paddingなし）
+                        // HealthKitLiveSection()
+
+                        // 以降のカード - 左右paddingあり
+                        // VStack(spacing: VirgilSpacing.lg) {
+                        //     // AI時間帯別インサイト（HealthMetricsGridSectionの上）
+                        //     AITimeBasedInsightSection()
+                        //         .padding(.bottom, VirgilSpacing.md)
+                        //
+                        //     // Health Metrics Grid (2x2) - Apple Watchスタイル
+                        //     HealthMetricsGridSection(isExpanded: $isCardExpanded, expandedCardDetail: $expandedCardDetail)
+                        //         .padding(.bottom, VirgilSpacing.md)
+                        //
+                        //     // Daily Action Plan（HealthMetricsGridSectionの下）
+                        //     DailyActionSection()
+                        //         .padding(.top, VirgilSpacing.xl)
+                        //
+                        //     // Real-Time Performance Section - 一時的に非表示
+                        //     // TodaysPerformanceSection()
+                        //
+                        //     // AI Core Section - 一時的に非表示
+                        //     // AICoreSection(currentInsight: aiInsights[aiInsightIndex])
+                        //
+                        //     // Bio Age Card - 一時的に非表示
+                        //     // BioAgeCard()
+                        //
+                        //     // Longevity Pace Card - 一時的に非表示
+                        //     // LongevityPaceCard()
+                        //
+                        //     // Metabolic Power Card - 一時的に非表示
+                        //     // MetabolicPowerCard()
+                        //
+                        //     // Recovery Sync Card - 一時的に非表示
+                        //     // RecoverySyncCard()
+                        //
+                        //     // Weekly Plan Section - 一時的に非表示
+                        //     // WeeklyPlanSection()
+                        // }
+                        // .padding(.horizontal, VirgilSpacing.md)
                     }
                     .padding(.top, VirgilSpacing.lg)
                     .padding(.bottom, 100)
@@ -114,11 +172,11 @@ struct HomeView: View {
         Task {
             do {
                 // 1. 認証リクエスト
-                try await HealthKitService.shared.requestAuthorization()
+                try await healthKitService.requestAuthorization()
                 print("✅ HealthKit認証成功")
 
                 // 2. データ取得
-                await HealthKitService.shared.fetchAllHealthData()
+                await healthKitService.fetchAllHealthData()
                 print("✅ HealthKitデータ取得完了")
 
             } catch {
