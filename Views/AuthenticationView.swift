@@ -15,6 +15,7 @@ struct AuthenticationView: View {
     @State private var showConfirmation = false
     @State private var showMFASetup = false
     @State private var showMFAVerify = false
+    @State private var showNewPassword = false
 
     // MARK: - Password Validation
 
@@ -60,13 +61,19 @@ struct AuthenticationView: View {
         .onChange(of: cognitoService.mfaRequired) { isRequired in
             showMFAVerify = isRequired
         }
+        .onChange(of: cognitoService.newPasswordRequired) { isRequired in
+            showNewPassword = isRequired
+        }
         .sheet(isPresented: $showMFASetup) {
             MFASetupView()
         }
         .sheet(isPresented: $showMFAVerify) {
             MFAVerifyView()
         }
-        .alert("メッセージ", isPresented: .constant(!cognitoService.message.isEmpty && !cognitoService.mfaRequired && !cognitoService.mfaSetupRequired)) {
+        .sheet(isPresented: $showNewPassword) {
+            NewPasswordView()
+        }
+        .alert("メッセージ", isPresented: .constant(!cognitoService.message.isEmpty && !cognitoService.mfaRequired && !cognitoService.mfaSetupRequired && !cognitoService.newPasswordRequired)) {
             Button("OK") {
                 cognitoService.message = ""
             }

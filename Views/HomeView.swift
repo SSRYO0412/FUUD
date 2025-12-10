@@ -56,6 +56,11 @@ struct HomeView: View {
 
                             // Health Metrics Grid (2x2) - Apple Watchスタイル
                             HealthMetricsGridSection(isExpanded: $isCardExpanded, expandedCardDetail: $expandedCardDetail)
+                                .padding(.bottom, VirgilSpacing.md)
+
+                            // Daily Action Plan（HealthMetricsGridSectionの下）
+                            DailyActionSection()
+                                .padding(.top, VirgilSpacing.xl)
 
                             // Real-Time Performance Section - 一時的に非表示
                             // TodaysPerformanceSection()

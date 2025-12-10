@@ -29,6 +29,7 @@ struct ProfileView: View {
                         privacySection
                         supportSection
                         demoModeSection
+                        developerSection
                         appInfoSection
                         logoutButton
                     }
@@ -157,6 +158,38 @@ struct ProfileView: View {
             }
             .padding(VirgilSpacing.md)
             .liquidGlassCard()
+        }
+    }
+
+    // MARK: - Developer Section
+
+    private var developerSection: some View {
+        VStack(alignment: .leading, spacing: VirgilSpacing.md) {
+            Text("DEVELOPER")
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundColor(.gray)
+                .padding(.horizontal, VirgilSpacing.sm)
+
+            NavigationLink(destination: DataCollectionDebugView()) {
+                HStack(spacing: VirgilSpacing.md) {
+                    Image(systemName: "ladybug")
+                        .font(.system(size: VirgilSpacing.iconSizeMedium))
+                        .foregroundColor(.orange)
+                        .frame(width: 44, height: 44)
+
+                    Text("Data Debug")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14))
+                        .foregroundColor(.virgilTextSecondary)
+                }
+                .padding(VirgilSpacing.md)
+                .liquidGlassCard()
+            }
         }
     }
 

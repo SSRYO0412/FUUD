@@ -1,0 +1,392 @@
+//
+//  HealthMetricsGridSection.swift
+//  AWStest
+//
+//  健康指標グリッドセクション（2x2レイアウト）
+//
+
+import SwiftUI
+
+struct HealthMetricsGridSection: View {
+    @StateObject private var bloodTestService = BloodTestService.shared
+    @StateObject private var healthScoreService = HealthScoreService.shared
+
+    var body: some View {
+        VStack(spacing: 12) {
+            // 上の行: 代謝力 + 炎症レベル
+            HStack(spacing: 12) {
+                // 左上: 代謝力 (折れ線グラフ)
+                HealthMetricCard(
+                    title: "代謝力",
+                    iconName: "flame.circle",
+                    scoreValue: String(format: "%.0f", metabolicScore * 100),
+                    scoreUnit: "%",
+                    statusText: metabolicStatus,
+                    statusColor: metabolicColor,
+                    visualType: .lineChart,
+                    progress: metabolicScore,
+                    chartDataPoints: metabolicChartData
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: 130)
+                .onAppear {
+                    print("🔥 代謝力: progress=\(metabolicScore), chartData=\(metabolicChartData)")
+                }
+
+                // 右上: 炎症レベル (半円ゲージ)
+                HealthMetricCard(
+                    title: "炎症レベル",
+                    iconName: "shield.circle",
+                    scoreValue: String(format: "%.0f", inflammationScore * 100),
+                    scoreUnit: "%",
+                    statusText: inflammationStatus,
+                    statusColor: inflammationColor,
+                    visualType: .semiCircleGauge,
+                    progress: inflammationScore
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: 130)
+                .onAppear {
+                    print("🛡️ 炎症レベル: progress=\(inflammationScore)")
+                }
+            }
+
+            // 下の行: 回復スピード + 老化速度
+            HStack(spacing: 12) {
+                // 左下: 回復スピード (横バー)
+                HealthMetricCard(
+                    title: "回復スピード",
+                    iconName: "arrow.clockwise.circle",
+                    scoreValue: String(format: "%.0f", recoveryScore * 100),
+                    scoreUnit: "%",
+                    statusText: recoveryStatus,
+                    statusColor: recoveryColor,
+                    visualType: .horizontalBar,
+                    progress: recoveryScore
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: 130)
+                .offset(y: 50)
+                .onAppear {
+                    print("🔄 回復スピード: progress=\(recoveryScore)")
+                }
+
+                // 右下: 老化速度 (横バー)
+                HealthMetricCard(
+                    title: "老化速度",
+                    iconName: "chart.line.uptrend.xyaxis.circle",
+                    scoreValue: String(format: "%.1f", agingRate),
+                    scoreUnit: "歳/年",
+                    statusText: agingRateStatus,
+                    statusColor: agingRateColor,
+                    visualType: .horizontalBar,
+                    progress: agingRateProgress
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: 130)
+                .offset(y: 50)
+                .onAppear {
+                    print("📈 老化速度詳細:")
+                    print("  - agingScore: \(String(format: "%.2f", agingScore))")
+                    print("  - agingRate: \(String(format: "%.2f", agingRate))歳/年")
+                    print("  - agingRateProgress: \(String(format: "%.2f", agingRateProgress))")
+                    print("  - 表示値: \(String(format: "%.1f", agingRate))歳/年")
+                    print("  - バー幅: \(String(format: "%.0f", agingRateProgress * 100))%")
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Computed Properties
+
+    /// 代謝力スコア（HbA1c、TGから計算）
+    private var metabolicScore: Double {
+        guard let bloodData = bloodTestService.bloodData else {
+            print("⚠️ 代謝力: 血液検査データなし")
+            return 0.35
+        }
+
+        // HbA1c: 5.6%以下が正常
+        let hba1c = bloodData.bloodItems.first { item in
+            let key = item.key.lowercased()
+            return key.contains("hba1c") || key == "hemoglobin_a1c"
+        }
+
+        guard let hba1cValue = hba1c?.value.replacingOccurrences(of: " ", with: ""),
+              let hba1cNum = Double(hba1cValue) else {
+            print("⚠️ 代謝力: HbA1cデータなし、デフォルト値使用")
+            return 0.35
+        }
+        print("✅ 代謝力: HbA1c = \(hba1cNum)%")
+
+        // HbA1c: 5.6%以下が正常、6.5%以上が糖尿病域
+        let hba1cScore = max(0, min(1, (6.5 - hba1cNum) / 1.0))
+
+        // TG: 150以下が正常
+        let tg = bloodData.bloodItems.first { item in
+            let key = item.key.lowercased()
+            return key == "tg" || key == "triglyceride"
+        }
+
+        if let tgValue = tg?.value.replacingOccurrences(of: " ", with: ""),
+           let tgNum = Double(tgValue) {
+            print("✅ 代謝力: TG = \(tgNum) mg/dL")
+            let tgScore = max(0, min(1, (150 - tgNum) / 100))
+            return (hba1cScore + tgScore) / 2
+        } else {
+            print("⚠️ 代謝力: TGデータなし、HbA1cのみで計算")
+            return hba1cScore
+        }
+    }
+
+    private var metabolicStatus: String {
+        if metabolicScore >= 0.7 { return "高" }
+        if metabolicScore >= 0.4 { return "中" }
+        return "低"
+    }
+
+    private var metabolicColor: Color {
+        if metabolicScore >= 0.7 { return Color(hex: "00C853") }
+        if metabolicScore >= 0.4 { return Color(hex: "FFCB05") }
+        return Color(hex: "5E7CE2")
+    }
+
+    /// 炎症レベル（CRPをメイン指標として使用）
+    private var inflammationScore: Double {
+        guard let bloodData = bloodTestService.bloodData else {
+            print("⚠️ 炎症レベル: 血液検査データなし")
+            return 0.4
+        }
+
+        let crp = bloodData.bloodItems.first { item in
+            let key = item.key.lowercased()
+            return key == "crp" || key == "c_reactive_protein"
+        }
+
+        guard let crpValue = crp?.value.replacingOccurrences(of: " ", with: ""),
+              let crpNum = Double(crpValue) else {
+            print("⚠️ 炎症レベル: CRPデータなし、デフォルト値使用")
+            return 0.4
+        }
+        print("✅ 炎症レベル: CRP = \(crpNum) mg/dL")
+
+        // CRP: 0.3以下が正常、値が低いほど良い
+        return max(0, min(1, (0.5 - crpNum) / 0.5))
+    }
+
+    private var inflammationStatus: String {
+        if inflammationScore >= 0.7 { return "状態正常" }
+        if inflammationScore >= 0.4 { return "注意" }
+        return "高い"
+    }
+
+    private var inflammationColor: Color {
+        if inflammationScore >= 0.7 { return Color(hex: "5E7CE2") }
+        if inflammationScore >= 0.4 { return Color(hex: "FFCB05") }
+        return Color(hex: "ED1C24")
+    }
+
+    /// 回復スピード（CRP、CK、フェリチンから算出）
+    private var recoveryScore: Double {
+        guard let bloodData = bloodTestService.bloodData else {
+            print("⚠️ 回復スピード: 血液検査データなし")
+            return 0.71
+        }
+
+        var scores: [Double] = []
+
+        // CRP: 0.3以下が正常
+        if let crp = bloodData.bloodItems.first(where: { $0.key.lowercased() == "crp" }) {
+            let crpValue = crp.value.replacingOccurrences(of: " ", with: "")
+            if let crpNum = Double(crpValue) {
+                print("✅ 回復スピード: CRP = \(crpNum) mg/dL")
+                let crpScore = max(0, min(1, (0.3 - crpNum) / 0.3))
+                scores.append(crpScore)
+            }
+        }
+
+        // CK: 200以下が正常
+        if let ck = bloodData.bloodItems.first(where: { item in
+            let key = item.key.lowercased()
+            return key == "ck" || key == "cpk" || key == "creatine_kinase"
+        }) {
+            let ckValue = ck.value.replacingOccurrences(of: " ", with: "")
+            if let ckNum = Double(ckValue) {
+                print("✅ 回復スピード: CK = \(ckNum) U/L")
+                let ckScore = max(0, min(1, (200 - ckNum) / 150))
+                scores.append(ckScore)
+            }
+        }
+
+        // フェリチン: 50-100が適正
+        if let ferritin = bloodData.bloodItems.first(where: { $0.key.lowercased() == "ferritin" }) {
+            let ferritinValue = ferritin.value.replacingOccurrences(of: " ", with: "")
+            if let ferritinNum = Double(ferritinValue) {
+                print("✅ 回復スピード: フェリチン = \(ferritinNum) ng/mL")
+                let ferritinScore = min(1, ferritinNum / 100)
+                scores.append(ferritinScore)
+            }
+        }
+
+        if scores.isEmpty {
+            print("⚠️ 回復スピード: 必要なデータなし、デフォルト値使用")
+            return 0.71
+        }
+
+        let average = scores.reduce(0, +) / Double(scores.count)
+        print("✅ 回復スピード計算完了: \(String(format: "%.2f", average * 100))%")
+        return average
+    }
+
+    private var recoveryStatus: String {
+        if recoveryScore >= 0.7 { return "準備完了" }
+        if recoveryScore >= 0.4 { return "回復中" }
+        return "疲労"
+    }
+
+    private var recoveryColor: Color {
+        if recoveryScore >= 0.7 { return Color(hex: "4FC0D0") }
+        if recoveryScore >= 0.4 { return Color(hex: "FFCB05") }
+        return Color(hex: "ED1C24")
+    }
+
+    /// 老化速度（HbA1c、CRP、ALB、CREから算出）
+    private var agingScore: Double {
+        guard let bloodData = bloodTestService.bloodData else {
+            print("⚠️ 老化速度: 血液検査データなし")
+            return 0.43
+        }
+
+        var scores: [Double] = []
+
+        // HbA1c: 5.6%以下が正常
+        if let hba1c = bloodData.bloodItems.first(where: { item in
+            let key = item.key.lowercased()
+            return key.contains("hba1c") || key == "hemoglobin_a1c"
+        }) {
+            let hba1cValue = hba1c.value.replacingOccurrences(of: " ", with: "")
+            if let hba1cNum = Double(hba1cValue) {
+                print("✅ 老化速度: HbA1c = \(hba1cNum)%")
+                let hba1cScore = max(0, min(1, (6.5 - hba1cNum) / 1.0))
+                scores.append(hba1cScore)
+            }
+        }
+
+        // CRP: 0.3以下が正常
+        if let crp = bloodData.bloodItems.first(where: { $0.key.lowercased() == "crp" }) {
+            let crpValue = crp.value.replacingOccurrences(of: " ", with: "")
+            if let crpNum = Double(crpValue) {
+                print("✅ 老化速度: CRP = \(crpNum) mg/dL")
+                let crpScore = max(0, min(1, (0.3 - crpNum) / 0.3))
+                scores.append(crpScore)
+            }
+        }
+
+        // ALB: 3.5-5.0が正常
+        if let alb = bloodData.bloodItems.first(where: { item in
+            let key = item.key.lowercased()
+            return key == "alb" || key == "albumin"
+        }) {
+            let albValue = alb.value.replacingOccurrences(of: " ", with: "")
+            if let albNum = Double(albValue) {
+                print("✅ 老化速度: ALB = \(albNum) g/dL")
+                let albScore = max(0, min(1, (albNum - 3.5) / 1.5))
+                scores.append(albScore)
+            }
+        }
+
+        // CRE: 0.6-1.2が正常
+        if let cre = bloodData.bloodItems.first(where: { item in
+            let key = item.key.lowercased()
+            return key == "cre" || key == "creatinine"
+        }) {
+            let creValue = cre.value.replacingOccurrences(of: " ", with: "")
+            if let creNum = Double(creValue) {
+                print("✅ 老化速度: CRE = \(creNum) mg/dL")
+                let creScore = max(0, min(1, (1.2 - creNum) / 0.5))
+                scores.append(creScore)
+            }
+        }
+
+        if scores.isEmpty {
+            print("⚠️ 老化速度: 必要なデータなし、デフォルト値使用")
+            return 0.43
+        }
+
+        let average = scores.reduce(0, +) / Double(scores.count)
+        print("✅ 老化速度計算完了: \(String(format: "%.2f", average * 100))%")
+        return average
+    }
+
+    private var agingStatus: String {
+        if agingScore >= 0.7 { return "優秀" }
+        if agingScore >= 0.4 { return "普通" }
+        return "低い"
+    }
+
+    private var agingColor: Color {
+        if agingScore >= 0.7 { return Color(hex: "00C853") }
+        if agingScore >= 0.4 { return Color(hex: "FFCB05") }
+        return Color(hex: "ED1C24")
+    }
+
+    /// 代謝力のチャートデータ（過去7日間）
+    private var metabolicChartData: [Double] {
+        let currentValue = metabolicScore * 100
+        // 現在のデータポイントのみ（過去データがない場合）
+        return [currentValue]
+    }
+
+    /// 老化速度（歳/年）を計算
+    private var agingRate: Double {
+        // agingScoreは0-1の範囲で、1が最良（老化が遅い）、0が最悪（老化が速い）
+        // 老化速度 = 2.0 - (agingScore * 1.5)
+        // agingScore=1.0 → 0.5歳/年（非常に遅い老化）
+        // agingScore=0.67 → 1.0歳/年（標準的な老化）
+        // agingScore=0 → 2.0歳/年（非常に速い老化）
+        let rate = 2.0 - (agingScore * 1.5)
+        print("✅ 老化速度: \(String(format: "%.2f", rate))歳/年 (スコア: \(String(format: "%.2f", agingScore * 100))%)")
+        return rate
+    }
+
+    private var agingRateStatus: String {
+        if agingRate <= 0.8 { return "優秀" }
+        if agingRate <= 1.2 { return "標準" }
+        return "注意"
+    }
+
+    private var agingRateColor: Color {
+        if agingRate <= 0.8 { return Color(hex: "00C853") }
+        if agingRate <= 1.2 { return Color(hex: "FFCB05") }
+        return Color(hex: "ED1C24")
+    }
+
+    /// 老化速度の横バープログレス（0-1）
+    private var agingRateProgress: Double {
+        // 0.5歳/年 → 1.0 (最良)
+        // 1.0歳/年 → 0.67 (標準)
+        // 2.0歳/年 → 0.0 (最悪)
+        return max(0, min(1, (2.0 - agingRate) / 1.5))
+    }
+}
+
+#if DEBUG
+struct HealthMetricsGridSection_Previews: PreviewProvider {
+    static var previews: some View {
+        ZStack {
+            LinearGradient(
+                colors: [Color(hex: "FAFAFA"), Color(hex: "F0F0F0")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+
+            ScrollView {
+                HealthMetricsGridSection()
+                    .padding(.top, 20)
+            }
+        }
+    }
+}
+#endif

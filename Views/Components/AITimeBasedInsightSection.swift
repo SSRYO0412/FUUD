@@ -11,13 +11,13 @@ import SwiftUI
 
 // MARK: - Time Slot Definition
 
-enum TimeSlot: CaseIterable {
-    case earlyMorning  // 5:00-8:00
-    case morning       // 8:00-12:00
-    case lunch         // 12:00-14:00
-    case afternoon     // 14:00-18:00
-    case evening       // 18:00-21:00
-    case night         // 21:00-5:00
+enum TimeSlot: String, CaseIterable {
+    case earlyMorning = "earlyMorning"  // 5:00-8:00
+    case morning = "morning"             // 8:00-12:00
+    case lunch = "lunch"                 // 12:00-14:00
+    case afternoon = "afternoon"         // 14:00-18:00
+    case evening = "evening"             // 18:00-21:00
+    case night = "night"                 // 21:00-5:00
 
     var title: String {
         switch self {
@@ -27,17 +27,6 @@ enum TimeSlot: CaseIterable {
         case .afternoon: return "午後の低迷期"
         case .evening: return "夕方〜夜"
         case .night: return "夜間・睡眠準備"
-        }
-    }
-
-    var nextUpdateTime: String {
-        switch self {
-        case .earlyMorning: return "12:00頃"
-        case .morning: return "14:00頃"
-        case .lunch: return "18:00頃"
-        case .afternoon: return "18:00頃"
-        case .evening: return "21:00頃"
-        case .night: return "8:00頃"
         }
     }
 
@@ -54,7 +43,7 @@ enum TimeSlot: CaseIterable {
     }
 }
 
-// MARK: - AI Insight Data Model
+// MARK: - AI Insight Data Model (Legacy - for fallback)
 
 struct AIInsightData {
     let timeSlot: TimeSlot
@@ -70,10 +59,10 @@ struct AIInsightData {
     let activityBenefit: String
 }
 
-// MARK: - Demo Data
+// MARK: - Demo Data (Fallback)
 
 struct AIInsightDemoData {
-    // [DUMMY] 全てデモデータ - API連携後に実データへ置き換え予定
+    // [DUMMY] フォールバック用デモデータ
     static let insights: [TimeSlot: AIInsightData] = [
         .earlyMorning: AIInsightData(
             timeSlot: .earlyMorning,
@@ -163,12 +152,12 @@ struct AIInsightDemoData {
 // MARK: - Main View
 
 struct AITimeBasedInsightSection: View {
+    @StateObject private var intelligenceService = TuuningIntelligenceService.shared
     @State private var currentTimeSlot: TimeSlot = TimeSlot.current()
     @State private var currentTime: String = ""
+    @State private var previousTimeSlot: TimeSlot? = nil
 
     var body: some View {
-        let insight = AIInsightDemoData.getInsight(for: currentTimeSlot)
-
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
             // Header
             HStack {
@@ -182,63 +171,119 @@ struct AITimeBasedInsightSection: View {
 
                 Spacer()
 
-                Text("\(currentTime) 更新")
-                    .font(.system(size: 8, weight: .medium))
-                    .foregroundColor(Color(hex: "0088CC"))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color(hex: "0088CC").opacity(0.1))
-                    .cornerRadius(4)
+                if intelligenceService.isLoading {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                } else {
+                    Text("\(currentTime) 更新")
+                        .font(.system(size: 8, weight: .medium))
+                        .foregroundColor(Color(hex: "0088CC"))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color(hex: "0088CC").opacity(0.1))
+                        .cornerRadius(4)
+                }
             }
 
-            // Main Comment
-            Text(insight.mainComment)
-                .font(.system(size: 13, weight: .regular))
-                .foregroundColor(.virgilTextPrimary)
-                .lineSpacing(4)
+            // Content based on API response or fallback
+            if let insight = intelligenceService.currentInsight {
+                // API Response Content
+                Text(insight.mainComment)
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundColor(.virgilTextPrimary)
+                    .lineSpacing(4)
 
-            // Data Reference
-            Text(insight.dataReference)
-                .font(.system(size: 9, weight: .medium))
-                .foregroundColor(.virgilTextSecondary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .background(Color.black.opacity(0.03))
-                .cornerRadius(6)
-
-            // Food Recommendation Card
-            AIInsightActionCard(
-                icon: insight.foodIcon,
-                title: insight.foodTitle,
-                recommendation: insight.foodRecommendation,
-                benefit: insight.foodBenefit,
-                accentColor: Color(hex: "00C853")
-            )
-
-            // Activity Recommendation Card
-            AIInsightActionCard(
-                icon: insight.activityIcon,
-                title: insight.activityTitle,
-                recommendation: insight.activityRecommendation,
-                benefit: insight.activityBenefit,
-                accentColor: Color(hex: "0088CC")
-            )
-
-            // Next Update
-            HStack {
-                Spacer()
-                Text("次の更新: \(insight.timeSlot.nextUpdateTime)")
+                Text(insight.dataReference)
                     .font(.system(size: 9, weight: .medium))
                     .foregroundColor(.virgilTextSecondary)
-                Spacer()
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(Color.black.opacity(0.03))
+                    .cornerRadius(6)
+
+                // Food Recommendation Card
+                AIInsightActionCard(
+                    icon: insight.food.icon,
+                    title: insight.food.title,
+                    recommendation: insight.food.recommendation,
+                    benefit: insight.food.benefit,
+                    accentColor: Color(hex: "00C853")
+                )
+
+                // Activity Recommendation Card
+                AIInsightActionCard(
+                    icon: insight.activity.icon,
+                    title: insight.activity.title,
+                    recommendation: insight.activity.recommendation,
+                    benefit: insight.activity.benefit,
+                    accentColor: Color(hex: "0088CC")
+                )
+
+                // Next Update
+                HStack {
+                    Spacer()
+                    Text("次の更新: \(insight.nextUpdate)")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(.virgilTextSecondary)
+                    Spacer()
+                }
+                .padding(.top, VirgilSpacing.xs)
+            } else {
+                // Fallback to Demo Data
+                let demoInsight = AIInsightDemoData.getInsight(for: currentTimeSlot)
+
+                Text(demoInsight.mainComment)
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundColor(.virgilTextPrimary)
+                    .lineSpacing(4)
+
+                Text(demoInsight.dataReference)
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundColor(.virgilTextSecondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(Color.black.opacity(0.03))
+                    .cornerRadius(6)
+
+                AIInsightActionCard(
+                    icon: demoInsight.foodIcon,
+                    title: demoInsight.foodTitle,
+                    recommendation: demoInsight.foodRecommendation,
+                    benefit: demoInsight.foodBenefit,
+                    accentColor: Color(hex: "00C853")
+                )
+
+                AIInsightActionCard(
+                    icon: demoInsight.activityIcon,
+                    title: demoInsight.activityTitle,
+                    recommendation: demoInsight.activityRecommendation,
+                    benefit: demoInsight.activityBenefit,
+                    accentColor: Color(hex: "0088CC")
+                )
+
+                HStack {
+                    Spacer()
+                    Text("次の更新: \(demoInsight.timeSlot.nextUpdateTime)")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(.virgilTextSecondary)
+                    Spacer()
+                }
+                .padding(.top, VirgilSpacing.xs)
             }
-            .padding(.top, VirgilSpacing.xs)
         }
         .padding(VirgilSpacing.md)
         .liquidGlassCard()
         .onAppear {
             updateCurrentTime()
             currentTimeSlot = TimeSlot.current()
+            fetchInsightIfNeeded()
+        }
+        .onChange(of: currentTimeSlot) { newTimeSlot in
+            // 時間帯が変わったら再取得
+            if previousTimeSlot != newTimeSlot {
+                previousTimeSlot = newTimeSlot
+                fetchInsightIfNeeded()
+            }
         }
     }
 
@@ -246,6 +291,20 @@ struct AITimeBasedInsightSection: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         currentTime = formatter.string(from: Date())
+    }
+
+    private func fetchInsightIfNeeded() {
+        Task {
+            do {
+                _ = try await intelligenceService.fetchInsight(for: currentTimeSlot)
+                await MainActor.run {
+                    updateCurrentTime()
+                }
+            } catch {
+                print("[AITimeBasedInsightSection] Error fetching insight: \(error)")
+                // エラー時はデモデータにフォールバック（自動的に表示される）
+            }
+        }
     }
 }
 

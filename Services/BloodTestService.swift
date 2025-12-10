@@ -124,7 +124,8 @@ class BloodTestService: ObservableObject {
             }
             
             let encodedEmail = userEmail.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? userEmail
-            let endpoint = "https://7rk2qibxm6.execute-api.ap-northeast-1.amazonaws.com/prod?userId=\(encodedEmail)"
+            let baseUrl = ConfigurationManager.shared.apiEndpoints.bloodData
+            let endpoint = "\(baseUrl)?userId=\(encodedEmail)"
             
             let requestConfig = NetworkManager.RequestConfig(
                 url: endpoint,
