@@ -88,15 +88,6 @@
 			);
 			target = 35A15C412E31EA8200678A42 /* AWStestUITests */;
 		};
-		60A4B3192EB1E914002DF43D /* Exceptions for "Managers" folder in "AWStest" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				ConfigurationManager.swift,
-				ErrorManager.swift,
-				NetworkManager.swift,
-			);
-			target = 35A15C2A2E31EA8100678A42 /* AWStest */;
-		};
 		60A4B31A2EB1E914002DF43D /* Exceptions for "Services" folder in "AWStest" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -119,9 +110,6 @@
 		};
 		607C5CCE2E68287800E33ED1 /* Managers */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				60A4B3192EB1E914002DF43D /* Exceptions for "Managers" folder in "AWStest" target */,
-			);
 			path = Managers;
 			sourceTree = "<group>";
 		};
@@ -150,6 +138,11 @@
 		608EB9562E95EC2E00F094F9 /* DesignSystem */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		608EB9602E95ED0000F094F9 /* ViewModels */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -202,6 +195,7 @@
 				608EB91F2E95D84300F094F9 /* Recovered References */,
 				608EB9482E95EBF200F094F9 /* Models */,
 				608EB9562E95EC2E00F094F9 /* DesignSystem */,
+				608EB9602E95ED0000F094F9 /* ViewModels */,
 			);
 			sourceTree = "<group>";
 		};
@@ -271,6 +265,7 @@
 				607C5CE02E68287800E33ED1 /* Views */,
 				608EB9482E95EBF200F094F9 /* Models */,
 				608EB9562E95EC2E00F094F9 /* DesignSystem */,
+				608EB9602E95ED0000F094F9 /* ViewModels */,
 			);
 			name = AWStest;
 			packageProductDependencies = (
@@ -584,11 +579,12 @@
 				CODE_SIGN_ENTITLEMENTS = AWStest.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HS2LQPZSCX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = TUUN;
+				INFOPLIST_KEY_CFBundleDisplayName = FUUD;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "TUUNはあなたの健康データを読み取り、代謝力・炎症レベル・回復スピード・老化速度などの健康指標を分析します。";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "TUUNはHealthKitにデータを書き込みません。読み取り専用です。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -601,8 +597,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = app.com.TUUN;
+				MARKETING_VERSION = 1.1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = app.com.FUUD;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -619,11 +615,12 @@
 				CODE_SIGN_ENTITLEMENTS = AWStest.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HS2LQPZSCX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = TUUN;
+				INFOPLIST_KEY_CFBundleDisplayName = FUUD;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "TUUNはあなたの健康データを読み取り、代謝力・炎症レベル・回復スピード・老化速度などの健康指標を分析します。";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "TUUNはHealthKitにデータを書き込みません。読み取り専用です。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -636,8 +633,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = app.com.TUUN;
+				MARKETING_VERSION = 1.1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = app.com.FUUD;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
