@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ProgramDetailView: View {
     let program: DietProgram
-    @Environment(\.presentationMode) var presentationMode
     @StateObject private var programService = DietProgramService.shared
     @State private var showingDurationSheet = false
     @State private var showingProgressView = false
@@ -17,12 +16,12 @@ struct ProgramDetailView: View {
     var body: some View {
         ZStack(alignment: .top) {
             // Background
-            Color(.systemBackground).ignoresSafeArea()
+            Color(.systemBackground)
 
             ScrollView {
                 VStack(spacing: 0) {
                     // Spacer for header
-                    Color.clear.frame(height: 200)
+                    Color.clear.frame(height: 280)
 
                     // Content
                     VStack(alignment: .leading, spacing: VirgilSpacing.xl) {
@@ -50,6 +49,7 @@ struct ProgramDetailView: View {
                         }
                     }
                     .padding(.horizontal, VirgilSpacing.md)
+                    .padding(.top, 28)
                     .padding(.bottom, VirgilSpacing.xl4)
                 }
             }
@@ -57,7 +57,10 @@ struct ProgramDetailView: View {
             // Fixed Header
             headerSection
         }
-        .navigationBarHidden(true)
+        .ignoresSafeArea(edges: .top)
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .modifier(TransparentNavigationBarModifier())
         .sheet(isPresented: $showingDurationSheet) {
             DurationSelectionSheet(program: program) { enrollment in
                 showingProgressView = true
@@ -76,74 +79,60 @@ struct ProgramDetailView: View {
     // MARK: - Header Section
 
     private var headerSection: some View {
-        VStack(spacing: 0) {
-            // Header Background
-            ZStack(alignment: .bottom) {
-                // Background with program image
-                ZStack {
-                    Image(program.imageAssetName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 200)
-                        .clipped()
+        ZStack(alignment: .bottom) {
+            // Background with program image
+            ZStack {
+                Image(program.imageAssetName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(height: 280)
+                    .clipped()
 
-                    // Dark overlay
-                    Color.lifesumDarkGreen.opacity(0.85)
-                }
-                .frame(height: 200)
+                // Dark overlay
+                Color.lifesumDarkGreen.opacity(0.85)
+            }
 
-                // Content
-                VStack(spacing: VirgilSpacing.md) {
-                    // Navigation Bar
-                    HStack {
-                        Button {
-                            presentationMode.wrappedValue.dismiss()
-                        } label: {
-                            HStack(spacing: 4) {
-                                Image(systemName: "chevron.left")
-                                Text("戻る")
-                            }
-                            .foregroundColor(.white)
-                        }
-
-                        Spacer()
-
-                        // Category Badge
-                        Text(program.category.displayNameEn.uppercased())
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.white.opacity(0.8))
-                    }
-                    .padding(.horizontal, VirgilSpacing.md)
-                    .padding(.top, 50)
-
+            // Content
+            VStack(spacing: VirgilSpacing.md) {
+                // Category Badge (top right)
+                HStack {
                     Spacer()
 
-                    // Program Name
-                    Text(program.nameJa)
-                        .font(.system(size: 24, weight: .bold, design: .serif))
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, VirgilSpacing.md)
-
-                    // START PLAN Button
-                    Button {
-                        showingDurationSheet = true
-                    } label: {
-                        Text("START PLAN")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(.lifesumDarkGreen)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(Color.white)
-                            .cornerRadius(25)
-                            .padding(.horizontal, VirgilSpacing.lg)
-                    }
-                    .padding(.bottom, VirgilSpacing.md)
+                    // Category Badge
+                    Text(program.category.displayNameEn.uppercased())
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.8))
                 }
+                .padding(.horizontal, VirgilSpacing.md)
+                .padding(.top, 100) // ナビゲーションバーの下に配置
+
+                Spacer()
+
+                // Program Name
+                Text(program.nameJa)
+                    .font(.system(size: 24, weight: .bold, design: .serif))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, VirgilSpacing.md)
+
+                // START PLAN Button
+                Button {
+                    showingDurationSheet = true
+                } label: {
+                    Text("START PLAN")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(.lifesumDarkGreen)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color.white)
+                        .cornerRadius(25)
+                        .padding(.horizontal, VirgilSpacing.lg)
+                }
+                .padding(.bottom, VirgilSpacing.md)
             }
-            .clipShape(RoundedCorner(radius: 24, corners: [.bottomLeft, .bottomRight]))
         }
-        .ignoresSafeArea(edges: .top)
+        .frame(height: 280)
+        .clipShape(RoundedCorner(radius: 24, corners: [.bottomLeft, .bottomRight]))
     }
 
     // MARK: - Description Section
@@ -388,6 +377,25 @@ struct ProgramDetailView: View {
             .padding(VirgilSpacing.sm)
             .background(Color.orange.opacity(0.1))
             .cornerRadius(8)
+        }
+    }
+}
+
+// MARK: - Transparent Navigation Bar Modifier
+
+struct TransparentNavigationBarModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 16.0, *) {
+            content
+                .toolbarBackground(.hidden, for: .navigationBar)
+        } else {
+            content
+                .onAppear {
+                    let appearance = UINavigationBarAppearance()
+                    appearance.configureWithTransparentBackground()
+                    UINavigationBar.appearance().standardAppearance = appearance
+                    UINavigationBar.appearance().scrollEdgeAppearance = appearance
+                }
         }
     }
 }
