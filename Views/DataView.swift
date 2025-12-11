@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct DataView: View {
-    @State private var selectedTab: DataTab = .lifestyle
+    @State private var selectedTab: DataTab = .progress
     @StateObject private var bloodTestService = BloodTestService.shared
     @StateObject private var geneDataService = GeneDataService.shared
 
@@ -54,10 +54,10 @@ struct DataView: View {
                     // Tab Content
                     Group {
                         switch selectedTab {
+                        case .progress:
+                            ProgressTab()
                         case .blood:
                             BloodTab()
-                        case .lifestyle:
-                            LifestyleTab()
                         case .gene:
                             GeneTab(onCategorySelected: { category in
                                 selectedGeneCategory = category
@@ -105,9 +105,10 @@ struct DataView: View {
 // MARK: - Data Tab Enum
 
 enum DataTab: String, CaseIterable, Identifiable {
-    case lifestyle = "LIFESTYLE"
+    case progress = "PROGRESS"
     case blood = "BLOOD"
     case gene = "GENE"
+    // case lifestyle = "LIFESTYLE" - 削除
     // case microbiome = "MICROBIOME" - 一時的に非表示
 
     var id: String { rawValue }

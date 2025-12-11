@@ -68,35 +68,30 @@ struct HomeView: View {
 
                 ScrollView {
                     VStack(spacing: VirgilSpacing.lg) {
-                        // Header - 左右paddingあり
-                        VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
-                            Text("FUUD")
-                                .font(.system(size: 36, weight: .black))
+                        // Header - Lifesum style centered
+                        HomeHeaderSection()
+                            .padding(.horizontal, VirgilSpacing.md)
 
-                            Text("スマート栄養管理")
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundColor(.virgilTextSecondary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, VirgilSpacing.md)
-
-                        // ===== FUUD 新セクション =====
+                        // ===== FUUD Lifesum風セクション =====
 
                         // 以下のカード - 左右paddingあり
                         VStack(spacing: VirgilSpacing.lg) {
                             // 1. Nutrition Today（Lifesum風 - 大型円形リング + PFCバー）
                             NutritionTodaySection()
 
-                            // 2. Insights & Analytics（MacroFactor風 - TDEE/体重トレンド/Goal Progress）
-                            InsightsAnalyticsSection()
+                            // 2. AI Insight Card（Lifesum風 - パーソナライズインサイト）
+                            AIInsightCard()
 
-                            // 3. Data & Habits（MacroFactor風 - Scale Weight/Nutrition/Body Metrics）
-                            DataHabitsSection()
+                            // 3. Meal Log List（Lifesum風 - 今日の食事ログ）
+                            MealLogListSection()
 
-                            // 4. Nutrient Explorer（MacroFactor風 - 2×2グリッド）
-                            NutrientExplorerSection()
+                            // 4. Exercise Section（Lifesum風 - 運動記録）
+                            ExerciseSectionHome()
 
-                            // 5. Steps（HealthKit歩数プログレス）
+                            // 5. Water Intake（Lifesum風 - 水分摂取）
+                            WaterIntakeSection()
+
+                            // 6. Steps（HealthKit歩数プログレス）
                             StepsSection()
                         }
                         .padding(.horizontal, VirgilSpacing.md)
