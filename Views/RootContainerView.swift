@@ -50,7 +50,7 @@ struct RootContainerView: View {
             VStack {
                 Spacer()
                 centerPlusButton
-                    .offset(y: -20)
+                    .offset(y: 10)
             }
         }
         .fullScreenCover(isPresented: $showingFoodLogSheet) {

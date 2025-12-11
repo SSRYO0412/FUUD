@@ -91,7 +91,10 @@ struct HomeView: View {
                             // 5. Water Intake（Lifesum風 - 水分摂取）
                             WaterIntakeSection()
 
-                            // 6. Steps（HealthKit歩数プログレス）
+                            // 6. Fasting Timer（Lifesum風 - 断食タイマー）
+                            FastingTimerCardView()
+
+                            // 7. Steps（HealthKit歩数プログレス）
                             StepsSection()
                         }
                         .padding(.horizontal, VirgilSpacing.md)
