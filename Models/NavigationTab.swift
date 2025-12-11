@@ -9,6 +9,7 @@ import SwiftUI
 
 enum NavigationTab: String, CaseIterable, Identifiable {
     case home
+    case program
     case data
     case profile
 
@@ -20,6 +21,8 @@ enum NavigationTab: String, CaseIterable, Identifiable {
         switch self {
         case .home:
             return "HOME"
+        case .program:
+            return "PROGRAM"
         case .data:
             return "DATA"
         case .profile:
@@ -31,6 +34,8 @@ enum NavigationTab: String, CaseIterable, Identifiable {
         switch self {
         case .home:
             return "house.fill"
+        case .program:
+            return "list.bullet.clipboard.fill"
         case .data:
             return "chart.bar.fill"
         case .profile:
@@ -42,6 +47,8 @@ enum NavigationTab: String, CaseIterable, Identifiable {
         switch self {
         case .home:
             return "house"
+        case .program:
+            return "list.bullet.clipboard"
         case .data:
             return "chart.bar"
         case .profile:
@@ -54,6 +61,8 @@ enum NavigationTab: String, CaseIterable, Identifiable {
     var accentColor: Color {
         switch self {
         case .home:
+            return Color.black
+        case .program:
             return Color.black
         case .data:
             return Color.black

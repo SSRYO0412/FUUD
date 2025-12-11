@@ -68,7 +68,7 @@ struct ProgramDetailView: View {
         }
         .background(
             NavigationLink(
-                destination: ProgramProgressView(program: program),
+                destination: ProgramContainerView(program: program),
                 isActive: $showingProgressView
             ) {
                 EmptyView()

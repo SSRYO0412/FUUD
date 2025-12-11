@@ -36,6 +36,16 @@ class ConfigurationManager {
         let bloodData: String     // 血液データAPI
         let geneData: String      // 遺伝子データAPI
 
+        // FUUD API エンドポイント
+        let fuudBase: String       // FUUD API ベースURL
+        let fuudTdee: String       // TDEE計算API
+        let fuudFoods: String      // 食品検索API
+        let fuudMealLog: String    // 食事記録API
+        let fuudWeightLog: String  // 体重記録API
+
+        // FUUD API ベースURL定数
+        private static let fuudBaseUrl = "https://5l5ol9ehia.execute-api.ap-northeast-1.amazonaws.com"
+
         static var current: APIEndpoints {
             switch Environment.current {
             case .development:
@@ -45,7 +55,12 @@ class ConfigurationManager {
                     healthProfile: "https://70ubpe7e14.execute-api.ap-northeast-1.amazonaws.com/prod/profile",
                     intelligence: "",  // TODO: Phase 3でエンドポイント設定
                     bloodData: "https://7rk2qibxm6.execute-api.ap-northeast-1.amazonaws.com/prod",
-                    geneData: "https://kxuyul35l4.execute-api.ap-northeast-1.amazonaws.com/prod"
+                    geneData: "https://kxuyul35l4.execute-api.ap-northeast-1.amazonaws.com/prod",
+                    fuudBase: fuudBaseUrl,
+                    fuudTdee: "\(fuudBaseUrl)/api/v1/tdee",
+                    fuudFoods: "\(fuudBaseUrl)/api/v1/foods",
+                    fuudMealLog: "\(fuudBaseUrl)/api/v1/logs/meal",
+                    fuudWeightLog: "\(fuudBaseUrl)/api/v1/logs/weight"
                 )
             case .staging:
                 return APIEndpoints(
@@ -54,7 +69,12 @@ class ConfigurationManager {
                     healthProfile: "https://70ubpe7e14.execute-api.ap-northeast-1.amazonaws.com/staging/profile",
                     intelligence: "",  // TODO: Phase 3でエンドポイント設定
                     bloodData: "https://7rk2qibxm6.execute-api.ap-northeast-1.amazonaws.com/prod",
-                    geneData: "https://kxuyul35l4.execute-api.ap-northeast-1.amazonaws.com/prod"
+                    geneData: "https://kxuyul35l4.execute-api.ap-northeast-1.amazonaws.com/prod",
+                    fuudBase: fuudBaseUrl,
+                    fuudTdee: "\(fuudBaseUrl)/api/v1/tdee",
+                    fuudFoods: "\(fuudBaseUrl)/api/v1/foods",
+                    fuudMealLog: "\(fuudBaseUrl)/api/v1/logs/meal",
+                    fuudWeightLog: "\(fuudBaseUrl)/api/v1/logs/weight"
                 )
             case .production:
                 return APIEndpoints(
@@ -63,7 +83,12 @@ class ConfigurationManager {
                     healthProfile: "https://70ubpe7e14.execute-api.ap-northeast-1.amazonaws.com/prod/profile",
                     intelligence: "",  // TODO: Phase 3でエンドポイント設定
                     bloodData: "https://7rk2qibxm6.execute-api.ap-northeast-1.amazonaws.com/prod",
-                    geneData: "https://kxuyul35l4.execute-api.ap-northeast-1.amazonaws.com/prod"
+                    geneData: "https://kxuyul35l4.execute-api.ap-northeast-1.amazonaws.com/prod",
+                    fuudBase: fuudBaseUrl,
+                    fuudTdee: "\(fuudBaseUrl)/api/v1/tdee",
+                    fuudFoods: "\(fuudBaseUrl)/api/v1/foods",
+                    fuudMealLog: "\(fuudBaseUrl)/api/v1/logs/meal",
+                    fuudWeightLog: "\(fuudBaseUrl)/api/v1/logs/weight"
                 )
             }
         }

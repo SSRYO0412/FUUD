@@ -86,6 +86,17 @@ extension Color {
 
     /// Glass Border: rgba(255, 255, 255, 0.2)
     static let virgilGlassBorder = Color.white.opacity(0.2)
+
+    // MARK: - Lifesum Program Colors
+
+    /// Lifesum Dark Green: #2D4739
+    static let lifesumDarkGreen = Color(hex: "2D4739")
+
+    /// Lifesum Light Green: #4A7C59
+    static let lifesumLightGreen = Color(hex: "4A7C59")
+
+    /// Lifesum Cream: #F5F2EB
+    static let lifesumCream = Color(hex: "F5F2EB")
 }
 
 // MARK: - Hex Color Extension

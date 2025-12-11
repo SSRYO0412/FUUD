@@ -3,6 +3,7 @@
 //  FUUD
 //
 //  Lifesum-style program progress view
+//  Modified for Phase 6-UI: PROGRESSタブのコンテンツ
 //
 
 import SwiftUI
@@ -12,8 +13,10 @@ struct ProgramProgressView: View {
 
     @StateObject private var nutritionPersonalizer = NutritionPersonalizer.shared
     @StateObject private var programService = DietProgramService.shared
-    @Environment(\.presentationMode) var presentationMode
     @State private var showingCancelAlert = false
+
+    /// キャンセル時のコールバック（ProgramContainerViewから渡される）
+    var onCancel: (() -> Void)?
 
     private var enrollment: ProgramEnrollment? {
         programService.enrolledProgram
@@ -41,39 +44,24 @@ struct ProgramProgressView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
-            // Background
-            Color(.systemBackground).ignoresSafeArea()
+        ScrollView {
+            VStack(spacing: VirgilSpacing.xl) {
+                // Current Phase Section
+                currentPhaseSection
 
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Spacer for header
-                    Color.clear.frame(height: 180)
+                // Today's Goals
+                todaysGoalsSection
 
-                    // Content
-                    VStack(spacing: VirgilSpacing.xl) {
-                        // Current Phase Section
-                        currentPhaseSection
+                // Roadmap Timeline
+                roadmapTimelineSection
 
-                        // Today's Goals
-                        todaysGoalsSection
-
-                        // Roadmap Timeline
-                        roadmapTimelineSection
-
-                        // Action Buttons
-                        actionButtonsSection
-                    }
-                    .padding(.horizontal, VirgilSpacing.md)
-                    .padding(.top, VirgilSpacing.lg)
-                    .padding(.bottom, VirgilSpacing.xl4)
-                }
+                // Action Buttons
+                actionButtonsSection
             }
-
-            // Fixed Header
-            headerSection
+            .padding(.horizontal, VirgilSpacing.md)
+            .padding(.top, VirgilSpacing.lg)
+            .padding(.bottom, VirgilSpacing.xl4)
         }
-        .navigationBarHidden(true)
         .alert("プログラムをキャンセル", isPresented: $showingCancelAlert) {
             Button("キャンセルする", role: .destructive) {
                 Task {
@@ -84,86 +72,6 @@ struct ProgramProgressView: View {
         } message: {
             Text("本当にプログラムをキャンセルしますか？進捗データは保存されません。")
         }
-    }
-
-    // MARK: - Header Section
-
-    private var headerSection: some View {
-        VStack(spacing: 0) {
-            ZStack(alignment: .bottom) {
-                // Dark green background
-                Color.lifesumDarkGreen
-                    .frame(height: 180)
-
-                // Content
-                VStack(spacing: VirgilSpacing.md) {
-                    // Navigation Bar
-                    HStack {
-                        Button {
-                            presentationMode.wrappedValue.dismiss()
-                        } label: {
-                            HStack(spacing: 4) {
-                                Image(systemName: "chevron.left")
-                                Text("戻る")
-                            }
-                            .foregroundColor(.white)
-                        }
-
-                        Spacer()
-
-                        // Settings
-                        Button {
-                            // TODO: Settings
-                        } label: {
-                            Image(systemName: "gearshape")
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-                    }
-                    .padding(.horizontal, VirgilSpacing.md)
-                    .padding(.top, 50)
-
-                    // Program Name
-                    Text(program.nameJa)
-                        .font(.system(size: 22, weight: .bold, design: .serif))
-                        .foregroundColor(.white)
-
-                    // Progress
-                    VStack(spacing: VirgilSpacing.sm) {
-                        // Day Counter
-                        HStack {
-                            Text("Day \(currentDay) / \(duration)")
-                                .font(.system(size: 28, weight: .bold))
-                                .foregroundColor(.white)
-
-                            Spacer()
-
-                            Text(String(format: "%.1f%%", progressPercentage))
-                                .font(.subheadline)
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-                        .padding(.horizontal, VirgilSpacing.md)
-
-                        // Progress Bar
-                        ZStack(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color.white.opacity(0.2))
-                                .frame(height: 8)
-
-                            GeometryReader { geometry in
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.white)
-                                    .frame(width: geometry.size.width * CGFloat(progressPercentage / 100), height: 8)
-                            }
-                        }
-                        .frame(height: 8)
-                        .padding(.horizontal, VirgilSpacing.md)
-                    }
-                    .padding(.bottom, VirgilSpacing.md)
-                }
-            }
-            .clipShape(RoundedCorner(radius: 24, corners: [.bottomLeft, .bottomRight]))
-        }
-        .ignoresSafeArea(edges: .top)
     }
 
     // MARK: - Current Phase Section
@@ -381,8 +289,10 @@ struct ProgramProgressView: View {
     }
 
     private func cancelProgram() async {
-        _ = await programService.cancelEnrollment()
-        presentationMode.wrappedValue.dismiss()
+        let success = await programService.cancelEnrollment()
+        if success {
+            onCancel?()
+        }
     }
 }
 
