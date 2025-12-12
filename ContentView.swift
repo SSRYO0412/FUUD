@@ -20,18 +20,21 @@ struct ContentView: View {
         }
         return true
     }()
-    
+
+    // オンボーディング完了フラグ
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+
     private var isPreview: Bool {
         // Xcode Previews では環境変数が "1" 固定とは限らないため、存在チェックに変更
         ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != nil
     }
-    
+
     // UI制御用の状態変数
     @State private var email = ""
     @State private var password = ""
     @State private var confirmationCode = ""
     @State private var showConfirmation = false
-    
+
     var body: some View {
         Group {
             if isInitializing {
@@ -42,10 +45,18 @@ struct ContentView: View {
                     Text("初期化中...")
                         .padding(.top)
                 }
+            } else if !hasCompletedOnboarding {
+                // 新規ユーザー: Lifesum風オンボーディング
+                NewOnboardingView {
+                    hasCompletedOnboarding = true
+                }
+                .environmentObject(cognitoService)
             } else if cognitoService.isSignedIn {
+                // ログイン済み: メイン画面
                 RootContainerView()
                     .environmentObject(cognitoService)
             } else {
+                // オンボーディング完了済みだがログアウト状態: ログイン画面
                 AuthenticationView()
                     .environmentObject(cognitoService)
             }

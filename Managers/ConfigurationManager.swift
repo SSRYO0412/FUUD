@@ -40,6 +40,7 @@ class ConfigurationManager {
         let fuudBase: String       // FUUD API ベースURL
         let fuudTdee: String       // TDEE計算API
         let fuudFoods: String      // 食品検索API
+        let fuudFoodParse: String  // 食品解析API (自然文→栄養データ)
         let fuudMealLog: String    // 食事記録API
         let fuudWeightLog: String  // 体重記録API
 
@@ -59,6 +60,7 @@ class ConfigurationManager {
                     fuudBase: fuudBaseUrl,
                     fuudTdee: "\(fuudBaseUrl)/api/v1/tdee",
                     fuudFoods: "\(fuudBaseUrl)/api/v1/foods",
+                    fuudFoodParse: "\(fuudBaseUrl)/api/v1/food/parse",
                     fuudMealLog: "\(fuudBaseUrl)/api/v1/logs/meal",
                     fuudWeightLog: "\(fuudBaseUrl)/api/v1/logs/weight"
                 )
@@ -73,6 +75,7 @@ class ConfigurationManager {
                     fuudBase: fuudBaseUrl,
                     fuudTdee: "\(fuudBaseUrl)/api/v1/tdee",
                     fuudFoods: "\(fuudBaseUrl)/api/v1/foods",
+                    fuudFoodParse: "\(fuudBaseUrl)/api/v1/food/parse",
                     fuudMealLog: "\(fuudBaseUrl)/api/v1/logs/meal",
                     fuudWeightLog: "\(fuudBaseUrl)/api/v1/logs/weight"
                 )
@@ -87,6 +90,7 @@ class ConfigurationManager {
                     fuudBase: fuudBaseUrl,
                     fuudTdee: "\(fuudBaseUrl)/api/v1/tdee",
                     fuudFoods: "\(fuudBaseUrl)/api/v1/foods",
+                    fuudFoodParse: "\(fuudBaseUrl)/api/v1/food/parse",
                     fuudMealLog: "\(fuudBaseUrl)/api/v1/logs/meal",
                     fuudWeightLog: "\(fuudBaseUrl)/api/v1/logs/weight"
                 )

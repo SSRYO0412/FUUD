@@ -108,3 +108,24 @@ enum FoodUnit: String, CaseIterable {
         }
     }
 }
+
+// MARK: - API Response Mapping
+
+extension FoodItem {
+    /// ParsedFoodItem（API レスポンス）から FoodItem を生成
+    init(from parsed: ParsedFoodItem) {
+        self.init(
+            name: parsed.name,
+            amount: parsed.grams,
+            unit: parsed.servingDescription ?? "g",
+            calories: Int(parsed.calories.rounded()),
+            carbs: parsed.carbs,
+            protein: parsed.protein,
+            fat: parsed.fat,
+            fiber: parsed.fiber ?? 0,
+            sugar: 0,  // API未提供、デフォルト0
+            sodium: parsed.sodium ?? 0,
+            isProcessed: parsed.source == "estimated"
+        )
+    }
+}
