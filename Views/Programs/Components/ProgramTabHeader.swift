@@ -27,6 +27,7 @@ struct ProgramTabHeader: View {
     let totalDays: Int
     let progressPercentage: Double
     @Binding var selectedTab: ProgramTab
+    var showBackButton: Bool = true  // デフォルトはtrue
     let onBack: () -> Void
 
     var body: some View {
@@ -34,18 +35,23 @@ struct ProgramTabHeader: View {
             ZStack(alignment: .bottom) {
                 // Dark green background
                 Color.lifesumDarkGreen
-                    .frame(height: 200)
+                    .frame(height: 270)
 
                 // Content
                 VStack(spacing: VirgilSpacing.md) {
                     // Navigation Bar
                     HStack {
-                        Button(action: onBack) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "chevron.left")
-                                Text("戻る")
+                        if showBackButton {
+                            Button(action: onBack) {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "chevron.left")
+                                    Text("戻る")
+                                }
+                                .foregroundColor(.white)
                             }
-                            .foregroundColor(.white)
+                        } else {
+                            // Spacer to maintain layout when no back button
+                            Color.clear.frame(width: 60)
                         }
 
                         Spacer()
@@ -105,6 +111,7 @@ struct ProgramTabHeader: View {
             }
             .clipShape(RoundedCorner(radius: 24, corners: [.bottomLeft, .bottomRight]))
         }
+        .frame(height: 270)
         .ignoresSafeArea(edges: .top)
     }
 

@@ -21,7 +21,7 @@ struct RootContainerView: View {
                     }
 
                 NavigationView {
-                    ProgramCatalogView()
+                    ProgramTabRootView()
                 }
                 .navigationViewStyle(.stack)
                 .tabItem {

@@ -24,6 +24,7 @@ struct OnboardingAuthView: View {
     enum AuthMode {
         case options
         case email
+        case login
         case confirmation
     }
 
@@ -34,11 +35,12 @@ struct OnboardingAuthView: View {
             // Header with back button
             HStack {
                 OnboardingBackButton {
-                    if authMode == .email {
+                    switch authMode {
+                    case .email, .login:
                         authMode = .options
-                    } else if authMode == .confirmation {
+                    case .confirmation:
                         authMode = .email
-                    } else {
+                    case .options:
                         viewModel.previousStep()
                     }
                 }
@@ -55,6 +57,8 @@ struct OnboardingAuthView: View {
                 authOptionsView
             case .email:
                 emailSignUpView
+            case .login:
+                loginView
             case .confirmation:
                 confirmationView
             }
@@ -126,6 +130,21 @@ struct OnboardingAuthView: View {
                 .underline()
             + Text("に同意したものとみなされます")
                 .foregroundColor(Color(hex: "6B7280"))
+
+            Spacer().frame(height: 32)
+
+            // Login option for existing users
+            VStack(spacing: 8) {
+                Text("既にアカウントをお持ちの方")
+                    .font(.system(size: 14))
+                    .foregroundColor(Color(hex: "6B7280"))
+
+                Button(action: { authMode = .login }) {
+                    Text("ログイン")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(primaryColor)
+                }
+            }
         }
         .font(.system(size: 12))
         .multilineTextAlignment(.center)
@@ -192,6 +211,71 @@ struct OnboardingAuthView: View {
         }
     }
 
+    // MARK: - Login View
+
+    private var loginView: some View {
+        VStack(spacing: 24) {
+            // Title
+            Text("ログイン")
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(.primary)
+
+            Text("メールアドレスとパスワードを\n入力してください")
+                .font(.system(size: 14))
+                .foregroundColor(Color(hex: "6B7280"))
+                .multilineTextAlignment(.center)
+
+            VStack(spacing: 16) {
+                // Email
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("メールアドレス")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color(hex: "6B7280"))
+                    TextField("", text: $email)
+                        .textFieldStyle(OnboardingTextFieldStyle())
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                }
+
+                // Password
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("パスワード")
+                        .font(.system(size: 12))
+                        .foregroundColor(Color(hex: "6B7280"))
+                    SecureField("", text: $password)
+                        .textFieldStyle(OnboardingTextFieldStyle())
+                }
+            }
+            .padding(.horizontal, 24)
+
+            Spacer().frame(height: 20)
+
+            // Login button
+            if isLoading {
+                ProgressView()
+                    .frame(height: 50)
+            } else {
+                OnboardingPrimaryButton("ログイン", isEnabled: isLoginFormValid) {
+                    signInWithEmail()
+                }
+                .padding(.horizontal, 24)
+            }
+
+            // Back to sign up
+            VStack(spacing: 8) {
+                Text("アカウントをお持ちでない方")
+                    .font(.system(size: 14))
+                    .foregroundColor(Color(hex: "6B7280"))
+
+                Button(action: { authMode = .options }) {
+                    Text("新規登録")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(primaryColor)
+                }
+            }
+        }
+    }
+
     // MARK: - Confirmation View
 
     private var confirmationView: some View {
@@ -242,6 +326,11 @@ struct OnboardingAuthView: View {
         password.count >= 8
     }
 
+    private var isLoginFormValid: Bool {
+        email.contains("@") &&
+        password.count >= 1
+    }
+
     // MARK: - Auth Methods
 
     private func handleAppleSignIn(_ result: Result<ASAuthorization, Error>) {
@@ -278,6 +367,28 @@ struct OnboardingAuthView: View {
                     showError = true
                 } else {
                     authMode = .confirmation
+                }
+            }
+        }
+    }
+
+    private func signInWithEmail() {
+        isLoading = true
+
+        Task {
+            await cognitoService.signIn(email: email, password: password)
+            await MainActor.run {
+                isLoading = false
+                if cognitoService.isSignedIn {
+                    viewModel.userData.email = email
+                    viewModel.handleAuthSuccess()
+                } else if cognitoService.message.contains("error") || cognitoService.message.contains("Error") {
+                    errorMessage = cognitoService.message
+                    showError = true
+                } else {
+                    // Handle other cases (e.g., MFA required)
+                    errorMessage = cognitoService.message.isEmpty ? "ログインに失敗しました" : cognitoService.message
+                    showError = true
                 }
             }
         }

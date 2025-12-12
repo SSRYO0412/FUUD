@@ -15,6 +15,9 @@ struct DurationSelectionSheet: View {
     @StateObject private var programService = DietProgramService.shared
     @State private var selectedDuration: Int = 45
     @State private var isLoading = false
+    @State private var showError = false
+    @State private var errorMessage = ""
+    @State private var showReplaceConfirmation = false
 
     private let durations: [(days: Int, title: String, subtitle: String, recommended: Bool)] = [
         (30, "30日コース", "4週間で基礎を固める", false),
@@ -48,6 +51,29 @@ struct DurationSelectionSheet: View {
             .background(Color(.systemBackground))
         }
         .navigationViewStyle(.stack)
+        .alert("エラー", isPresented: $showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(errorMessage)
+        }
+        .confirmationDialog(
+            "プログラムの変更",
+            isPresented: $showReplaceConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("新しいプログラムを開始", role: .destructive) {
+                Task {
+                    await replaceProgram()
+                }
+            }
+            Button("キャンセル", role: .cancel) {}
+        } message: {
+            Text("現在のプログラムを終了して、新しいプログラムを開始しますか？")
+        }
+        .task {
+            // シート表示時に既存プログラムを取得
+            await programService.fetchEnrolledProgram()
+        }
     }
 
     // MARK: - Header Section
@@ -160,7 +186,12 @@ struct DurationSelectionSheet: View {
     private var startButtonSection: some View {
         Button {
             Task {
-                await startProgram()
+                // 既存プログラムがあるかチェック
+                if programService.isEnrolled {
+                    showReplaceConfirmation = true
+                } else {
+                    await startProgram()
+                }
             }
         } label: {
             HStack {
@@ -202,10 +233,32 @@ struct DurationSelectionSheet: View {
         isLoading = false
 
         if success, let enrollment = programService.enrolledProgram {
+            // 通知を送信してProgramTabRootViewを更新
+            NotificationCenter.default.post(name: .programEnrollmentChanged, object: nil)
             presentationMode.wrappedValue.dismiss()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 onStart(enrollment)
             }
+        } else {
+            // エラー時の処理
+            errorMessage = programService.errorMessage ?? "プログラムの開始に失敗しました"
+            showError = true
+        }
+    }
+
+    private func replaceProgram() async {
+        isLoading = true
+
+        // 1. 既存プログラムをキャンセル
+        let cancelled = await programService.cancelEnrollment()
+
+        if cancelled {
+            // 2. 新しいプログラムを開始
+            await startProgram()
+        } else {
+            isLoading = false
+            errorMessage = programService.errorMessage ?? "プログラムの終了に失敗しました"
+            showError = true
         }
     }
 }

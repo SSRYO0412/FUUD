@@ -231,6 +231,20 @@ struct ProgramProgressView: View {
 
     private var actionButtonsSection: some View {
         VStack(spacing: VirgilSpacing.md) {
+            // 他のプログラムに変更ボタン
+            NavigationLink(destination: ProgramCatalogView()) {
+                HStack {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                    Text("他のプログラムに変更")
+                }
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.lifesumDarkGreen)
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(Color.lifesumDarkGreen.opacity(0.1))
+                .cornerRadius(12)
+            }
+
             // Cancel Button
             Button {
                 showingCancelAlert = true
@@ -291,6 +305,8 @@ struct ProgramProgressView: View {
     private func cancelProgram() async {
         let success = await programService.cancelEnrollment()
         if success {
+            // 通知を送信してProgramTabRootViewを更新
+            NotificationCenter.default.post(name: .programEnrollmentChanged, object: nil)
             onCancel?()
         }
     }

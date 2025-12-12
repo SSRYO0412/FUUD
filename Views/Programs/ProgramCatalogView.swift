@@ -15,13 +15,18 @@ struct ProgramCatalogView: View {
     @State private var showingDetail = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Dark Green Header
-                headerSection
+        ZStack(alignment: .top) {
+            // Background
+            Color(.systemBackground)
 
-                // Your Traits + おすすめプログラム カルーセル
-                YourTraitsCarouselSection(
+            // Scrollable Content
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Spacer for header
+                    Color.clear.frame(height: 200)
+
+                    // Your Traits + おすすめプログラム カルーセル
+                    YourTraitsCarouselSection(
                     traitsViewModel: traitsViewModel,
                     recommender: recommender,
                     onProgramTap: { program in
@@ -67,7 +72,11 @@ struct ProgramCatalogView: View {
                 .padding(.bottom, VirgilSpacing.xl4)
             }
         }
-        .background(Color(.systemBackground))
+
+            // Fixed Header
+            headerSection
+        }
+        .ignoresSafeArea(edges: .top)
         .navigationBarHidden(true)
         .task {
             // 並列でデータ読み込み
@@ -92,10 +101,12 @@ struct ProgramCatalogView: View {
     // MARK: - Header Section
 
     private var headerSection: some View {
-        VStack(spacing: VirgilSpacing.md) {
-            // Safe area spacer
-            Color.clear.frame(height: 44)
+        ZStack(alignment: .bottom) {
+            // 背景
+            Color.lifesumDarkGreen
+                .frame(height: 200)
 
+            // コンテンツ
             VStack(spacing: VirgilSpacing.sm) {
                 Text("Find your plan")
                     .font(.system(size: 28, weight: .bold, design: .serif))
@@ -105,14 +116,11 @@ struct ProgramCatalogView: View {
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.8))
             }
-            .padding(.bottom, VirgilSpacing.lg)
+            .padding(.bottom, VirgilSpacing.xl)
         }
+        .frame(height: 200)
         .frame(maxWidth: .infinity)
-        .background(
-            Color.lifesumDarkGreen
-                .clipShape(RoundedCorner(radius: 24, corners: [.bottomLeft, .bottomRight]))
-        )
-        .ignoresSafeArea(edges: .top)
+        .clipShape(RoundedCorner(radius: 24, corners: [.bottomLeft, .bottomRight]))
     }
 
     // MARK: - Category Section

@@ -66,6 +66,21 @@ struct TodayProgramView: View {
                     onMealReview: onMealReview,
                     onActivityLog: onActivityLog
                 )
+
+                // 他のプログラムに変更ボタン
+                NavigationLink(destination: ProgramCatalogView()) {
+                    HStack {
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                        Text("他のプログラムに変更")
+                    }
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.lifesumDarkGreen)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(Color.lifesumDarkGreen.opacity(0.1))
+                    .cornerRadius(12)
+                }
+                .padding(.horizontal, VirgilSpacing.md)
             }
             .padding(.top, VirgilSpacing.lg)
             .padding(.bottom, VirgilSpacing.xl4)

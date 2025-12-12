@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ProgramContainerView: View {
     let program: DietProgram
+    var isRootView: Bool = false  // ProgramTabRootViewから来た場合はtrue
 
     @StateObject private var viewModel = TodayProgramViewModel()
     @StateObject private var programService = DietProgramService.shared
@@ -36,12 +37,12 @@ struct ProgramContainerView: View {
     var body: some View {
         ZStack(alignment: .top) {
             // Background
-            Color(.systemBackground).ignoresSafeArea()
+            Color(.systemBackground)
 
             // Content (switches based on tab)
             VStack(spacing: 0) {
                 // Spacer for header
-                Color.clear.frame(height: 200)
+                Color.clear.frame(height: 270)
 
                 // Tab Content
                 tabContent
@@ -54,11 +55,13 @@ struct ProgramContainerView: View {
                 totalDays: totalDays,
                 progressPercentage: progressPercentage,
                 selectedTab: $selectedTab,
+                showBackButton: !isRootView,
                 onBack: {
                     presentationMode.wrappedValue.dismiss()
                 }
             )
         }
+        .ignoresSafeArea(edges: .top)
         .navigationBarHidden(true)
         .task {
             await viewModel.loadAllData()
