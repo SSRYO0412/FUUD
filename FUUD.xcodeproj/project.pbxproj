@@ -1,0 +1,760 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		607C5CE42E68287800E33ED1 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CCF2E68287800E33ED1 /* OnboardingView.swift */; };
+		607C5CE62E68287800E33ED1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC62E68287800E33ED1 /* ContentView.swift */; };
+		607C5CE92E68287800E33ED1 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC32E68287800E33ED1 /* ChatService.swift */; };
+		607C5CEC2E68287800E33ED1 /* HealthProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC82E68287800E33ED1 /* HealthProfileService.swift */; };
+		607C5CEF2E68287800E33ED1 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC42E68287800E33ED1 /* ChatView.swift */; };
+		607C5CF22E68287800E33ED1 /* AWStestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC22E68287800E33ED1 /* AWStestApp.swift */; };
+		607C5CF72E68287800E33ED1 /* HealthProfileModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */; };
+		607C5CFB2E68287800E33ED1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC12E68287800E33ED1 /* Assets.xcassets */; };
+		607C5CFC2E68287800E33ED1 /* CognitoService.swift.backup in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC52E68287800E33ED1 /* CognitoService.swift.backup */; };
+		60F9221B2ECF1D5000008108 /* MetricConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922182ECF1D5000008108 /* MetricConfigs.swift */; };
+		60F9221C2ECF1D5000008108 /* MetricConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922172ECF1D5000008108 /* MetricConfig.swift */; };
+		60F9221D2ECF1D5000008108 /* HealthKitBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922152ECF1D5000008108 /* HealthKitBridge.swift */; };
+		60F9221E2ECF1D5000008108 /* ScoreEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922192ECF1D5000008108 /* ScoreEngine.swift */; };
+		60F9221F2ECF1D5000008108 /* HealthScoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922162ECF1D5000008108 /* HealthScoreService.swift */; };
+		60F922C92ED01A7800008108 /* BloodScoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922C82ED01A7800008108 /* BloodScoring.swift */; };
+		90A1B0012E6A000000000001 /* Services/SimpleCognitoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0112E6A00000000001 /* Services/SimpleCognitoService.swift */; };
+		90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */; };
+		90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */; };
+		90A1B0042E6A000000000004 /* Managers/ErrorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0412E6A00000000004 /* Managers/ErrorManager.swift */; };
+		90A1B0052E6A000000000005 /* Managers/DemoModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A1AF0612E6A00000000006 /* Managers/DemoModeManager.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		35A15C392E31EA8200678A42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 35A15C232E31EA8100678A42 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 35A15C2A2E31EA8100678A42;
+			remoteInfo = AWStest;
+		};
+		35A15C432E31EA8200678A42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 35A15C232E31EA8100678A42 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 35A15C2A2E31EA8100678A42;
+			remoteInfo = AWStest;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		35A15C2B2E31EA8100678A42 /* AWStest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWStest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		35A15C382E31EA8200678A42 /* AWStestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AWStestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		35A15C422E31EA8200678A42 /* AWStestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AWStestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		607C5CC12E68287800E33ED1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		607C5CC22E68287800E33ED1 /* AWStestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWStestApp.swift; sourceTree = "<group>"; };
+		607C5CC32E68287800E33ED1 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
+		607C5CC42E68287800E33ED1 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		607C5CC52E68287800E33ED1 /* CognitoService.swift.backup */ = {isa = PBXFileReference; lastKnownFileType = text; path = CognitoService.swift.backup; sourceTree = "<group>"; };
+		607C5CC62E68287800E33ED1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileModels.swift; sourceTree = "<group>"; };
+		607C5CC82E68287800E33ED1 /* HealthProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileService.swift; sourceTree = "<group>"; };
+		607C5CCF2E68287800E33ED1 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		60F922152ECF1D5000008108 /* HealthKitBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBridge.swift; sourceTree = "<group>"; };
+		60F922162ECF1D5000008108 /* HealthScoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthScoreService.swift; sourceTree = "<group>"; };
+		60F922172ECF1D5000008108 /* MetricConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricConfig.swift; sourceTree = "<group>"; };
+		60F922182ECF1D5000008108 /* MetricConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricConfigs.swift; sourceTree = "<group>"; };
+		60F922192ECF1D5000008108 /* ScoreEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreEngine.swift; sourceTree = "<group>"; };
+		60F922C82ED01A7800008108 /* BloodScoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BloodScoring.swift; sourceTree = "<group>"; };
+		90A1AF0112E6A00000000001 /* Services/SimpleCognitoService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SimpleCognitoService.swift; sourceTree = "<group>"; };
+		90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ConfigurationManager.swift; sourceTree = "<group>"; };
+		90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/NetworkManager.swift; sourceTree = "<group>"; };
+		90A1AF0412E6A00000000004 /* Managers/ErrorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/ErrorManager.swift; sourceTree = "<group>"; };
+		90A1AF0512E6A00000000005 /* Helpers/KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers/KeychainHelper.swift; sourceTree = "<group>"; };
+		90A1AF0612E6A00000000006 /* Managers/DemoModeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/DemoModeManager.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		608EB9502E95EC0D00F094F9 /* Exceptions for "Views" folder in "AWStestTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Components/CustomBottomNavBar.swift,
+			);
+			target = 35A15C372E31EA8200678A42 /* AWStestTests */;
+		};
+		608EB9512E95EC0D00F094F9 /* Exceptions for "Views" folder in "AWStestUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Components/CustomBottomNavBar.swift,
+			);
+			target = 35A15C412E31EA8200678A42 /* AWStestUITests */;
+		};
+		60A4B31A2EB1E914002DF43D /* Exceptions for "Services" folder in "AWStest" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SimpleCognitoService.swift,
+			);
+			target = 35A15C2A2E31EA8100678A42 /* AWStest */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		35A15C2D2E31EA8100678A42 /* AWStest */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AWStest;
+			sourceTree = "<group>";
+		};
+		607C5CCA2E68287800E33ED1 /* Helpers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		607C5CCE2E68287800E33ED1 /* Managers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		607C5CD42E68287800E33ED1 /* Services */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				60A4B31A2EB1E914002DF43D /* Exceptions for "Services" folder in "AWStest" target */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		607C5CE02E68287800E33ED1 /* Views */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				608EB9502E95EC0D00F094F9 /* Exceptions for "Views" folder in "AWStestTests" target */,
+				608EB9512E95EC0D00F094F9 /* Exceptions for "Views" folder in "AWStestUITests" target */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		608EB9482E95EBF200F094F9 /* Models */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		608EB9562E95EC2E00F094F9 /* DesignSystem */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		608EB9602E95ED0000F094F9 /* ViewModels */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		35A15C282E31EA8100678A42 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		35A15C352E31EA8200678A42 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		35A15C3F2E31EA8200678A42 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		35A15C222E31EA8100678A42 = {
+			isa = PBXGroup;
+			children = (
+				60F9221A2ECF1D5000008108 /* ScoreEngine */,
+				35A15C2D2E31EA8100678A42 /* AWStest */,
+				35A15C5E2E31FD5D00678A42 /* Frameworks */,
+				35A15C2C2E31EA8100678A42 /* Products */,
+				607C5CC12E68287800E33ED1 /* Assets.xcassets */,
+				607C5CC22E68287800E33ED1 /* AWStestApp.swift */,
+				607C5CC32E68287800E33ED1 /* ChatService.swift */,
+				607C5CC42E68287800E33ED1 /* ChatView.swift */,
+				607C5CC52E68287800E33ED1 /* CognitoService.swift.backup */,
+				607C5CC62E68287800E33ED1 /* ContentView.swift */,
+				607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */,
+				607C5CC82E68287800E33ED1 /* HealthProfileService.swift */,
+				607C5CCA2E68287800E33ED1 /* Helpers */,
+				607C5CCE2E68287800E33ED1 /* Managers */,
+				607C5CCF2E68287800E33ED1 /* OnboardingView.swift */,
+				607C5CD42E68287800E33ED1 /* Services */,
+				607C5CE02E68287800E33ED1 /* Views */,
+				608EB91F2E95D84300F094F9 /* Recovered References */,
+				608EB9482E95EBF200F094F9 /* Models */,
+				608EB9562E95EC2E00F094F9 /* DesignSystem */,
+				608EB9602E95ED0000F094F9 /* ViewModels */,
+			);
+			sourceTree = "<group>";
+		};
+		35A15C2C2E31EA8100678A42 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				35A15C2B2E31EA8100678A42 /* AWStest.app */,
+				35A15C382E31EA8200678A42 /* AWStestTests.xctest */,
+				35A15C422E31EA8200678A42 /* AWStestUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		35A15C5E2E31FD5D00678A42 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		608EB91F2E95D84300F094F9 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				90A1AF0112E6A00000000001 /* Services/SimpleCognitoService.swift */,
+				90A1AF0212E6A00000000002 /* Managers/ConfigurationManager.swift */,
+				90A1AF0312E6A00000000003 /* Managers/NetworkManager.swift */,
+				90A1AF0412E6A00000000004 /* Managers/ErrorManager.swift */,
+				90A1AF0612E6A00000000006 /* Managers/DemoModeManager.swift */,
+				90A1AF0512E6A00000000005 /* Helpers/KeychainHelper.swift */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		60F9221A2ECF1D5000008108 /* ScoreEngine */ = {
+			isa = PBXGroup;
+			children = (
+				60F922C82ED01A7800008108 /* BloodScoring.swift */,
+				60F922152ECF1D5000008108 /* HealthKitBridge.swift */,
+				60F922162ECF1D5000008108 /* HealthScoreService.swift */,
+				60F922172ECF1D5000008108 /* MetricConfig.swift */,
+				60F922182ECF1D5000008108 /* MetricConfigs.swift */,
+				60F922192ECF1D5000008108 /* ScoreEngine.swift */,
+			);
+			path = ScoreEngine;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		35A15C2A2E31EA8100678A42 /* AWStest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 35A15C4C2E31EA8200678A42 /* Build configuration list for PBXNativeTarget "AWStest" */;
+			buildPhases = (
+				35A15C272E31EA8100678A42 /* Sources */,
+				35A15C282E31EA8100678A42 /* Frameworks */,
+				35A15C292E31EA8100678A42 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				35A15C2D2E31EA8100678A42 /* AWStest */,
+				607C5CCA2E68287800E33ED1 /* Helpers */,
+				607C5CCE2E68287800E33ED1 /* Managers */,
+				607C5CD42E68287800E33ED1 /* Services */,
+				607C5CE02E68287800E33ED1 /* Views */,
+				608EB9482E95EBF200F094F9 /* Models */,
+				608EB9562E95EC2E00F094F9 /* DesignSystem */,
+				608EB9602E95ED0000F094F9 /* ViewModels */,
+			);
+			name = AWStest;
+			packageProductDependencies = (
+			);
+			productName = AWStest;
+			productReference = 35A15C2B2E31EA8100678A42 /* AWStest.app */;
+			productType = "com.apple.product-type.application";
+		};
+		35A15C372E31EA8200678A42 /* AWStestTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 35A15C4F2E31EA8200678A42 /* Build configuration list for PBXNativeTarget "AWStestTests" */;
+			buildPhases = (
+				35A15C342E31EA8200678A42 /* Sources */,
+				35A15C352E31EA8200678A42 /* Frameworks */,
+				35A15C362E31EA8200678A42 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				35A15C3A2E31EA8200678A42 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				608EB9482E95EBF200F094F9 /* Models */,
+				608EB9562E95EC2E00F094F9 /* DesignSystem */,
+			);
+			name = AWStestTests;
+			packageProductDependencies = (
+			);
+			productName = AWStestTests;
+			productReference = 35A15C382E31EA8200678A42 /* AWStestTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		35A15C412E31EA8200678A42 /* AWStestUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 35A15C522E31EA8200678A42 /* Build configuration list for PBXNativeTarget "AWStestUITests" */;
+			buildPhases = (
+				35A15C3E2E31EA8200678A42 /* Sources */,
+				35A15C3F2E31EA8200678A42 /* Frameworks */,
+				35A15C402E31EA8200678A42 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				35A15C442E31EA8200678A42 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				608EB9482E95EBF200F094F9 /* Models */,
+				608EB9562E95EC2E00F094F9 /* DesignSystem */,
+			);
+			name = AWStestUITests;
+			packageProductDependencies = (
+			);
+			productName = AWStestUITests;
+			productReference = 35A15C422E31EA8200678A42 /* AWStestUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		35A15C232E31EA8100678A42 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1630;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					35A15C2A2E31EA8100678A42 = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					35A15C372E31EA8200678A42 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 35A15C2A2E31EA8100678A42;
+					};
+					35A15C412E31EA8200678A42 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 35A15C2A2E31EA8100678A42;
+					};
+				};
+			};
+			buildConfigurationList = 35A15C262E31EA8100678A42 /* Build configuration list for PBXProject "FUUD" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 35A15C222E31EA8100678A42;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 35A15C2C2E31EA8100678A42 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				35A15C2A2E31EA8100678A42 /* AWStest */,
+				35A15C372E31EA8200678A42 /* AWStestTests */,
+				35A15C412E31EA8200678A42 /* AWStestUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		35A15C292E31EA8100678A42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				607C5CFB2E68287800E33ED1 /* Assets.xcassets in Resources */,
+				607C5CFC2E68287800E33ED1 /* CognitoService.swift.backup in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		35A15C362E31EA8200678A42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		35A15C402E31EA8200678A42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		35A15C272E31EA8100678A42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				607C5CE42E68287800E33ED1 /* OnboardingView.swift in Sources */,
+				607C5CE62E68287800E33ED1 /* ContentView.swift in Sources */,
+				607C5CE92E68287800E33ED1 /* ChatService.swift in Sources */,
+				607C5CEC2E68287800E33ED1 /* HealthProfileService.swift in Sources */,
+				60F922C92ED01A7800008108 /* BloodScoring.swift in Sources */,
+				607C5CEF2E68287800E33ED1 /* ChatView.swift in Sources */,
+				607C5CF22E68287800E33ED1 /* AWStestApp.swift in Sources */,
+				607C5CF72E68287800E33ED1 /* HealthProfileModels.swift in Sources */,
+				90A1B0012E6A000000000001 /* Services/SimpleCognitoService.swift in Sources */,
+				90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */,
+				60F9221B2ECF1D5000008108 /* MetricConfigs.swift in Sources */,
+				60F9221C2ECF1D5000008108 /* MetricConfig.swift in Sources */,
+				60F9221D2ECF1D5000008108 /* HealthKitBridge.swift in Sources */,
+				60F9221E2ECF1D5000008108 /* ScoreEngine.swift in Sources */,
+				60F9221F2ECF1D5000008108 /* HealthScoreService.swift in Sources */,
+				90A1B0032E6A000000000003 /* Managers/NetworkManager.swift in Sources */,
+				90A1B0042E6A000000000004 /* Managers/ErrorManager.swift in Sources */,
+				90A1B0052E6A000000000005 /* Managers/DemoModeManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		35A15C342E31EA8200678A42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		35A15C3E2E31EA8200678A42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		35A15C3A2E31EA8200678A42 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 35A15C2A2E31EA8100678A42 /* AWStest */;
+			targetProxy = 35A15C392E31EA8200678A42 /* PBXContainerItemProxy */;
+		};
+		35A15C442E31EA8200678A42 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 35A15C2A2E31EA8100678A42 /* AWStest */;
+			targetProxy = 35A15C432E31EA8200678A42 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		35A15C4A2E31EA8200678A42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		35A15C4B2E31EA8200678A42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		35A15C4D2E31EA8200678A42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AWStest.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HS2LQPZSCX;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = FUUD;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "TUUNはあなたの健康データを読み取り、代謝力・炎症レベル・回復スピード・老化速度などの健康指標を分析します。";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "TUUNはHealthKitにデータを書き込みません。読み取り専用です。";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = app.com.FUUD;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		35A15C4E2E31EA8200678A42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AWStest.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HS2LQPZSCX;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = FUUD;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "TUUNはあなたの健康データを読み取り、代謝力・炎症レベル・回復スピード・老化速度などの健康指標を分析します。";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "TUUNはHealthKitにデータを書き込みません。読み取り専用です。";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = app.com.FUUD;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		35A15C502E31EA8200678A42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourname.TUUN.Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AWStest.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AWStest";
+			};
+			name = Debug;
+		};
+		35A15C512E31EA8200678A42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourname.TUUN.Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AWStest.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AWStest";
+			};
+			name = Release;
+		};
+		35A15C532E31EA8200678A42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourname.TUUN.UITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AWStest;
+			};
+			name = Debug;
+		};
+		35A15C542E31EA8200678A42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourname.TUUN.UITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AWStest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		35A15C262E31EA8100678A42 /* Build configuration list for PBXProject "FUUD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35A15C4A2E31EA8200678A42 /* Debug */,
+				35A15C4B2E31EA8200678A42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		35A15C4C2E31EA8200678A42 /* Build configuration list for PBXNativeTarget "AWStest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35A15C4D2E31EA8200678A42 /* Debug */,
+				35A15C4E2E31EA8200678A42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		35A15C4F2E31EA8200678A42 /* Build configuration list for PBXNativeTarget "AWStestTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35A15C502E31EA8200678A42 /* Debug */,
+				35A15C512E31EA8200678A42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		35A15C522E31EA8200678A42 /* Build configuration list for PBXNativeTarget "AWStestUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35A15C532E31EA8200678A42 /* Debug */,
+				35A15C542E31EA8200678A42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 35A15C232E31EA8100678A42 /* Project object */;
+}

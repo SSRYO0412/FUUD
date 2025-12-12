@@ -1,0 +1,132 @@
+//
+//  ProgramContainerView.swift
+//  FUUD
+//
+//  タブ切り替えの親View（TODAY / PROGRESS）
+//  Phase 6-UI: TodayProgramView + ProgramProgressViewを統合
+//
+
+import SwiftUI
+
+struct ProgramContainerView: View {
+    let program: DietProgram
+
+    @StateObject private var viewModel = TodayProgramViewModel()
+    @StateObject private var programService = DietProgramService.shared
+    @Environment(\.presentationMode) var presentationMode
+    @State private var selectedTab: ProgramTab = .today
+    @State private var showingCheckInSheet = false
+
+    private var enrollment: ProgramEnrollment? {
+        programService.enrolledProgram
+    }
+
+    private var currentDay: Int {
+        enrollment?.currentDay ?? 1
+    }
+
+    private var totalDays: Int {
+        enrollment?.duration ?? 45
+    }
+
+    private var progressPercentage: Double {
+        enrollment?.progressPercentage ?? 0
+    }
+
+    var body: some View {
+        ZStack(alignment: .top) {
+            // Background
+            Color(.systemBackground).ignoresSafeArea()
+
+            // Content (switches based on tab)
+            VStack(spacing: 0) {
+                // Spacer for header
+                Color.clear.frame(height: 200)
+
+                // Tab Content
+                tabContent
+            }
+
+            // Fixed Header with Tabs
+            ProgramTabHeader(
+                programName: program.nameJa,
+                currentDay: currentDay,
+                totalDays: totalDays,
+                progressPercentage: progressPercentage,
+                selectedTab: $selectedTab,
+                onBack: {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            )
+        }
+        .navigationBarHidden(true)
+        .task {
+            await viewModel.loadAllData()
+        }
+        .sheet(isPresented: $showingCheckInSheet) {
+            // TODO: MorningCheckInSheet implementation
+            checkInSheetContent
+        }
+    }
+
+    // MARK: - Check In Sheet Content
+
+    @ViewBuilder
+    private var checkInSheetContent: some View {
+        if #available(iOS 16.0, *) {
+            Text("朝の問診（後日実装）")
+                .presentationDetents([.medium])
+        } else {
+            Text("朝の問診（後日実装）")
+        }
+    }
+
+    // MARK: - Tab Content
+
+    @ViewBuilder
+    private var tabContent: some View {
+        switch selectedTab {
+        case .today:
+            TodayProgramView(
+                viewModel: viewModel,
+                onCheckIn: {
+                    showingCheckInSheet = true
+                },
+                onMealTap: { meal in
+                    // TODO: Meal detail navigation
+                    print("Meal tapped: \(meal.title)")
+                },
+                onWeightLog: {
+                    // TODO: Weight log navigation
+                    print("Weight log tapped")
+                },
+                onMealReview: {
+                    // TODO: Meal review navigation
+                    print("Meal review tapped")
+                },
+                onActivityLog: {
+                    // TODO: Activity log navigation
+                    print("Activity log tapped")
+                }
+            )
+
+        case .progress:
+            ProgramProgressView(
+                program: program,
+                onCancel: {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            )
+        }
+    }
+}
+
+// MARK: - Preview
+
+#Preview {
+    NavigationView {
+        ProgramContainerView(
+            program: DietProgramCatalog.programs.first!
+        )
+    }
+}
