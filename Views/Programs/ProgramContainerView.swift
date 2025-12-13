@@ -17,6 +17,7 @@ struct ProgramContainerView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var selectedTab: ProgramTab = .today
     @State private var showingCheckInSheet = false
+    @State private var morningPlan: MorningPlan = MorningPlan.loadToday() ?? .empty
 
     private var enrollment: ProgramEnrollment? {
         programService.enrolledProgram
@@ -67,20 +68,22 @@ struct ProgramContainerView: View {
             await viewModel.loadAllData()
         }
         .sheet(isPresented: $showingCheckInSheet) {
-            // TODO: MorningCheckInSheet implementation
-            checkInSheetContent
-        }
-    }
-
-    // MARK: - Check In Sheet Content
-
-    @ViewBuilder
-    private var checkInSheetContent: some View {
-        if #available(iOS 16.0, *) {
-            Text("朝の問診（後日実装）")
-                .presentationDetents([.medium])
-        } else {
-            Text("朝の問診（後日実装）")
+            if #available(iOS 16.0, *) {
+                MorningCheckInSheet(
+                    morningPlan: $morningPlan,
+                    onSave: { plan in
+                        viewModel.updateMorningPlan(plan)
+                    }
+                )
+                .presentationDetents([.large])
+            } else {
+                MorningCheckInSheet(
+                    morningPlan: $morningPlan,
+                    onSave: { plan in
+                        viewModel.updateMorningPlan(plan)
+                    }
+                )
+            }
         }
     }
 

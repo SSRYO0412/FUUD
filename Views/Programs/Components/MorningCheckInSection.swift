@@ -2,15 +2,30 @@
 //  MorningCheckInSection.swift
 //  FUUD
 //
-//  朝の問診セクション（プレースホルダー）
-//  Phase 6-UI: TodayProgramView用
+//  朝の問診セクション
+//  食事予定・運動予定の表示
 //
 
 import SwiftUI
 
 struct MorningCheckInSection: View {
     let dayContext: DayContext
+    let morningPlan: MorningPlan
     let onCheckIn: () -> Void
+
+    // Backwards compatibility initializer
+    init(dayContext: DayContext, onCheckIn: @escaping () -> Void) {
+        self.dayContext = dayContext
+        self.morningPlan = .empty
+        self.onCheckIn = onCheckIn
+    }
+
+    // New initializer with morningPlan
+    init(morningPlan: MorningPlan, onCheckIn: @escaping () -> Void) {
+        self.dayContext = .empty
+        self.morningPlan = morningPlan
+        self.onCheckIn = onCheckIn
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -21,7 +36,7 @@ struct MorningCheckInSection: View {
                 .textCase(.uppercase)
 
             // Content
-            if dayContext.isEmpty {
+            if morningPlan.isEmpty {
                 // 未入力: チェックインボタン
                 checkInButton
             } else {
@@ -48,11 +63,11 @@ struct MorningCheckInSection: View {
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("今朝の調子を教えてください")
+                    Text("今日の予定を教えてください")
                         .font(.headline)
                         .foregroundColor(.primary)
 
-                    Text("睡眠・エネルギー・食欲をチェック")
+                    Text("食事と運動の予定をチェック")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -92,18 +107,36 @@ struct MorningCheckInSection: View {
                 }
             }
 
-            // Summary Items
-            HStack(spacing: VirgilSpacing.md) {
-                if let sleep = dayContext.sleepQuality {
-                    summaryItem(icon: sleep.icon, label: sleep.displayName)
+            // Summary Items - Meals
+            VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
+                // Meal Plan Row
+                HStack(spacing: VirgilSpacing.sm) {
+                    if let breakfast = morningPlan.breakfast {
+                        mealSummaryItem(label: "朝", type: breakfast, iconColor: .orange)
+                    }
+                    if let lunch = morningPlan.lunch {
+                        mealSummaryItem(label: "昼", type: lunch, iconColor: .yellow)
+                    }
+                    if let dinner = morningPlan.dinner {
+                        mealSummaryItem(label: "夕", type: dinner, iconColor: .indigo)
+                    }
                 }
 
-                if let energy = dayContext.energyLevel {
-                    summaryItem(icon: energy.icon, label: energy.displayName)
-                }
+                // Exercise Row
+                if let exercise = morningPlan.exercise, exercise.type != .none {
+                    HStack(spacing: 4) {
+                        Image(systemName: exercise.type.icon)
+                            .font(.system(size: 12))
+                            .foregroundColor(.lifesumLightGreen)
 
-                if let appetite = dayContext.appetiteLevel {
-                    summaryItem(icon: appetite.icon, label: appetite.displayName)
+                        Text("\(exercise.type.displayName) \(exercise.durationMinutes)分")
+                            .font(.caption)
+                            .foregroundColor(.primary)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.lifesumLightGreen.opacity(0.1))
+                    .cornerRadius(4)
                 }
             }
         }
@@ -112,13 +145,13 @@ struct MorningCheckInSection: View {
         .cornerRadius(12)
     }
 
-    private func summaryItem(icon: String, label: String) -> some View {
+    private func mealSummaryItem(label: String, type: PlannedMealType, iconColor: Color) -> some View {
         HStack(spacing: 4) {
-            Image(systemName: icon)
+            Image(systemName: type.icon)
                 .font(.system(size: 12))
-                .foregroundColor(.lifesumDarkGreen)
+                .foregroundColor(iconColor)
 
-            Text(label)
+            Text("\(label):\(type.shortName)")
                 .font(.caption)
                 .foregroundColor(.primary)
         }
@@ -135,7 +168,7 @@ struct MorningCheckInSection: View {
     VStack(spacing: 20) {
         // 未入力状態
         MorningCheckInSection(
-            dayContext: .empty,
+            morningPlan: .empty,
             onCheckIn: {}
         )
 
@@ -143,12 +176,11 @@ struct MorningCheckInSection: View {
 
         // 入力済み状態
         MorningCheckInSection(
-            dayContext: DayContext(
-                sleepQuality: .good,
-                energyLevel: .normal,
-                appetiteLevel: .normal,
-                stressLevel: nil,
-                notes: nil,
+            morningPlan: MorningPlan(
+                breakfast: PlannedMealType.homemade,
+                lunch: PlannedMealType.convenience,
+                dinner: PlannedMealType.eatingOut,
+                exercise: ExercisePlan(type: .walking, durationMinutes: 30),
                 recordedAt: Date()
             ),
             onCheckIn: {}

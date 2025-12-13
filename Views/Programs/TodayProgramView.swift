@@ -22,7 +22,7 @@ struct TodayProgramView: View {
             VStack(spacing: VirgilSpacing.xl) {
                 // Morning Check-In Section
                 MorningCheckInSection(
-                    dayContext: viewModel.dayContext,
+                    morningPlan: viewModel.morningPlan,
                     onCheckIn: onCheckIn
                 )
 

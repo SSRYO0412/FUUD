@@ -41,8 +41,11 @@ class TodayProgramViewModel: ObservableObject {
     /// 現在のフェーズ
     @Published var currentPhase: ProgramPhase?
 
-    /// 朝の問診データ
+    /// 朝の問診データ（旧：睡眠・エネルギー・食欲）
     @Published var dayContext: DayContext = .empty
+
+    /// 朝の問診データ（新：食事予定・運動予定）
+    @Published var morningPlan: MorningPlan = MorningPlan.loadToday() ?? .empty
 
     /// 食事プラン
     @Published var mealPlan: DailyMealPlan?
@@ -119,7 +122,7 @@ class TodayProgramViewModel: ObservableObject {
 
     /// 朝の問診が完了しているか
     var hasMorningCheckIn: Bool {
-        !dayContext.isEmpty
+        !morningPlan.isEmpty
     }
 
     /// フォーカスプランがあるか
@@ -205,9 +208,16 @@ class TodayProgramViewModel: ObservableObject {
 
     // MARK: - Day Context
 
-    /// 朝の問診を更新
+    /// 朝の問診を更新（旧：DayContext）
     func updateDayContext(_ context: DayContext) {
         dayContext = context
+        // 問診データに基づいて食事プランを再生成
+        generateMealPlan()
+    }
+
+    /// 朝の問診を更新（新：MorningPlan）
+    func updateMorningPlan(_ plan: MorningPlan) {
+        morningPlan = plan
         // 問診データに基づいて食事プランを再生成
         generateMealPlan()
     }
