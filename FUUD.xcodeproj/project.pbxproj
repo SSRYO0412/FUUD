@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		607C5CE62E68287800E33ED1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC62E68287800E33ED1 /* ContentView.swift */; };
-		607C5CEF2E68287800E33ED1 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC42E68287800E33ED1 /* ChatView.swift */; };
 		607C5CF22E68287800E33ED1 /* AWStestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC22E68287800E33ED1 /* AWStestApp.swift */; };
 		607C5CFB2E68287800E33ED1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607C5CC12E68287800E33ED1 /* Assets.xcassets */; };
 		60F9221B2ECF1D5000008108 /* MetricConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F922182ECF1D5000008108 /* MetricConfigs.swift */; };
@@ -47,7 +46,6 @@
 		35A15C422E31EA8200678A42 /* AWStestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AWStestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607C5CC12E68287800E33ED1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		607C5CC22E68287800E33ED1 /* AWStestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWStestApp.swift; sourceTree = "<group>"; };
-		607C5CC42E68287800E33ED1 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		607C5CC62E68287800E33ED1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		60F922152ECF1D5000008108 /* HealthKitBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBridge.swift; sourceTree = "<group>"; };
 		60F922162ECF1D5000008108 /* HealthScoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthScoreService.swift; sourceTree = "<group>"; };
@@ -171,7 +169,6 @@
 				35A15C2C2E31EA8100678A42 /* Products */,
 				607C5CC12E68287800E33ED1 /* Assets.xcassets */,
 				607C5CC22E68287800E33ED1 /* AWStestApp.swift */,
-				607C5CC42E68287800E33ED1 /* ChatView.swift */,
 				607C5CC62E68287800E33ED1 /* ContentView.swift */,
 				607C5CCA2E68287800E33ED1 /* Helpers */,
 				607C5CCE2E68287800E33ED1 /* Managers */,
@@ -385,7 +382,6 @@
 			files = (
 				607C5CE62E68287800E33ED1 /* ContentView.swift in Sources */,
 				60F922C92ED01A7800008108 /* BloodScoring.swift in Sources */,
-				607C5CEF2E68287800E33ED1 /* ChatView.swift in Sources */,
 				607C5CF22E68287800E33ED1 /* AWStestApp.swift in Sources */,
 				90A1B0012E6A000000000001 /* Services/SimpleCognitoService.swift in Sources */,
 				90A1B0022E6A000000000002 /* Managers/ConfigurationManager.swift in Sources */,
