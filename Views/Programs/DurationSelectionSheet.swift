@@ -12,12 +12,8 @@ struct DurationSelectionSheet: View {
     let onStart: (ProgramEnrollment) -> Void
 
     @Environment(\.presentationMode) var presentationMode
-    @StateObject private var programService = DietProgramService.shared
     @State private var selectedDuration: Int = 45
-    @State private var isLoading = false
-    @State private var showError = false
-    @State private var errorMessage = ""
-    @State private var showReplaceConfirmation = false
+    @State private var showRoadmapDetail = false
 
     private let durations: [(days: Int, title: String, subtitle: String, recommended: Bool)] = [
         (30, "30日コース", "4週間で基礎を固める", false),
@@ -51,29 +47,6 @@ struct DurationSelectionSheet: View {
             .background(Color(.systemBackground))
         }
         .navigationViewStyle(.stack)
-        .alert("エラー", isPresented: $showError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(errorMessage)
-        }
-        .confirmationDialog(
-            "プログラムの変更",
-            isPresented: $showReplaceConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button("新しいプログラムを開始", role: .destructive) {
-                Task {
-                    await replaceProgram()
-                }
-            }
-            Button("キャンセル", role: .cancel) {}
-        } message: {
-            Text("現在のプログラムを終了して、新しいプログラムを開始しますか？")
-        }
-        .task {
-            // シート表示時に既存プログラムを取得
-            await programService.fetchEnrolledProgram()
-        }
     }
 
     // MARK: - Header Section
@@ -185,23 +158,14 @@ struct DurationSelectionSheet: View {
 
     private var startButtonSection: some View {
         Button {
-            Task {
-                // 既存プログラムがあるかチェック
-                if programService.isEnrolled {
-                    showReplaceConfirmation = true
-                } else {
-                    await startProgram()
-                }
-            }
+            showRoadmapDetail = true
         } label: {
             HStack {
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                } else {
-                    Text("START PROGRAM")
-                        .font(.system(size: 16, weight: .bold))
-                }
+                Text("詳細を見る")
+                    .font(.system(size: 16, weight: .bold))
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .bold))
             }
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
@@ -209,7 +173,19 @@ struct DurationSelectionSheet: View {
             .background(Color.lifesumDarkGreen)
             .cornerRadius(28)
         }
-        .disabled(isLoading)
+        .background(
+            NavigationLink(
+                destination: ProgramRoadmapDetailView(
+                    program: program,
+                    selectedDuration: selectedDuration,
+                    onStart: { enrollment in
+                        presentationMode.wrappedValue.dismiss()
+                        onStart(enrollment)
+                    }
+                ),
+                isActive: $showRoadmapDetail
+            ) { EmptyView() }
+        )
     }
 
     // MARK: - Helper Functions
@@ -219,47 +195,6 @@ struct DurationSelectionSheet: View {
         formatter.dateFormat = "yyyy年M月d日"
         formatter.locale = Locale(identifier: "ja_JP")
         return formatter.string(from: date)
-    }
-
-    private func startProgram() async {
-        isLoading = true
-
-        let success = await programService.enrollProgram(
-            program.id,
-            duration: selectedDuration,
-            startDate: Date()
-        )
-
-        isLoading = false
-
-        if success, let enrollment = programService.enrolledProgram {
-            // 通知を送信してProgramTabRootViewを更新
-            NotificationCenter.default.post(name: .programEnrollmentChanged, object: nil)
-            presentationMode.wrappedValue.dismiss()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                onStart(enrollment)
-            }
-        } else {
-            // エラー時の処理
-            errorMessage = programService.errorMessage ?? "プログラムの開始に失敗しました"
-            showError = true
-        }
-    }
-
-    private func replaceProgram() async {
-        isLoading = true
-
-        // 1. 既存プログラムをキャンセル
-        let cancelled = await programService.cancelEnrollment()
-
-        if cancelled {
-            // 2. 新しいプログラムを開始
-            await startProgram()
-        } else {
-            isLoading = false
-            errorMessage = programService.errorMessage ?? "プログラムの終了に失敗しました"
-            showError = true
-        }
     }
 }
 
