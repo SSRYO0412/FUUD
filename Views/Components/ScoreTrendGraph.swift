@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ScoreTrendGraph: View {
-    let scores: [Int]  // [DUMMY] 過去6ヶ月のスコア、API連携後に実データ使用
+    let scores: [Int]  // 過去6ヶ月のスコア、API連携後に実データ使用
 
     // 月のラベルを生成（現在月から6ヶ月前まで）
     private var monthLabels: [String] {
@@ -114,7 +114,7 @@ struct ScoreTrendGraph: View {
 #if DEBUG
 struct ScoreTrendGraph_Previews: PreviewProvider {
     static var previews: some View {
-        ScoreTrendGraph(scores: [78, 82, 85, 88, 90, 92])  // [DUMMY] プレビュー用データ
+        ScoreTrendGraph(scores: [78, 82, 85, 88, 90, 92])  // プレビュー用データ
             .padding()
             .background(Color.white)
     }

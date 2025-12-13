@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MetricDetailView: View {
     let metric: String
-    let data: [String: String] // [DUMMY] 詳細データはPerformanceDetailData.sampleから取得
+    let data: [String: String] // 詳細データはPerformanceDetailData.sampleから取得
     let onClose: () -> Void
 
     var body: some View {
@@ -49,7 +49,7 @@ struct MetricDetailView: View {
         .cornerRadius(12)
     }
 
-    // [DUMMY] メトリック名の表示変換、本番ではローカライズ対応
+    // メトリック名の表示変換、本番ではローカライズ対応
     private var metricDisplayName: String {
         switch metric {
         case "recovery":
@@ -104,7 +104,7 @@ struct MetricDetailView_Previews: PreviewProvider {
     static var previews: some View {
         MetricDetailView(
             metric: "recovery",
-            data: [ // [DUMMY] Preview用のサンプルデータ
+            data: [ // Preview用のサンプルデータ
                 "HRV (RMSSD)": "68ms ↑",
                 "安静時心拍": "52bpm ↓",
                 "深睡眠": "22% ↑",

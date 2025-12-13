@@ -9,9 +9,9 @@ import SwiftUI
 
 struct SleepDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @State private var showCopyToast = false // 共有ボタン用コピー通知トースト
     @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
-    // [DUMMY] 睡眠指標や関連データはテスト用の固定値
+    // 睡眠指標や関連データはテスト用の固定値
 
     // MARK: - Category Data
     private let categoryName = "睡眠"
@@ -22,14 +22,14 @@ struct SleepDetailView: View {
         lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 
-    // [DUMMY] カテゴリー関連遺伝子データ
+    // カテゴリー関連遺伝子データ
     private let sleepGenes: [(name: String, variant: String, risk: String, description: String)] = [
         (name: "PER3 VNTR", variant: "VNTR", risk: "最適", description: "概日リズム：安定型"),
         (name: "CLOCK 3111T/C", variant: "3111T/C", risk: "良好", description: "睡眠パターン：夜型傾向軽度"),
         (name: "ADORA2A", variant: "ADORA2A", risk: "良好", description: "カフェイン感受性：中程度")
     ]
 
-    // [DUMMY] カテゴリー関連血液マーカーデータ
+    // カテゴリー関連血液マーカーデータ
     private let sleepBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
         (name: "Melatonin", value: "12", unit: "pg/mL", range: "10-15", status: "最適"),
         (name: "Cortisol (朝)", value: "15", unit: "μg/dL", range: "10-20", status: "良好"),
@@ -37,7 +37,7 @@ struct SleepDetailView: View {
         (name: "Vitamin D", value: "45", unit: "ng/mL", range: "30-100", status: "最適")
     ]
 
-    // [DUMMY] カテゴリー関連HealthKitデータ
+    // カテゴリー関連HealthKitデータ
     private let sleepHealthKit: [(name: String, value: String, status: String)] = [
         (name: "睡眠時間", value: "7h 12m", status: "最適"),
         (name: "深睡眠", value: "2h 30m", status: "優秀"),
@@ -76,7 +76,7 @@ struct SleepDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
-                    Text("あなたの睡眠スコアは優秀です。規則正しい就寝時間と質の高い睡眠が、心身の健康維持に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                    Text("あなたの睡眠スコアは優秀です。規則正しい就寝時間と質の高い睡眠が、心身の健康維持に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // AIコメント、API連携後に実データ使用
                         .font(.system(size: 13, weight: .regular))
                         .foregroundColor(.virgilTextPrimary)
                         .lineSpacing(4)
@@ -90,7 +90,7 @@ struct SleepDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    ScoreTrendGraph(scores: [84, 86, 87, 88, 89, 90])  // [DUMMY] 過去6ヶ月のスコア
+                    ScoreTrendGraph(scores: [84, 86, 87, 88, 89, 90])  // 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .liquidGlassCard()
@@ -107,7 +107,7 @@ struct SleepDetailView: View {
 
                         Spacer()
 
-                        // [DUMMY] 共有ボタン追加
+                        // 共有ボタン追加
                         Button(action: shareGenes) {
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
@@ -116,7 +116,7 @@ struct SleepDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        // 遺伝子データ、API連携後に実データ使用
                         GeneCard(
                             name: "PER3 VNTR",
                             description: "概日リズム：安定型",
@@ -154,7 +154,7 @@ struct SleepDetailView: View {
 
                         Spacer()
 
-                        // [DUMMY] 共有ボタン追加
+                        // 共有ボタン追加
                         Button(action: shareBloodMarkers) {
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
@@ -163,7 +163,7 @@ struct SleepDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        // 血液マーカーデータ、API連携後に実データ使用
                         BloodMarkerRow(name: "Melatonin", value: "12 pg/mL", status: "最適")
                         BloodMarkerRow(name: "Cortisol (朝)", value: "15 μg/dL", status: "良好")
                         BloodMarkerRow(name: "Magnesium", value: "2.3 mg/dL", status: "最適")
@@ -176,7 +176,7 @@ struct SleepDetailView: View {
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
                 MicrobiomeSection(bacteria: [
-                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    // 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
                         name: "Lactobacillus",
                         description: "GABA産生・睡眠の質向上",
@@ -201,7 +201,7 @@ struct SleepDetailView: View {
                 // Related HealthKit - MVP: HealthKit情報を非表示
                 /*
                 HealthKitSection(metrics: [
-                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    // HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "睡眠時間", value: "7h 12m", status: "最適"),
                     HealthKitSectionMetric(name: "深睡眠", value: "2h 30m", status: "優秀"),
                     HealthKitSectionMetric(name: "レム睡眠", value: "1h 48m", status: "良好"),
@@ -217,7 +217,7 @@ struct SleepDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 睡眠ステージデータ、API連携後に実データ使用
+                        // 睡眠ステージデータ、API連携後に実データ使用
                         SleepStageRow(stage: "深睡眠", duration: "2.5時間", percentage: 35)
                         SleepStageRow(stage: "レム睡眠", duration: "1.8時間", percentage: 25)
                         SleepStageRow(stage: "浅睡眠", duration: "2.9時間", percentage: 40)
@@ -233,7 +233,7 @@ struct SleepDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 推奨アクション、API連携後に実データ使用
+                        // 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "🌙",
                             title: "就寝時刻の固定",
@@ -267,7 +267,7 @@ struct SleepDetailView: View {
         .navigationTitle("睡眠")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            // [DUMMY] NavigationBarに共有ボタン追加
+            // NavigationBarに共有ボタン追加
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: shareDetailView) {
                     Image(systemName: "square.and.arrow.up")
@@ -283,13 +283,13 @@ struct SleepDetailView: View {
             }
         }
         .floatingChatButton()
-        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー通知トースト
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // コピー通知トースト
     }
 
     // MARK: - Share Actions
 
     /// DetailView全体のデータをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    /// 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -301,7 +301,7 @@ struct SleepDetailView: View {
     }
 
     /// 遺伝子セクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareGenes() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -313,7 +313,7 @@ struct SleepDetailView: View {
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareBloodMarkers() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,

@@ -9,9 +9,9 @@ import SwiftUI
 
 struct StressDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @State private var showCopyToast = false // 共有ボタン用コピー通知トースト
     @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
-    // [DUMMY] ストレス関連データはモック
+    // ストレス関連データはモック
 
     // MARK: - Category Data
     private let categoryName = "ストレス"
@@ -22,14 +22,14 @@ struct StressDetailView: View {
         lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 
-    // [DUMMY] カテゴリー関連遺伝子データ
+    // カテゴリー関連遺伝子データ
     private let stressGenes: [(name: String, variant: String, risk: String, description: String)] = [
         (name: "NR3C1", variant: "NR3C1", risk: "注意", description: "コルチゾール受容体・ストレス応答"),
         (name: "COMT Val158Met", variant: "Val158Met", risk: "良好", description: "ドーパミン代謝・ストレス耐性"),
         (name: "SLC6A4", variant: "SLC6A4", risk: "標準", description: "セロトニントランスポーター")
     ]
 
-    // [DUMMY] カテゴリー関連血液マーカーデータ
+    // カテゴリー関連血液マーカーデータ
     private let stressBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
         (name: "CRP", value: "0.3", unit: "mg/L", range: "0-5", status: "最適"),
         (name: "LAC", value: "12", unit: "mg/dL", range: "4-16", status: "良好"),
@@ -37,7 +37,7 @@ struct StressDetailView: View {
         (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適")
     ]
 
-    // [DUMMY] カテゴリー関連HealthKitデータ
+    // カテゴリー関連HealthKitデータ
     private let stressHealthKit: [(name: String, value: String, status: String)] = [
         (name: "HRV", value: "68ms", status: "良好"),
         (name: "安静時心拍", value: "58bpm", status: "最適"),
@@ -75,7 +75,7 @@ struct StressDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
-                    Text("あなたのストレス管理スコアは良好です。適切なリラクゼーションと運動が、ストレスの軽減に寄与しています。引き続き現在の習慣を維持することで、長期的な心身の健康維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                    Text("あなたのストレス管理スコアは良好です。適切なリラクゼーションと運動が、ストレスの軽減に寄与しています。引き続き現在の習慣を維持することで、長期的な心身の健康維持が期待できます。")  // AIコメント、API連携後に実データ使用
                         .font(.system(size: 13, weight: .regular))
                         .foregroundColor(.virgilTextPrimary)
                         .lineSpacing(4)
@@ -89,7 +89,7 @@ struct StressDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    ScoreTrendGraph(scores: [74, 76, 78, 79, 81, 82])  // [DUMMY] 過去6ヶ月のスコア
+                    ScoreTrendGraph(scores: [74, 76, 78, 79, 81, 82])  // 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .liquidGlassCard()
@@ -106,7 +106,7 @@ struct StressDetailView: View {
 
                         Spacer()
 
-                        Button(action: shareGenes) { // [DUMMY] 遺伝子セクション共有ボタン
+                        Button(action: shareGenes) { // 遺伝子セクション共有ボタン
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
                                 .foregroundColor(.virgilTextSecondary)
@@ -114,7 +114,7 @@ struct StressDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        // 遺伝子データ、API連携後に実データ使用
                         GeneCard(
                             name: "NR3C1",
                             description: "コルチゾール受容体・ストレス応答",
@@ -152,7 +152,7 @@ struct StressDetailView: View {
 
                         Spacer()
 
-                        Button(action: shareBloodMarkers) { // [DUMMY] 血液マーカーセクション共有ボタン
+                        Button(action: shareBloodMarkers) { // 血液マーカーセクション共有ボタン
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
                                 .foregroundColor(.virgilTextSecondary)
@@ -160,7 +160,7 @@ struct StressDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        // 血液マーカーデータ、API連携後に実データ使用
                         BloodMarkerRow(name: "CRP", value: "0.3 mg/L", status: "最適")
                         BloodMarkerRow(name: "LAC", value: "12 mg/dL", status: "良好")
                         BloodMarkerRow(name: "1,5-AG", value: "18.5 μg/mL", status: "最適")
@@ -173,7 +173,7 @@ struct StressDetailView: View {
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
                 MicrobiomeSection(bacteria: [
-                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    // 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
                         name: "SCFA産生菌",
                         description: "脳‐腸軸・抗ストレス",
@@ -192,7 +192,7 @@ struct StressDetailView: View {
                 // Related HealthKit - MVP: HealthKit情報を非表示
                 /*
                 HealthKitSection(metrics: [
-                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    // HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "HRV", value: "68ms", status: "良好"),
                     HealthKitSectionMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
                     HealthKitSectionMetric(name: "呼吸数", value: "14回/分", status: "最適"),
@@ -207,7 +207,7 @@ struct StressDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 推奨アクション、API連携後に実データ使用
+                        // 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "🧘",
                             title: "瞑想・マインドフルネス",
@@ -240,7 +240,7 @@ struct StressDetailView: View {
         .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("ストレス")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar { // [DUMMY] NavigationBar共有ボタン追加
+        .toolbar { // NavigationBar共有ボタン追加
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: shareDetailView) {
                     Image(systemName: "square.and.arrow.up")
@@ -256,13 +256,13 @@ struct StressDetailView: View {
             }
         }
         .floatingChatButton()
-        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー完了トースト表示
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // コピー完了トースト表示
     }
 
     // MARK: - Share Actions
 
     /// DetailView全体のデータをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    /// 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -274,7 +274,7 @@ struct StressDetailView: View {
     }
 
     /// 遺伝子セクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareGenes() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -286,7 +286,7 @@ struct StressDetailView: View {
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareBloodMarkers() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,

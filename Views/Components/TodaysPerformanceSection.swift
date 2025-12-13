@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TodaysPerformanceSection: View {
-    @State private var metrics = PerformanceMetrics.sample // [DUMMY] 実際の計算値に置き換え
+    @State private var metrics = PerformanceMetrics.sample // 実際の計算値に置き換え
     @State private var expandedMetric: String? = nil
 
     var body: some View {
@@ -21,7 +21,7 @@ struct TodaysPerformanceSection: View {
                     name: "予想消費カロリー",
                     score: "\(metrics.predictedCalories)",
                     unit: "kcal",
-                    delta: "+8%", // [DUMMY] 実際の計算値に置き換え
+                    delta: "+8%", // 実際の計算値に置き換え
                     deltaType: .positive,
                     indicator: .high,
                     isExpanded: expandedMetric == "predictedCalories",
@@ -149,7 +149,7 @@ struct TodaysPerformanceSection: View {
                     name: "老化速度",
                     score: String(format: "%.2f", metrics.longevity),
                     unit: "age/year",
-                    delta: "−18%", // [DUMMY] 実際の計算値に置き換え
+                    delta: "−18%", // 実際の計算値に置き換え
                     deltaType: .positive,
                     indicator: .excellent,
                     isExpanded: expandedMetric == "longevity",
@@ -181,7 +181,7 @@ struct TodaysPerformanceSection: View {
                     name: "総合パフォーマンス",
                     score: "\(metrics.performance)",
                     unit: nil,
-                    delta: "+12%", // [DUMMY] 実際の計算値に置き換え
+                    delta: "+12%", // 実際の計算値に置き換え
                     deltaType: .positive,
                     indicator: .high,
                     isExpanded: expandedMetric == "performance",

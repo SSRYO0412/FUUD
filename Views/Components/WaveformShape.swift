@@ -25,7 +25,7 @@ struct WaveformView: View {
     @State private var timer: Timer?
 
     // 各レイヤーの固定パラメータ（初期化時に設定、以降変更なし）
-    // [DUMMY] 実際のHealthKitデータに応じて動的に調整予定
+    // 実際のHealthKitデータに応じて動的に調整予定
     private let layer1Config = WaveLayerConfig(
         frequency: 1.2,
         amplitude: 16.0, // 8.0 → 16.0（2倍）
@@ -81,7 +81,7 @@ struct WaveformView: View {
         }
         .frame(height: 40)
         .background(Color.black.opacity(0.01))
-        // [DUMMY] cornerRadius削除 - 画面幅いっぱいに波形を表示するため
+        // cornerRadius削除 - 画面幅いっぱいに波形を表示するため
         .onAppear {
             startAnimation()
         }

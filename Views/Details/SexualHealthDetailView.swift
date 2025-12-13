@@ -9,9 +9,9 @@ import SwiftUI
 
 struct SexualHealthDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @State private var showCopyToast = false // 共有ボタン用コピー通知トースト
     @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
-    // [DUMMY] 性的健康に関するスコア・指標はモック
+    // 性的健康に関するスコア・指標はモック
 
     // MARK: - Category Data
     private let categoryName = "性的な健康"
@@ -22,14 +22,14 @@ struct SexualHealthDetailView: View {
         lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 
-    // [DUMMY] カテゴリー関連遺伝子データ
+    // カテゴリー関連遺伝子データ
     private let sexualHealthGenes: [(name: String, variant: String, risk: String, description: String)] = [
         (name: "AR", variant: "AR", risk: "良好", description: "アンドロゲン受容体・テストステロン感受性"),
         (name: "ESR1", variant: "ESR1", risk: "優秀", description: "エストロゲン受容体・ホルモンバランス"),
         (name: "NOS3", variant: "NOS3", risk: "優秀", description: "一酸化窒素合成・血流調節")
     ]
 
-    // [DUMMY] カテゴリー関連血液マーカーデータ
+    // カテゴリー関連血液マーカーデータ
     private let sexualHealthBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
         (name: "ApoB", value: "85", unit: "mg/dL", range: "<100", status: "最適"),
         (name: "Lp(a)", value: "18", unit: "mg/dL", range: "<30", status: "最適"),
@@ -42,7 +42,7 @@ struct SexualHealthDetailView: View {
         (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "良好")
     ]
 
-    // [DUMMY] カテゴリー関連HealthKitデータ
+    // カテゴリー関連HealthKitデータ
     private let sexualHealthHealthKit: [(name: String, value: String, status: String)] = [
         (name: "睡眠の質", value: "85%", status: "優秀"),
         (name: "深睡眠", value: "1h 45m", status: "良好"),
@@ -81,7 +81,7 @@ struct SexualHealthDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
-                    Text("あなたの性的健康スコアは良好です。バランスの取れたホルモンレベルと健康的な生活習慣が、性機能の維持に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                    Text("あなたの性的健康スコアは良好です。バランスの取れたホルモンレベルと健康的な生活習慣が、性機能の維持に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // AIコメント、API連携後に実データ使用
                         .font(.system(size: 13, weight: .regular))
                         .foregroundColor(.virgilTextPrimary)
                         .lineSpacing(4)
@@ -95,7 +95,7 @@ struct SexualHealthDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    ScoreTrendGraph(scores: [80, 82, 84, 85, 86, 87])  // [DUMMY] 過去6ヶ月のスコア
+                    ScoreTrendGraph(scores: [80, 82, 84, 85, 86, 87])  // 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .liquidGlassCard()
@@ -110,17 +110,17 @@ struct SexualHealthDetailView: View {
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
 
-                        Spacer() // [DUMMY]
+                        Spacer()
 
-                        Button(action: shareGenes) { // [DUMMY]
-                            Image(systemName: "doc.on.doc") // [DUMMY]
-                                .font(.system(size: 14)) // [DUMMY]
-                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
-                        } // [DUMMY]
+                        Button(action: shareGenes) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        // 遺伝子データ、API連携後に実データ使用
                         GeneCard(
                             name: "AR",
                             description: "アンドロゲン受容体・テストステロン感受性",
@@ -156,17 +156,17 @@ struct SexualHealthDetailView: View {
                             .font(.system(size: 9, weight: .semibold))
                             .foregroundColor(.virgilTextSecondary)
 
-                        Spacer() // [DUMMY]
+                        Spacer()
 
-                        Button(action: shareBloodMarkers) { // [DUMMY]
-                            Image(systemName: "doc.on.doc") // [DUMMY]
-                                .font(.system(size: 14)) // [DUMMY]
-                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
-                        } // [DUMMY]
+                        Button(action: shareBloodMarkers) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        // 血液マーカーデータ、API連携後に実データ使用
                         BloodMarkerRow(name: "ApoB", value: "85 mg/dL", status: "最適")
                         BloodMarkerRow(name: "Lp(a)", value: "18 mg/dL", status: "最適")
                         BloodMarkerRow(name: "TG", value: "95 mg/dL", status: "最適")
@@ -184,7 +184,7 @@ struct SexualHealthDetailView: View {
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
                 MicrobiomeSection(bacteria: [
-                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    // 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
                         name: "Estrobolome",
                         description: "エストロゲン代謝・ホルモンバランス",
@@ -209,7 +209,7 @@ struct SexualHealthDetailView: View {
                 // Related HealthKit - MVP: HealthKit情報を非表示
                 /*
                 HealthKitSection(metrics: [
-                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    // HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "睡眠の質", value: "85%", status: "優秀"),
                     HealthKitSectionMetric(name: "深睡眠", value: "1h 45m", status: "良好"),
                     HealthKitSectionMetric(name: "HRV", value: "68ms", status: "優秀"),
@@ -225,7 +225,7 @@ struct SexualHealthDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 推奨アクション、API連携後に実データ使用
+                        // 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "💪",
                             title: "レジスタンストレーニング",
@@ -258,15 +258,15 @@ struct SexualHealthDetailView: View {
         .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("性的な健康")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar { // [DUMMY]
-            ToolbarItem(placement: .navigationBarTrailing) { // [DUMMY]
-                Button(action: shareDetailView) { // [DUMMY]
-                    Image(systemName: "square.and.arrow.up") // [DUMMY]
-                        .font(.system(size: 16, weight: .medium)) // [DUMMY]
-                        .foregroundColor(.virgilTextPrimary) // [DUMMY]
-                } // [DUMMY]
-            } // [DUMMY]
-        } // [DUMMY]
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .task {
             // 初回表示時にスコア計算
             if lifestyleScoreService.categoryScores.isEmpty {
@@ -274,13 +274,13 @@ struct SexualHealthDetailView: View {
             }
         }
         .floatingChatButton()
-        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY]
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast)
     }
 
     // MARK: - Share Actions
 
     /// DetailView全体のデータをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    /// 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -292,7 +292,7 @@ struct SexualHealthDetailView: View {
     }
 
     /// 遺伝子セクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareGenes() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -304,7 +304,7 @@ struct SexualHealthDetailView: View {
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareBloodMarkers() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,

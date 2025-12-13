@@ -9,9 +9,9 @@ import SwiftUI
 
 struct MetabolicDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @State private var showCopyToast = false // 共有ボタン用コピー通知トースト
     @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
-    // [DUMMY] 代謝スコアと各セクションは仮の固定値
+    // 代謝スコアと各セクションは仮の固定値
 
     // MARK: - Category Data
     private let categoryName = "ダイエット"
@@ -22,7 +22,7 @@ struct MetabolicDetailView: View {
         lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 
-    // [DUMMY] カテゴリー関連遺伝子データ
+    // カテゴリー関連遺伝子データ
     private let metabolicGenes: [(name: String, variant: String, risk: String, description: String)] = [
         (name: "FTO rs9939609", variant: "rs9939609", risk: "標準", description: "肥満リスク：標準型"),
         (name: "TCF7L2 rs7903146", variant: "rs7903146", risk: "保護型", description: "2型糖尿病リスク：低"),
@@ -30,7 +30,7 @@ struct MetabolicDetailView: View {
         (name: "ADRB2 rs1042714", variant: "rs1042714", risk: "良好", description: "代謝応答性：良好")
     ]
 
-    // [DUMMY] カテゴリー関連血液マーカーデータ
+    // カテゴリー関連血液マーカーデータ
     private let metabolicBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
         (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-6.0", status: "最適"),
         (name: "GA", value: "14.5", unit: "%", range: "11-16", status: "良好"),
@@ -42,7 +42,7 @@ struct MetabolicDetailView: View {
         (name: "ApoB", value: "75", unit: "mg/dL", range: "<90", status: "最適")
     ]
 
-    // [DUMMY] カテゴリー関連HealthKitデータ
+    // カテゴリー関連HealthKitデータ
     private let metabolicHealthKit: [(name: String, value: String, status: String)] = [
         (name: "体重", value: "68kg", status: "最適"),
         (name: "BMI", value: "22.5", status: "最適"),
@@ -81,7 +81,7 @@ struct MetabolicDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
-                    Text("あなたの代謝機能スコアは良好です。バランスの取れた食事と適度な運動が、健康的な代謝機能の維持に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                    Text("あなたの代謝機能スコアは良好です。バランスの取れた食事と適度な運動が、健康的な代謝機能の維持に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // AIコメント、API連携後に実データ使用
                         .font(.system(size: 13, weight: .regular))
                         .foregroundColor(.virgilTextPrimary)
                         .lineSpacing(4)
@@ -95,7 +95,7 @@ struct MetabolicDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    ScoreTrendGraph(scores: [72, 75, 78, 80, 83, 85])  // [DUMMY] 過去6ヶ月のスコア
+                    ScoreTrendGraph(scores: [72, 75, 78, 80, 83, 85])  // 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .liquidGlassCard()
@@ -112,7 +112,7 @@ struct MetabolicDetailView: View {
 
                         Spacer()
 
-                        Button(action: shareGenes) { // [DUMMY] 遺伝子セクション共有ボタン
+                        Button(action: shareGenes) { // 遺伝子セクション共有ボタン
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
                                 .foregroundColor(.virgilTextSecondary)
@@ -120,7 +120,7 @@ struct MetabolicDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        // 遺伝子データ、API連携後に実データ使用
                         GeneCard(
                             name: "FTO rs9939609",
                             description: "肥満リスク：標準型",
@@ -165,7 +165,7 @@ struct MetabolicDetailView: View {
 
                         Spacer()
 
-                        Button(action: shareBloodMarkers) { // [DUMMY] 血液マーカーセクション共有ボタン
+                        Button(action: shareBloodMarkers) { // 血液マーカーセクション共有ボタン
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
                                 .foregroundColor(.virgilTextSecondary)
@@ -173,7 +173,7 @@ struct MetabolicDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        // 血液マーカーデータ、API連携後に実データ使用
                         BloodMarkerRow(name: "HbA1c", value: "5.2%", status: "最適")
                         BloodMarkerRow(name: "GA", value: "14.5%", status: "良好")
                         BloodMarkerRow(name: "1,5-AG", value: "18.5 μg/mL", status: "最適")
@@ -190,7 +190,7 @@ struct MetabolicDetailView: View {
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
                 MicrobiomeSection(bacteria: [
-                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    // 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
                         name: "SCFA産生菌",
                         description: "短鎖脂肪酸産生・代謝改善",
@@ -209,7 +209,7 @@ struct MetabolicDetailView: View {
                 // Related HealthKit - MVP: HealthKit情報を非表示
                 /*
                 HealthKitSection(metrics: [
-                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    // HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "体重", value: "68kg", status: "最適"),
                     HealthKitSectionMetric(name: "BMI", value: "22.5", status: "最適"),
                     HealthKitSectionMetric(name: "消費カロリー", value: "2,350kcal", status: "良好"),
@@ -225,7 +225,7 @@ struct MetabolicDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 推奨アクション、API連携後に実データ使用
+                        // 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "🍽️",
                             title: "食事管理",
@@ -258,7 +258,7 @@ struct MetabolicDetailView: View {
         .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("ダイエット")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar { // [DUMMY] NavigationBarに共有ボタンを追加
+        .toolbar { // NavigationBarに共有ボタンを追加
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: shareDetailView) {
                     Image(systemName: "square.and.arrow.up")
@@ -274,13 +274,13 @@ struct MetabolicDetailView: View {
             }
         }
         .floatingChatButton()
-        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー通知トースト
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // コピー通知トースト
     }
 
     // MARK: - Share Actions
 
     /// DetailView全体のデータをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    /// 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -292,7 +292,7 @@ struct MetabolicDetailView: View {
     }
 
     /// 遺伝子セクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareGenes() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -304,7 +304,7 @@ struct MetabolicDetailView: View {
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareBloodMarkers() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,

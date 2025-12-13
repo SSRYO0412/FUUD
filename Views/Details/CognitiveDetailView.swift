@@ -9,9 +9,9 @@ import SwiftUI
 
 struct CognitiveDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @State private var showCopyToast = false // 共有ボタン用コピー通知トースト
     @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
-    // [DUMMY] スコア・遺伝子・血液・推奨事項はモックデータ
+    // スコア・遺伝子・血液・推奨事項はモックデータ
 
     // MARK: - Category Data
     private let categoryName = "認知機能"
@@ -22,14 +22,14 @@ struct CognitiveDetailView: View {
         lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 
-    // [DUMMY] カテゴリー関連遺伝子データ
+    // カテゴリー関連遺伝子データ
     private let cognitiveGenes: [(name: String, variant: String, risk: String, description: String)] = [
         (name: "APOE ε3/ε3", variant: "ε3/ε3", risk: "低", description: "アルツハイマー病リスク：低"),
         (name: "BDNF Val66Met", variant: "Val66Met", risk: "良好", description: "学習・記憶能力：優良"),
         (name: "COMT Val158Met", variant: "Val158Met", risk: "最適", description: "ドーパミン代謝：バランス型")
     ]
 
-    // [DUMMY] カテゴリー関連血液マーカーデータ
+    // カテゴリー関連血液マーカーデータ
     private let cognitiveBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
         (name: "Homocysteine", value: "8.2", unit: "μmol/L", range: "5-15", status: "最適"),
         (name: "Vitamin B12", value: "580", unit: "pg/mL", range: "200-900", status: "良好"),
@@ -37,7 +37,7 @@ struct CognitiveDetailView: View {
         (name: "Omega-3 Index", value: "8.2", unit: "%", range: ">8", status: "優秀")
     ]
 
-    // [DUMMY] カテゴリー関連HealthKitデータ
+    // カテゴリー関連HealthKitデータ
     private let cognitiveHealthKit: [(name: String, value: String, status: String)] = [
         (name: "睡眠時間", value: "7.5時間", status: "最適"),
         (name: "深睡眠", value: "90分", status: "優秀"),
@@ -75,7 +75,7 @@ struct CognitiveDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
-                    Text("あなたの認知機能スコアは優秀です。規則正しい生活リズムと適度な運動が、脳の健康維持に寄与しています。引き続き現在の習慣を維持することで、長期的な認知機能の維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                    Text("あなたの認知機能スコアは優秀です。規則正しい生活リズムと適度な運動が、脳の健康維持に寄与しています。引き続き現在の習慣を維持することで、長期的な認知機能の維持が期待できます。")  // AIコメント、API連携後に実データ使用
                         .font(.system(size: 13, weight: .regular))
                         .foregroundColor(.virgilTextPrimary)
                         .lineSpacing(4)
@@ -89,7 +89,7 @@ struct CognitiveDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    ScoreTrendGraph(scores: [78, 82, 85, 88, 90, 92])  // [DUMMY] 過去6ヶ月のスコア
+                    ScoreTrendGraph(scores: [78, 82, 85, 88, 90, 92])  // 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .liquidGlassCard()
@@ -113,7 +113,7 @@ struct CognitiveDetailView: View {
                         }
                     }
 
-                    // [DUMMY] 遺伝子パネルはモックデータ
+                    // 遺伝子パネルはモックデータ
                     VStack(spacing: VirgilSpacing.sm) {
                         GeneCard(
                             name: "APOE ε3/ε3",
@@ -159,7 +159,7 @@ struct CognitiveDetailView: View {
                         }
                     }
 
-                    // [DUMMY] 血液マーカーはモックデータ
+                    // 血液マーカーはモックデータ
                     VStack(spacing: VirgilSpacing.sm) {
                         BloodMarkerRow(name: "Homocysteine", value: "8.2 μmol/L", status: "最適")
                         BloodMarkerRow(name: "Vitamin B12", value: "580 pg/mL", status: "良好")
@@ -173,7 +173,7 @@ struct CognitiveDetailView: View {
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
                 MicrobiomeSection(bacteria: [
-                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    // 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
                         name: "Faecalibacterium",
                         description: "酪酸産生菌・腸内環境を改善",
@@ -204,7 +204,7 @@ struct CognitiveDetailView: View {
                 // Related HealthKit - MVP: HealthKit情報を非表示
                 /*
                 HealthKitSection(metrics: [
-                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    // HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "睡眠時間", value: "7.5時間", status: "最適"),
                     HealthKitSectionMetric(name: "深睡眠", value: "90分", status: "優秀"),
                     HealthKitSectionMetric(name: "HRV", value: "68ms", status: "良好"),
@@ -218,7 +218,7 @@ struct CognitiveDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    // [DUMMY] 推奨アクションはモックデータ
+                    // 推奨アクションはモックデータ
                     VStack(spacing: VirgilSpacing.sm) {
                         RecommendationCard(
                             icon: "🥗",
@@ -274,7 +274,7 @@ struct CognitiveDetailView: View {
     // MARK: - Share Actions
 
     /// DetailView全体のデータをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    /// 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -286,7 +286,7 @@ struct CognitiveDetailView: View {
     }
 
     /// 遺伝子セクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareGenes() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -298,7 +298,7 @@ struct CognitiveDetailView: View {
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareBloodMarkers() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -317,7 +317,7 @@ struct GeneCard: View {
     let description: String
     let impact: String
     let color: Color
-    @State private var showCopyToast = false // [DUMMY] コピー通知トースト表示状態
+    @State private var showCopyToast = false // コピー通知トースト表示状態
 
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.xs) {
@@ -345,13 +345,13 @@ struct GeneCard: View {
         .background(Color.black.opacity(0.02))
         .cornerRadius(8)
         .onLongPressGesture(minimumDuration: 0.5) {
-            // [DUMMY] 遺伝子カード長押し時にハプティックフィードバック＆プロンプト生成
+            // 遺伝子カード長押し時にハプティックフィードバック＆プロンプト生成
             let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.impactOccurred()
 
             let prompt = PromptGenerator.generateGenePrompt(
                 geneName: name,
-                variant: name, // [DUMMY] バリアント情報が分離されていないため名前を使用
+                variant: name, // バリアント情報が分離されていないため名前を使用
                 riskLevel: impact,
                 description: description
             )
@@ -367,7 +367,7 @@ struct BloodMarkerRow: View {
     let name: String
     let value: String
     let status: String
-    @State private var showCopyToast = false // [DUMMY] コピー通知トースト表示状態
+    @State private var showCopyToast = false // コピー通知トースト表示状態
 
     // ステータスに応じた色分け (Optimal/最適=緑, Reference/正常範囲=黄, Risk/注意=赤)
     private var statusColor: Color {
@@ -407,7 +407,7 @@ struct BloodMarkerRow: View {
         .background(Color.black.opacity(0.02))
         .cornerRadius(6)
         .onLongPressGesture(minimumDuration: 0.5) {
-            // [DUMMY] 血液マーカー長押し時にハプティックフィードバック＆プロンプト生成
+            // 血液マーカー長押し時にハプティックフィードバック＆プロンプト生成
             let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.impactOccurred()
 
@@ -415,7 +415,7 @@ struct BloodMarkerRow: View {
                 markerName: name,
                 value: value.components(separatedBy: " ").first ?? value,
                 unit: value.components(separatedBy: " ").last ?? "",
-                referenceRange: "基準値範囲", // [DUMMY] 基準値が構造化されていないため固定文言
+                referenceRange: "基準値範囲", // 基準値が構造化されていないため固定文言
                 status: status
             )
             CopyHelper.copyToClipboard(prompt, showToast: $showCopyToast)

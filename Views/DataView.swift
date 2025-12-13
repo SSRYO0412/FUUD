@@ -147,7 +147,7 @@ private struct BloodTab: View {
             //         .font(.system(size: 9, weight: .semibold))
             //         .foregroundColor(.gray)
             //     Spacer()
-            //     Text("87") // [DUMMY] 仮スコア値
+            //     Text("87") // 仮スコア値
             //         .font(.system(size: 20, weight: .bold))
             //         .foregroundColor(Color(hex: "#00C853"))
             // }
@@ -161,12 +161,12 @@ private struct BloodTab: View {
 // MARK: - Microbiome Tab
 
 private struct MicrobiomeTab: View {
-    // [DUMMY] 多様性スコアと菌種リストはモックデータ
+    // 多様性スコアと菌種リストはモックデータ
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.lg) {
             // Diversity Score
             VStack(spacing: VirgilSpacing.md) {
-                Text("85") // [DUMMY] モックの多様性スコア
+                Text("85") // モックの多様性スコア
                     .font(.system(size: 48, weight: .black))
                     .foregroundStyle(
                         LinearGradient(
@@ -186,9 +186,9 @@ private struct MicrobiomeTab: View {
 
             // Bacteria List
             VStack(spacing: VirgilSpacing.sm) {
-                BacteriaRow(name: "Faecalibacterium", percentage: "18.5%") // [DUMMY] モックの菌種データ
-                BacteriaRow(name: "Bifidobacterium", percentage: "15.2%") // [DUMMY] モックの菌種データ
-                BacteriaRow(name: "Akkermansia", percentage: "12.8%") // [DUMMY] モックの菌種データ
+                BacteriaRow(name: "Faecalibacterium", percentage: "18.5%") // モックの菌種データ
+                BacteriaRow(name: "Bifidobacterium", percentage: "15.2%") // モックの菌種データ
+                BacteriaRow(name: "Akkermansia", percentage: "12.8%") // モックの菌種データ
             }
         }
     }
@@ -197,7 +197,7 @@ private struct MicrobiomeTab: View {
 private struct BacteriaRow: View {
     let name: String
     let percentage: String
-    // [DUMMY] 腸内細菌の構成比は仮の固定値
+    // 腸内細菌の構成比は仮の固定値
 
     var body: some View {
         HStack {
@@ -280,9 +280,9 @@ private struct LifeScoreCard: View {
     let emoji: String
     let title: String
     let score: Int
-    @State private var showCopyToast = false // [DUMMY] コピー通知トースト表示状態
-    @State private var showActionDialog = false // [DUMMY] アクション選択ダイアログ表示状態
-    @State private var navigateToDetail = false // [DUMMY] DetailView遷移フラグ
+    @State private var showCopyToast = false // コピー通知トースト表示状態
+    @State private var showActionDialog = false // アクション選択ダイアログ表示状態
+    @State private var navigateToDetail = false // DetailView遷移フラグ
 
     // スコア別グラデーションカラー（左濃→右薄）
     private var scoreGradient: LinearGradient {
@@ -360,7 +360,7 @@ private struct LifeScoreCard: View {
             }
             .virgilGlassCard(interactive: true)
             .onLongPressGesture(minimumDuration: 0.5) {
-                // [DUMMY] ライフスコアカード長押し時にハプティックフィードバック＆ダイアログ表示
+                // ライフスコアカード長押し時にハプティックフィードバック＆ダイアログ表示
                 let generator = UIImpactFeedbackGenerator(style: .medium)
                 generator.impactOccurred()
                 showActionDialog = true
@@ -375,7 +375,7 @@ private struct LifeScoreCard: View {
         )
         .confirmationDialog("アクション選択", isPresented: $showActionDialog) {
             Button("プロンプトを生成") {
-                // [DUMMY] カテゴリー完全データプロンプトを生成＆コピー
+                // カテゴリー完全データプロンプトを生成＆コピー
                 let categoryData = getCategoryData(for: title)
                 let prompt = PromptGenerator.generateCategoryPrompt(
                     category: categoryData.name,

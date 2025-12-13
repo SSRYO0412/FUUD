@@ -62,7 +62,7 @@ struct AIInsightData {
 // MARK: - Demo Data (Fallback)
 
 struct AIInsightDemoData {
-    // [DUMMY] フォールバック用デモデータ
+    // フォールバック用デモデータ
     static let insights: [TimeSlot: AIInsightData] = [
         .earlyMorning: AIInsightData(
             timeSlot: .earlyMorning,

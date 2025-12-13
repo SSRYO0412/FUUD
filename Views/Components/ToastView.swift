@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// コピー完了時に表示されるトースト通知
-/// [DUMMY] 現状は固定メッセージ、将来的に動的メッセージ対応予定
+/// 現状は固定メッセージ、将来的に動的メッセージ対応予定
 struct ToastView: View {
     let message: String
     @Binding var isShowing: Bool
@@ -73,7 +73,7 @@ struct ToastView: View {
 
 extension View {
     /// トースト通知を表示するモディファイア
-    /// [DUMMY] 使用例: .showToast(message: "コピーしました", isShowing: $showToast)
+    /// 使用例: .showToast(message: "コピーしました", isShowing: $showToast)
     func showToast(message: String, isShowing: Binding<Bool>) -> some View {
         self.overlay(
             ToastView(message: message, isShowing: isShowing)

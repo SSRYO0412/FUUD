@@ -19,7 +19,7 @@ struct MicrobiomeItem {
 // MARK: - Microbiome Section
 
 struct MicrobiomeSection: View {
-    let bacteria: [MicrobiomeItem]  // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+    let bacteria: [MicrobiomeItem]  // 腸内細菌データ、API連携後に実データ使用
 
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.md) {
@@ -82,7 +82,7 @@ private struct MicrobiomeCard: View {
 struct MicrobiomeSection_Previews: PreviewProvider {
     static var previews: some View {
         MicrobiomeSection(bacteria: [
-            // [DUMMY] プレビュー用データ
+            // プレビュー用データ
             MicrobiomeItem(
                 name: "Faecalibacterium",
                 description: "酪酸産生菌・腸内環境を改善",

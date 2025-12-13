@@ -9,7 +9,7 @@ import Foundation
 
 /// デモモード用チャットデータ
 struct DemoChatData {
-    // [DUMMY] デモ撮影用の固定Q&A。本番では実際のAI APIを使用
+    // デモ撮影用の固定Q&A。本番では実際のAI APIを使用
     static let demoQA: [String: String] = [
         "ベンチプレスの数値がここ3か月伸び悩んでいてどうすればいい？": """
 原因：
@@ -21,7 +21,7 @@ ALBとFeの数値が低くなっています。体内のタンパク質合成効
 
 追加の調査：
 また、オーバーワークトレーニングの可能性を探るためにCRPの数値も調べますか？
-""", // [DUMMY] デモ用固定回答：筋トレ停滞
+""", // デモ用固定回答：筋トレ停滞
 
         "昨日飲みすぎてしまってリカバリー案を考えてほしい。": """
 原因：
@@ -38,21 +38,21 @@ EPA/DHAを1〜2g/日摂取するとTGを下げやすくなります。
 
 追加の調査：
 また、肝臓への影響をみるためにAST/ALT/γ-GTPを確認しておくと安心です。新規検査を注文しますか？
-""", // [DUMMY] デモ用固定回答：飲酒後リカバリー
+""", // デモ用固定回答：飲酒後リカバリー
 
-        "私の遺伝子リスクは何ですか？": "あなたの遺伝子解析の結果、認知機能関連のAPOE遺伝子はε3/ε3型で、アルツハイマー病リスクは低く保護的です。また、運動能力関連のACTN3遺伝子はRR型で、パワー系の運動に適した体質です。", // [DUMMY] デモ用固定回答：遺伝子リスク
+        "私の遺伝子リスクは何ですか？": "あなたの遺伝子解析の結果、認知機能関連のAPOE遺伝子はε3/ε3型で、アルツハイマー病リスクは低く保護的です。また、運動能力関連のACTN3遺伝子はRR型で、パワー系の運動に適した体質です。", // デモ用固定回答：遺伝子リスク
     ]
 
     /// UserDefaultsキー
-    private static let demoModeKey = "demo_mode_enabled" // [DUMMY] デモモード設定の保存キー
+    private static let demoModeKey = "demo_mode_enabled" // デモモード設定の保存キー
 
     /// デモモードが有効かどうか
     static var isEnabled: Bool {
         get {
-            UserDefaults.standard.bool(forKey: demoModeKey) // [DUMMY] デモモード状態を取得
+            UserDefaults.standard.bool(forKey: demoModeKey) // デモモード状態を取得
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: demoModeKey) // [DUMMY] デモモード状態を保存
+            UserDefaults.standard.set(newValue, forKey: demoModeKey) // デモモード状態を保存
         }
     }
 }
@@ -74,15 +74,15 @@ class ChatService {
     ///   - topic: トピック（nutrition, exercise, lifestyle, general_health）
     /// - Returns: AIからの応答（複数の場合あり）
     func sendMessage(_ message: String, topic: String = "general_health") async throws -> [String] {
-        // [DUMMY] デモモード: 固定Q&Aチェック。デモ撮影用の機能
+        // デモモード: 固定Q&Aチェック。デモ撮影用の機能
         if DemoChatData.isEnabled {
-            if let demoResponse = DemoChatData.demoQA[message] { // [DUMMY] 質問が固定リストに存在するかチェック
+            if let demoResponse = DemoChatData.demoQA[message] { // 質問が固定リストに存在するかチェック
                 // 実際のAPIっぽく見せるため少し遅延
-                try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒 [DUMMY] API応答を模倣
+                try await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒 API応答を模倣
 
-                // [DUMMY] デモ応答を「原因」「アドバイス」「追加の調査」に分割
+                // デモ応答を「原因」「アドバイス」「追加の調査」に分割
                 let sections = demoResponse.components(separatedBy: "\n\n").filter { !$0.isEmpty }
-                return sections // [DUMMY] 分割した固定回答を返す
+                return sections // 分割した固定回答を返す
             }
         }
 
@@ -133,7 +133,7 @@ class ChatService {
         geneData: [String: Any]? = nil,
         autoDetectGene: Bool = true
     ) async throws -> ChatResponse {
-        // [DUMMY] デモモード: 固定Q&Aチェック
+        // デモモード: 固定Q&Aチェック
         if DemoChatData.isEnabled {
             if let demoResponse = DemoChatData.demoQA[message] {
                 try await Task.sleep(nanoseconds: 1_500_000_000)

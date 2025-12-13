@@ -122,8 +122,8 @@ class ConfigurationManager {
         static var current: AWSCredentialsConfig {
             // 実際の本番環境では環境変数から取得するか、より安全な方法を使用
             return AWSCredentialsConfig(
-                accessKey: ProcessInfo.processInfo.environment["AWS_ACCESS_KEY_ID"] ?? "AKIAIOSFODNN7EXAMPLE", // [DUMMY] AWSアクセスキーの例示値
-                secretKey: ProcessInfo.processInfo.environment["AWS_SECRET_ACCESS_KEY"] ?? "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", // [DUMMY] AWSシークレットキーの例示値
+                accessKey: ProcessInfo.processInfo.environment["AWS_ACCESS_KEY_ID"] ?? "AKIAIOSFODNN7EXAMPLE", // AWSアクセスキーの例示値
+                secretKey: ProcessInfo.processInfo.environment["AWS_SECRET_ACCESS_KEY"] ?? "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", // AWSシークレットキーの例示値
                 region: "ap-northeast-1"
             )
         }

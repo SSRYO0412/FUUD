@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HealthKitLiveSection: View {
-    @State private var metrics = HealthKitMetric.samples // [DUMMY] 実際のHealthKitデータに置き換え
+    @State private var metrics = HealthKitMetric.samples // 実際のHealthKitデータに置き換え
     @State private var lastUpdated = Date()
     @State private var timeSinceUpdate: TimeInterval = 2
 
@@ -75,7 +75,7 @@ struct HealthKitLiveSection: View {
         Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             timeSinceUpdate = Date().timeIntervalSince(lastUpdated)
 
-            // [DUMMY] 実際はSwift側からのpush更新に置き換え
+            // 実際はSwift側からのpush更新に置き換え
             if timeSinceUpdate >= 120 {
                 lastUpdated = Date()
                 timeSinceUpdate = 2
@@ -148,7 +148,7 @@ struct WaveSyncPulsingModifier: ViewModifier {
 
 // MARK: - Waveform Placeholder
 
-// [DUMMY] 旧プレースホルダー、現在はWaveformViewに置き換え済み、削除予定
+// 旧プレースホルダー、現在はWaveformViewに置き換え済み、削除予定
 struct WaveformPlaceholder: View {
     var body: some View {
         Rectangle()

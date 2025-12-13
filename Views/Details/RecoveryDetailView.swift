@@ -9,9 +9,9 @@ import SwiftUI
 
 struct RecoveryDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @State private var showCopyToast = false // 共有ボタン用コピー通知トースト
     @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
-    // [DUMMY] 回復指標データはUI検証用の固定値
+    // 回復指標データはUI検証用の固定値
 
     // MARK: - Category Data
     private let categoryName = "疲労回復"
@@ -22,13 +22,13 @@ struct RecoveryDetailView: View {
         lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 
-    // [DUMMY] カテゴリー関連遺伝子データ
+    // カテゴリー関連遺伝子データ
     private let recoveryGenes: [(name: String, variant: String, risk: String, description: String)] = [
         (name: "ACTN3 R577X", variant: "R577X", risk: "優秀", description: "筋肉回復能力・速筋型"),
         (name: "PPARGC1A Gly482Ser", variant: "Gly482Ser", risk: "良好", description: "ミトコンドリア機能・持久力")
     ]
 
-    // [DUMMY] カテゴリー関連血液マーカーデータ
+    // カテゴリー関連血液マーカーデータ
     private let recoveryBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
         (name: "CK", value: "120", unit: "U/L", range: "60-400", status: "最適"),
         (name: "Mb", value: "45", unit: "ng/mL", range: "28-72", status: "良好"),
@@ -39,7 +39,7 @@ struct RecoveryDetailView: View {
         (name: "Mg", value: "2.2", unit: "mg/dL", range: "1.8-2.6", status: "良好")
     ]
 
-    // [DUMMY] カテゴリー関連HealthKitデータ
+    // カテゴリー関連HealthKitデータ
     private let recoveryHealthKit: [(name: String, value: String, status: String)] = [
         (name: "心拍回復 (HRR)", value: "35bpm/1min", status: "優秀"),
         (name: "トレーニング負荷", value: "適正", status: "良好"),
@@ -77,7 +77,7 @@ struct RecoveryDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
-                    Text("あなたの疲労回復スコアは良好です。適切な休息と栄養補給が、効率的な回復に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                    Text("あなたの疲労回復スコアは良好です。適切な休息と栄養補給が、効率的な回復に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // AIコメント、API連携後に実データ使用
                         .font(.system(size: 13, weight: .regular))
                         .foregroundColor(.virgilTextPrimary)
                         .lineSpacing(4)
@@ -91,7 +91,7 @@ struct RecoveryDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    ScoreTrendGraph(scores: [79, 81, 83, 84, 86, 87])  // [DUMMY] 過去6ヶ月のスコア
+                    ScoreTrendGraph(scores: [79, 81, 83, 84, 86, 87])  // 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .liquidGlassCard()
@@ -108,7 +108,7 @@ struct RecoveryDetailView: View {
 
                         Spacer()
 
-                        Button(action: shareGenes) { // [DUMMY] 遺伝子セクション共有ボタン
+                        Button(action: shareGenes) { // 遺伝子セクション共有ボタン
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
                                 .foregroundColor(.virgilTextSecondary)
@@ -116,7 +116,7 @@ struct RecoveryDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        // 遺伝子データ、API連携後に実データ使用
                         GeneCard(
                             name: "ACTN3 R577X",
                             description: "筋肉回復能力・速筋型",
@@ -147,7 +147,7 @@ struct RecoveryDetailView: View {
 
                         Spacer()
 
-                        Button(action: shareBloodMarkers) { // [DUMMY] 血液マーカーセクション共有ボタン
+                        Button(action: shareBloodMarkers) { // 血液マーカーセクション共有ボタン
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
                                 .foregroundColor(.virgilTextSecondary)
@@ -155,7 +155,7 @@ struct RecoveryDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        // 血液マーカーデータ、API連携後に実データ使用
                         BloodMarkerRow(name: "CK", value: "120 U/L", status: "最適")
                         BloodMarkerRow(name: "Mb", value: "45 ng/mL", status: "良好")
                         BloodMarkerRow(name: "LAC", value: "12 mg/dL", status: "最適")
@@ -171,7 +171,7 @@ struct RecoveryDetailView: View {
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
                 MicrobiomeSection(bacteria: [
-                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    // 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
                         name: "乳酸代謝菌",
                         description: "乳酸除去・筋肉回復促進",
@@ -190,7 +190,7 @@ struct RecoveryDetailView: View {
                 // Related HealthKit - MVP: HealthKit情報を非表示
                 /*
                 HealthKitSection(metrics: [
-                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    // HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "心拍回復 (HRR)", value: "35bpm/1min", status: "優秀"),
                     HealthKitSectionMetric(name: "トレーニング負荷", value: "適正", status: "良好"),
                     HealthKitSectionMetric(name: "ワークアウト強度", value: "中", status: "最適"),
@@ -205,7 +205,7 @@ struct RecoveryDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 推奨アクション、API連携後に実データ使用
+                        // 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "😴",
                             title: "睡眠最適化",
@@ -238,7 +238,7 @@ struct RecoveryDetailView: View {
         .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("疲労回復")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar { // [DUMMY] ナビゲーションバー共有ボタン
+        .toolbar { // ナビゲーションバー共有ボタン
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: shareDetailView) {
                     Image(systemName: "square.and.arrow.up")
@@ -254,13 +254,13 @@ struct RecoveryDetailView: View {
             }
         }
         .floatingChatButton()
-        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー完了トースト通知
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // コピー完了トースト通知
     }
 
     // MARK: - Share Actions
 
     /// DetailView全体のデータをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    /// 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -272,7 +272,7 @@ struct RecoveryDetailView: View {
     }
 
     /// 遺伝子セクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareGenes() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -284,7 +284,7 @@ struct RecoveryDetailView: View {
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareBloodMarkers() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,

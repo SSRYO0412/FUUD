@@ -12,7 +12,7 @@ import UIKit
 struct CopyHelper {
 
     /// テキストをクリップボードにコピーし、ハプティックフィードバックとトースト表示をトリガー
-    /// [DUMMY] デバッグログ付き、本番環境では削除予定
+    /// デバッグログ付き、本番環境では削除予定
     static func copyToClipboard(_ text: String, showToast: Binding<Bool>) {
         // クリップボードにコピー
         UIPasteboard.general.string = text
@@ -26,7 +26,7 @@ struct CopyHelper {
             showToast.wrappedValue = true
         }
 
-        // [DUMMY] デバッグログ（開発中のみ）
+        // デバッグログ（開発中のみ）
         #if DEBUG
         print("📋 [CopyHelper] Copied to clipboard:")
         print(text.prefix(200)) // 最初の200文字のみ表示
@@ -37,7 +37,7 @@ struct CopyHelper {
     }
 
     /// テキストをクリップボードにコピー（トースト表示なし）
-    /// [DUMMY] シンプルなコピー専用、通知不要な場合に使用
+    /// シンプルなコピー専用、通知不要な場合に使用
     static func copyToClipboardSilent(_ text: String) {
         UIPasteboard.general.string = text
 

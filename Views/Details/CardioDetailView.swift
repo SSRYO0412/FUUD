@@ -9,9 +9,9 @@ import SwiftUI
 
 struct CardioDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @State private var showCopyToast = false // 共有ボタン用コピー通知トースト
     @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
-    // [DUMMY] 心血管関連の数値と指標はモック
+    // 心血管関連の数値と指標はモック
 
     // MARK: - Category Data
     private let categoryName = "心臓の健康"
@@ -22,14 +22,14 @@ struct CardioDetailView: View {
         lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 
-    // [DUMMY] カテゴリー関連遺伝子データ
+    // カテゴリー関連遺伝子データ
     private let cardioGenes: [(name: String, variant: String, risk: String, description: String)] = [
         (name: "APOE", variant: "APOE", risk: "良好", description: "コレステロール代謝・動脈硬化リスク"),
         (name: "ACE I/D", variant: "ACE I/D", risk: "良好", description: "血圧調節・心筋機能"),
         (name: "NOS3", variant: "NOS3", risk: "優秀", description: "血管内皮機能・一酸化窒素産生")
     ]
 
-    // [DUMMY] カテゴリー関連血液マーカーデータ
+    // カテゴリー関連血液マーカーデータ
     private let cardioBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
         (name: "ApoB", value: "82", unit: "mg/dL", range: "<90", status: "最適"),
         (name: "Lp(a)", value: "15", unit: "mg/dL", range: "<30", status: "最適"),
@@ -40,7 +40,7 @@ struct CardioDetailView: View {
         (name: "CRP", value: "0.04", unit: "mg/dL", range: "<0.1", status: "最適")
     ]
 
-    // [DUMMY] カテゴリー関連HealthKitデータ
+    // カテゴリー関連HealthKitデータ
     private let cardioHealthKit: [(name: String, value: String, status: String)] = [
         (name: "安静時心拍", value: "58bpm", status: "最適"),
         (name: "HRV", value: "68ms", status: "優秀"),
@@ -79,7 +79,7 @@ struct CardioDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
-                    Text("あなたの心臓の健康スコアは良好です。適度な有酸素運動とバランスの取れた食事が、心血管系の健康維持に寄与しています。引き続き現在の習慣を維持することで、長期的な心臓の健康維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                    Text("あなたの心臓の健康スコアは良好です。適度な有酸素運動とバランスの取れた食事が、心血管系の健康維持に寄与しています。引き続き現在の習慣を維持することで、長期的な心臓の健康維持が期待できます。")  // AIコメント、API連携後に実データ使用
                         .font(.system(size: 13, weight: .regular))
                         .foregroundColor(.virgilTextPrimary)
                         .lineSpacing(4)
@@ -93,7 +93,7 @@ struct CardioDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    ScoreTrendGraph(scores: [78, 80, 82, 83, 84, 85])  // [DUMMY] 過去6ヶ月のスコア
+                    ScoreTrendGraph(scores: [78, 80, 82, 83, 84, 85])  // 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .liquidGlassCard()
@@ -110,7 +110,7 @@ struct CardioDetailView: View {
 
                         Spacer()
 
-                        // [DUMMY] 遺伝子セクション共有ボタン
+                        // 遺伝子セクション共有ボタン
                         Button(action: shareGenes) {
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
@@ -119,7 +119,7 @@ struct CardioDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        // 遺伝子データ、API連携後に実データ使用
                         GeneCard(
                             name: "APOE",
                             description: "コレステロール代謝・動脈硬化リスク",
@@ -157,7 +157,7 @@ struct CardioDetailView: View {
 
                         Spacer()
 
-                        // [DUMMY] 血液マーカーセクション共有ボタン
+                        // 血液マーカーセクション共有ボタン
                         Button(action: shareBloodMarkers) {
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
@@ -166,7 +166,7 @@ struct CardioDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        // 血液マーカーデータ、API連携後に実データ使用
                         BloodMarkerRow(name: "ApoB", value: "82 mg/dL", status: "最適")
                         BloodMarkerRow(name: "Lp(a)", value: "15 mg/dL", status: "最適")
                         BloodMarkerRow(name: "TG", value: "85 mg/dL", status: "最適")
@@ -182,7 +182,7 @@ struct CardioDetailView: View {
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
                 MicrobiomeSection(bacteria: [
-                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    // 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
                         name: "Akkermansia muciniphila",
                         description: "腸粘膜保護・動脈硬化予防",
@@ -207,7 +207,7 @@ struct CardioDetailView: View {
                 // Related HealthKit - MVP: HealthKit情報を非表示
                 /*
                 HealthKitSection(metrics: [
-                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    // HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "安静時心拍", value: "58bpm", status: "最適"),
                     HealthKitSectionMetric(name: "HRV", value: "68ms", status: "優秀"),
                     HealthKitSectionMetric(name: "血圧", value: "118/75", status: "最適"),
@@ -223,7 +223,7 @@ struct CardioDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 推奨アクション、API連携後に実データ使用
+                        // 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "🏃",
                             title: "有酸素運動",
@@ -258,7 +258,7 @@ struct CardioDetailView: View {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                // [DUMMY] DetailView全体共有ボタン
+                // DetailView全体共有ボタン
                 Button(action: shareDetailView) {
                     Image(systemName: "square.and.arrow.up")
                         .font(.system(size: 16, weight: .medium))
@@ -273,13 +273,13 @@ struct CardioDetailView: View {
             }
         }
         .floatingChatButton()
-        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー通知トースト
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // コピー通知トースト
     }
 
     // MARK: - Share Actions
 
     /// DetailView全体のデータをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    /// 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -291,7 +291,7 @@ struct CardioDetailView: View {
     }
 
     /// 遺伝子セクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareGenes() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -303,7 +303,7 @@ struct CardioDetailView: View {
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareBloodMarkers() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,

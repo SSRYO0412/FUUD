@@ -13,7 +13,7 @@ struct PromptGenerator {
     // MARK: - Base Template
 
     /// Bio-Integrative AI Trainerのベーステンプレート
-    /// [DUMMY] 現状はユーザー背景が固定、将来的にプロフィールから動的取得
+    /// 現状はユーザー背景が固定、将来的にプロフィールから動的取得
     private static let baseTemplate = """
 あなたは「Bio-Integrative AI Trainer」です。
 私はあなたのクライアントであり、体の状態をデータで共有します。
@@ -79,7 +79,7 @@ struct PromptGenerator {
     // MARK: - Gene Prompt Generation
 
     /// 単一遺伝子のプロンプト生成
-    /// [DUMMY] 現状はモックデータ、将来的にGeneDataServiceから取得
+    /// 現状はモックデータ、将来的にGeneDataServiceから取得
     static func generateGenePrompt(
         geneName: String,
         variant: String,
@@ -101,7 +101,7 @@ struct PromptGenerator {
     }
 
     /// 複数遺伝子セクションのプロンプト生成
-    /// [DUMMY] GeneCardの配列を受け取る想定、実装時に型調整
+    /// GeneCardの配列を受け取る想定、実装時に型調整
     static func generateGenesSectionPrompt(genes: [(name: String, variant: String, risk: String, description: String)]) -> String {
         var dataSection = """
 --- データ開始 ---
@@ -124,7 +124,7 @@ struct PromptGenerator {
     // MARK: - Blood Marker Prompt Generation
 
     /// 単一血液マーカーのプロンプト生成
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestServiceから取得
+    /// 現状はモックデータ、将来的にBloodTestServiceから取得
     static func generateBloodMarkerPrompt(
         markerName: String,
         value: String,
@@ -147,7 +147,7 @@ struct PromptGenerator {
     }
 
     /// 複数血液マーカーセクションのプロンプト生成
-    /// [DUMMY] BloodMarkerの配列を受け取る想定、実装時に型調整
+    /// BloodMarkerの配列を受け取る想定、実装時に型調整
     static func generateBloodMarkersSectionPrompt(markers: [(name: String, value: String, unit: String, range: String, status: String)]) -> String {
         var dataSection = """
 --- データ開始 ---
@@ -170,7 +170,7 @@ struct PromptGenerator {
     // MARK: - Category-Based Comprehensive Prompt Generation
 
     /// カテゴリー別完全データプロンプト生成
-    /// [DUMMY] DetailView長押し用、関連遺伝子・血液・HealthKitの完全データを含む
+    /// DetailView長押し用、関連遺伝子・血液・HealthKitの完全データを含む
     static func generateCategoryPrompt(
         category: String,
         relatedGenes: [(name: String, variant: String, risk: String, description: String)],
@@ -230,7 +230,7 @@ struct PromptGenerator {
     // MARK: - Microbiome Prompt Generation
 
     /// マイクロバイオームデータのプロンプト生成
-    /// [DUMMY] 腸内細菌データの固定フォーマット、API連携後に動的化
+    /// 腸内細菌データの固定フォーマット、API連携後に動的化
     static func generateMicrobiomePrompt(
         diversityScore: Int,
         bacteria: [(name: String, percentage: String)]

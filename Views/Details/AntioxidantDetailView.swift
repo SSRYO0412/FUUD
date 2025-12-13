@@ -9,9 +9,9 @@ import SwiftUI
 
 struct AntioxidantDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @State private var showCopyToast = false // 共有ボタン用コピー通知トースト
     @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
-    // [DUMMY] 抗酸化指標の数値・関連データはモック
+    // 抗酸化指標の数値・関連データはモック
 
     // MARK: - Category Data
     private let categoryName = "抗酸化"
@@ -22,14 +22,14 @@ struct AntioxidantDetailView: View {
         lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 
-    // [DUMMY] カテゴリー関連遺伝子データ
+    // カテゴリー関連遺伝子データ
     private let antioxidantGenes: [(name: String, variant: String, risk: String, description: String)] = [
         (name: "SOD2 Val16Ala", variant: "Val16Ala", risk: "優秀", description: "スーパーオキシド分解酵素"),
         (name: "GPX1 Pro198Leu", variant: "Pro198Leu", risk: "良好", description: "グルタチオンペルオキシダーゼ"),
         (name: "CAT", variant: "-", risk: "最適", description: "カタラーゼ活性")
     ]
 
-    // [DUMMY] カテゴリー関連血液マーカーデータ
+    // カテゴリー関連血液マーカーデータ
     private let antioxidantBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
         (name: "GGT", value: "22", unit: "U/L", range: "0-50", status: "最適"),
         (name: "UA", value: "5.2", unit: "mg/dL", range: "3.0-7.0", status: "最適"),
@@ -38,7 +38,7 @@ struct AntioxidantDetailView: View {
         (name: "Zn", value: "95", unit: "μg/dL", range: "80-130", status: "最適")
     ]
 
-    // [DUMMY] カテゴリー関連HealthKitデータ
+    // カテゴリー関連HealthKitデータ
     private let antioxidantHealthKit: [(name: String, value: String, status: String)] = [
         (name: "高強度運動時間", value: "週150分", status: "最適"),
         (name: "睡眠時間", value: "7.5時間", status: "良好")
@@ -74,7 +74,7 @@ struct AntioxidantDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
-                    Text("あなたの抗酸化スコアは良好です。抗酸化物質が豊富な食事が、細胞の健康維持に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                    Text("あなたの抗酸化スコアは良好です。抗酸化物質が豊富な食事が、細胞の健康維持に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // AIコメント、API連携後に実データ使用
                         .font(.system(size: 13, weight: .regular))
                         .foregroundColor(.virgilTextPrimary)
                         .lineSpacing(4)
@@ -88,7 +88,7 @@ struct AntioxidantDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    ScoreTrendGraph(scores: [76, 78, 80, 81, 83, 84])  // [DUMMY] 過去6ヶ月のスコア
+                    ScoreTrendGraph(scores: [76, 78, 80, 81, 83, 84])  // 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .liquidGlassCard()
@@ -105,7 +105,7 @@ struct AntioxidantDetailView: View {
 
                         Spacer()
 
-                        // [DUMMY] 遺伝子セクション共有ボタン
+                        // 遺伝子セクション共有ボタン
                         Button(action: shareGenes) {
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
@@ -114,7 +114,7 @@ struct AntioxidantDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        // 遺伝子データ、API連携後に実データ使用
                         GeneCard(
                             name: "SOD2 Val16Ala",
                             description: "スーパーオキシド分解酵素",
@@ -152,7 +152,7 @@ struct AntioxidantDetailView: View {
 
                         Spacer()
 
-                        // [DUMMY] 血液マーカーセクション共有ボタン
+                        // 血液マーカーセクション共有ボタン
                         Button(action: shareBloodMarkers) {
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
@@ -161,7 +161,7 @@ struct AntioxidantDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        // 血液マーカーデータ、API連携後に実データ使用
                         BloodMarkerRow(name: "GGT", value: "22 U/L", status: "最適")
                         BloodMarkerRow(name: "UA", value: "5.2 mg/dL", status: "最適")
                         BloodMarkerRow(name: "CRP", value: "0.3 mg/L", status: "最適")
@@ -175,7 +175,7 @@ struct AntioxidantDetailView: View {
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
                 MicrobiomeSection(bacteria: [
-                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    // 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
                         name: "SCFA産生菌",
                         description: "抗炎症・抗酸化作用",
@@ -200,7 +200,7 @@ struct AntioxidantDetailView: View {
                 // Related HealthKit - MVP: HealthKit情報を非表示
                 /*
                 HealthKitSection(metrics: [
-                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    // HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "高強度運動時間", value: "週150分", status: "最適"),
                     HealthKitSectionMetric(name: "睡眠時間", value: "7.5時間", status: "良好")
                 ])
@@ -213,7 +213,7 @@ struct AntioxidantDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 推奨アクション、API連携後に実データ使用
+                        // 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "🥗",
                             title: "抗酸化食品",
@@ -247,7 +247,7 @@ struct AntioxidantDetailView: View {
         .navigationTitle("抗酸化")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            // [DUMMY] NavigationBar共有ボタン
+            // NavigationBar共有ボタン
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: shareDetailView) {
                     Image(systemName: "square.and.arrow.up")
@@ -263,13 +263,13 @@ struct AntioxidantDetailView: View {
             }
         }
         .floatingChatButton()
-        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー完了トースト通知
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // コピー完了トースト通知
     }
 
     // MARK: - Share Actions
 
     /// DetailView全体のデータをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    /// 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -281,7 +281,7 @@ struct AntioxidantDetailView: View {
     }
 
     /// 遺伝子セクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareGenes() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -293,7 +293,7 @@ struct AntioxidantDetailView: View {
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareBloodMarkers() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,

@@ -9,9 +9,9 @@ import SwiftUI
 
 struct AppearanceDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @State private var showCopyToast = false // 共有ボタン用コピー通知トースト
     @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
-    // [DUMMY] 見た目の健康データはUI検証用の固定値
+    // 見た目の健康データはUI検証用の固定値
 
     // MARK: - Category Data
     private let categoryName = "見た目の健康"
@@ -22,7 +22,7 @@ struct AppearanceDetailView: View {
         lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 
-    // [DUMMY] カテゴリー関連遺伝子データ
+    // カテゴリー関連遺伝子データ
     private let appearanceGenes: [(name: String, variant: String, risk: String, description: String)] = [
         (name: "MTHFR C677T", variant: "C677T", risk: "良好", description: "葉酸代謝・肌質への影響"),
         (name: "VDR FokI", variant: "FokI", risk: "最適", description: "ビタミンD受容体・肌健康"),
@@ -30,7 +30,7 @@ struct AppearanceDetailView: View {
         (name: "COL1A1", variant: "COL1A1", risk: "良好", description: "コラーゲン生成能力")
     ]
 
-    // [DUMMY] カテゴリー関連血液マーカーデータ
+    // カテゴリー関連血液マーカーデータ
     private let appearanceBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
         (name: "ALB", value: "4.5", unit: "g/dL", range: "3.8-5.2", status: "最適"),
         (name: "TP", value: "7.2", unit: "g/dL", range: "6.5-8.2", status: "最適"),
@@ -41,7 +41,7 @@ struct AppearanceDetailView: View {
         (name: "HbA1c", value: "5.2", unit: "%", range: "4.0-5.6", status: "最適")
     ]
 
-    // [DUMMY] カテゴリー関連HealthKitデータ
+    // カテゴリー関連HealthKitデータ
     private let appearanceHealthKit: [(name: String, value: String, status: String)] = [
         (name: "VO2max", value: "42 ml/kg/min", status: "良好"),
         (name: "睡眠効率", value: "89%", status: "優秀"),
@@ -80,7 +80,7 @@ struct AppearanceDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
-                    Text("あなたの見た目の健康スコアは優秀です。バランスの取れた栄養摂取と適切なスキンケアが、若々しい外見の維持に寄与しています。引き続き現在の習慣を維持することで、長期的な美容と健康の維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                    Text("あなたの見た目の健康スコアは優秀です。バランスの取れた栄養摂取と適切なスキンケアが、若々しい外見の維持に寄与しています。引き続き現在の習慣を維持することで、長期的な美容と健康の維持が期待できます。")  // AIコメント、API連携後に実データ使用
                         .font(.system(size: 13, weight: .regular))
                         .foregroundColor(.virgilTextPrimary)
                         .lineSpacing(4)
@@ -94,7 +94,7 @@ struct AppearanceDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    ScoreTrendGraph(scores: [80, 82, 84, 85, 87, 88])  // [DUMMY] 過去6ヶ月のスコア
+                    ScoreTrendGraph(scores: [80, 82, 84, 85, 87, 88])  // 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .liquidGlassCard()
@@ -111,7 +111,7 @@ struct AppearanceDetailView: View {
 
                         Spacer()
 
-                        Button(action: shareGenes) { // [DUMMY] 遺伝子セクション共有ボタン
+                        Button(action: shareGenes) { // 遺伝子セクション共有ボタン
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
                                 .foregroundColor(.virgilTextSecondary)
@@ -119,7 +119,7 @@ struct AppearanceDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        // 遺伝子データ、API連携後に実データ使用
                         GeneCard(
                             name: "MTHFR C677T",
                             description: "葉酸代謝・肌質への影響",
@@ -164,7 +164,7 @@ struct AppearanceDetailView: View {
 
                         Spacer()
 
-                        Button(action: shareBloodMarkers) { // [DUMMY] 血液マーカーセクション共有ボタン
+                        Button(action: shareBloodMarkers) { // 血液マーカーセクション共有ボタン
                             Image(systemName: "doc.on.doc")
                                 .font(.system(size: 14))
                                 .foregroundColor(.virgilTextSecondary)
@@ -172,7 +172,7 @@ struct AppearanceDetailView: View {
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        // 血液マーカーデータ、API連携後に実データ使用
                         BloodMarkerRow(name: "ALB", value: "4.5 g/dL", status: "最適")
                         BloodMarkerRow(name: "TP", value: "7.2 g/dL", status: "最適")
                         BloodMarkerRow(name: "Ferritin", value: "95 ng/mL", status: "良好")
@@ -188,7 +188,7 @@ struct AppearanceDetailView: View {
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
                 MicrobiomeSection(bacteria: [
-                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    // 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
                         name: "Bifidobacterium",
                         description: "プロバイオティクス・腸‐肌軸",
@@ -213,7 +213,7 @@ struct AppearanceDetailView: View {
                 // Related HealthKit - MVP: HealthKit情報を非表示
                 /*
                 HealthKitSection(metrics: [
-                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    // HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "VO2max", value: "42 ml/kg/min", status: "良好"),
                     HealthKitSectionMetric(name: "睡眠効率", value: "89%", status: "優秀"),
                     HealthKitSectionMetric(name: "歩行速度", value: "5.2 km/h", status: "最適"),
@@ -229,7 +229,7 @@ struct AppearanceDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 推奨アクション、API連携後に実データ使用
+                        // 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "💧",
                             title: "水分補給",
@@ -262,7 +262,7 @@ struct AppearanceDetailView: View {
         .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("見た目の健康")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar { // [DUMMY] NavigationBar共有ボタン
+        .toolbar { // NavigationBar共有ボタン
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: shareDetailView) {
                     Image(systemName: "square.and.arrow.up")
@@ -278,13 +278,13 @@ struct AppearanceDetailView: View {
             }
         }
         .floatingChatButton()
-        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY] コピー完了トースト表示
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // コピー完了トースト表示
     }
 
     // MARK: - Share Actions
 
     /// DetailView全体のデータをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    /// 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -296,7 +296,7 @@ struct AppearanceDetailView: View {
     }
 
     /// 遺伝子セクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareGenes() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -308,7 +308,7 @@ struct AppearanceDetailView: View {
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareBloodMarkers() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,

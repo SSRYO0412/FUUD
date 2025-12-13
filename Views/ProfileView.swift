@@ -213,7 +213,7 @@ struct ProfileView: View {
                         .font(.virgilBodyLarge)
                         .foregroundColor(.virgilTextPrimary)
                     Spacer()
-                    Text("1.0.0") // [DUMMY] 実際のアプリバージョンに置き換え予定
+                    Text("1.0.0") // 実際のアプリバージョンに置き換え予定
                         .font(.virgilBodySmall)
                         .foregroundColor(.virgilTextSecondary)
                 }
@@ -227,7 +227,7 @@ struct ProfileView: View {
                         .font(.virgilBodyLarge)
                         .foregroundColor(.virgilTextPrimary)
                     Spacer()
-                    Text("1") // [DUMMY] 正式ビルド番号で更新予定
+                    Text("1") // 正式ビルド番号で更新予定
                         .font(.virgilBodySmall)
                         .foregroundColor(.virgilTextSecondary)
                 }

@@ -26,8 +26,8 @@ struct MessageView: View {
 struct MessageView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
-            MessageView(message: "ログイン成功！") // [DUMMY] プレビュー用メッセージ
-            MessageView(message: "エラーが発生しました") // [DUMMY] プレビュー用メッセージ
+            MessageView(message: "ログイン成功！") // プレビュー用メッセージ
+            MessageView(message: "エラーが発生しました") // プレビュー用メッセージ
         }
         .padding()
     }

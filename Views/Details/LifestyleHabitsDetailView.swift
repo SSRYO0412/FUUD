@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LifestyleHabitsDetailView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var showCopyToast = false // [DUMMY] 共有ボタン用コピー通知トースト
+    @State private var showCopyToast = false // 共有ボタン用コピー通知トースト
     @StateObject private var lifestyleScoreService = LifestyleScoreService.shared
 
     // MARK: - Category Data
@@ -21,14 +21,14 @@ struct LifestyleHabitsDetailView: View {
         lifestyleScoreService.getScore(for: categoryId) ?? 50
     }
 
-    // [DUMMY] 生活習慣関連遺伝子データ
+    // 生活習慣関連遺伝子データ
     private let lifestyleGenes: [(name: String, variant: String, risk: String, description: String)] = [
         (name: "FTO", variant: "FTO", risk: "良好", description: "食欲調節・肥満リスク"),
         (name: "APOE", variant: "APOE", risk: "優秀", description: "脂質代謝・認知機能"),
         (name: "ALDH2", variant: "ALDH2", risk: "優秀", description: "アルコール代謝")
     ]
 
-    // [DUMMY] 生活習慣関連血液マーカーデータ
+    // 生活習慣関連血液マーカーデータ
     private let lifestyleBloodMarkers: [(name: String, value: String, unit: String, range: String, status: String)] = [
         (name: "HbA1c", value: "5.4", unit: "%", range: "4.6-6.2", status: "最適"),
         (name: "1,5-AG", value: "18", unit: "μg/mL", range: "14-26", status: "良好"),
@@ -44,7 +44,7 @@ struct LifestyleHabitsDetailView: View {
         (name: "Ferritin", value: "88", unit: "ng/mL", range: "30-400", status: "良好")
     ]
 
-    // [DUMMY] 生活習慣関連HealthKitデータ
+    // 生活習慣関連HealthKitデータ
     private let lifestyleHealthKit: [(name: String, value: String, status: String)] = [
         (name: "歩数", value: "10200歩/日", status: "優秀"),
         (name: "立ち時間", value: "10h/日", status: "最適"),
@@ -91,7 +91,7 @@ struct LifestyleHabitsDetailView: View {
                             .foregroundColor(.virgilTextSecondary)
                     }
 
-                    Text("あなたの生活習慣スコアは優秀です。規則正しい生活リズムと適度な運動が、遺伝子FTOの良好な発現とHbA1cの最適値に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // [DUMMY] AIコメント、API連携後に実データ使用
+                    Text("あなたの生活習慣スコアは優秀です。規則正しい生活リズムと適度な運動が、遺伝子FTOの良好な発現とHbA1cの最適値に寄与しています。引き続き現在の習慣を維持することで、長期的な健康維持が期待できます。")  // AIコメント、API連携後に実データ使用
                         .font(.system(size: 13, weight: .regular))
                         .foregroundColor(.virgilTextPrimary)
                         .lineSpacing(4)
@@ -105,7 +105,7 @@ struct LifestyleHabitsDetailView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(.virgilTextSecondary)
 
-                    ScoreTrendGraph(scores: [82, 84, 85, 86, 87, 88])  // [DUMMY] 過去6ヶ月のスコア
+                    ScoreTrendGraph(scores: [82, 84, 85, 86, 87, 88])  // 過去6ヶ月のスコア
                 }
                 .padding(VirgilSpacing.md)
                 .liquidGlassCard()
@@ -122,15 +122,15 @@ struct LifestyleHabitsDetailView: View {
 
                         Spacer()
 
-                        Button(action: shareGenes) { // [DUMMY]
-                            Image(systemName: "doc.on.doc") // [DUMMY]
-                                .font(.system(size: 14)) // [DUMMY]
-                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
-                        } // [DUMMY]
+                        Button(action: shareGenes) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 遺伝子データ、API連携後に実データ使用
+                        // 遺伝子データ、API連携後に実データ使用
                         GeneCard(
                             name: "FTO",
                             description: "食欲調節・肥満リスク",
@@ -168,15 +168,15 @@ struct LifestyleHabitsDetailView: View {
 
                         Spacer()
 
-                        Button(action: shareBloodMarkers) { // [DUMMY]
-                            Image(systemName: "doc.on.doc") // [DUMMY]
-                                .font(.system(size: 14)) // [DUMMY]
-                                .foregroundColor(.virgilTextSecondary) // [DUMMY]
-                        } // [DUMMY]
+                        Button(action: shareBloodMarkers) {
+                            Image(systemName: "doc.on.doc")
+                                .font(.system(size: 14))
+                                .foregroundColor(.virgilTextSecondary)
+                        }
                     }
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 血液マーカーデータ、API連携後に実データ使用
+                        // 血液マーカーデータ、API連携後に実データ使用
                         BloodMarkerRow(name: "HbA1c", value: "5.4%", status: "最適")
                         BloodMarkerRow(name: "1,5-AG", value: "18 μg/mL", status: "良好")
                         BloodMarkerRow(name: "TG", value: "92 mg/dL", status: "最適")
@@ -197,7 +197,7 @@ struct LifestyleHabitsDetailView: View {
                 // Related Microbiome - MVP: 腸内細菌情報を非表示
                 /*
                 MicrobiomeSection(bacteria: [
-                    // [DUMMY] 腸内細菌データ、API連携後に実データ使用
+                    // 腸内細菌データ、API連携後に実データ使用
                     MicrobiomeItem(
                         name: "SCFA産生菌",
                         description: "短鎖脂肪酸・代謝改善",
@@ -222,7 +222,7 @@ struct LifestyleHabitsDetailView: View {
                 // Related HealthKit - MVP: HealthKit情報を非表示
                 /*
                 HealthKitSection(metrics: [
-                    // [DUMMY] HealthKitデータ、API連携後に実データ使用
+                    // HealthKitデータ、API連携後に実データ使用
                     HealthKitSectionMetric(name: "歩数", value: "10200歩/日", status: "優秀"),
                     HealthKitSectionMetric(name: "立ち時間", value: "10h/日", status: "最適"),
                     HealthKitSectionMetric(name: "ワークアウト分", value: "45分/日", status: "優秀"),
@@ -238,7 +238,7 @@ struct LifestyleHabitsDetailView: View {
                         .foregroundColor(.virgilTextSecondary)
 
                     VStack(spacing: VirgilSpacing.sm) {
-                        // [DUMMY] 推奨アクション、API連携後に実データ使用
+                        // 推奨アクション、API連携後に実データ使用
                         RecommendationCard(
                             icon: "⏰",
                             title: "規則正しい生活リズム",
@@ -271,15 +271,15 @@ struct LifestyleHabitsDetailView: View {
         }
         .navigationTitle("生活習慣")
         .navigationBarTitleDisplayMode(.large)
-        .toolbar { // [DUMMY]
-            ToolbarItem(placement: .navigationBarTrailing) { // [DUMMY]
-                Button(action: shareDetailView) { // [DUMMY]
-                    Image(systemName: "square.and.arrow.up") // [DUMMY]
-                        .font(.system(size: 16, weight: .medium)) // [DUMMY]
-                        .foregroundColor(.virgilTextPrimary) // [DUMMY]
-                } // [DUMMY]
-            } // [DUMMY]
-        } // [DUMMY]
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: shareDetailView) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.virgilTextPrimary)
+                }
+            }
+        }
         .task {
             // 初回表示時にスコア計算
             if lifestyleScoreService.categoryScores.isEmpty {
@@ -287,13 +287,13 @@ struct LifestyleHabitsDetailView: View {
             }
         }
         .floatingChatButton()
-        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast) // [DUMMY]
+        .showToast(message: "✅ プロンプトをコピーしました", isShowing: $showCopyToast)
     }
 
     // MARK: - Share Actions
 
     /// DetailView全体のデータをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
+    /// 現状はモックデータ、将来的にBloodTestService/GeneDataService連携
     private func shareDetailView() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -305,7 +305,7 @@ struct LifestyleHabitsDetailView: View {
     }
 
     /// 遺伝子セクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareGenes() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,
@@ -317,7 +317,7 @@ struct LifestyleHabitsDetailView: View {
     }
 
     /// 血液マーカーセクションをプロンプトとしてコピー
-    /// [DUMMY] 現状はモックデータ
+    /// 現状はモックデータ
     private func shareBloodMarkers() {
         let prompt = PromptGenerator.generateCategoryPrompt(
             category: categoryName,

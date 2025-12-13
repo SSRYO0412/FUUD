@@ -80,32 +80,32 @@ struct HealthKitMetric {
     let trend: MetricTrend
     let updateInterval: TimeInterval
 
-    // [DUMMY] テスト用のサンプルメトリクス
+    // テスト用のサンプルメトリクス
     static let samples: [HealthKitMetric] = [
         HealthKitMetric(
             label: "心拍変動",
-            value: "68", // [DUMMY] 実際のHealthKitデータに置き換え
+            value: "68", // 実際のHealthKitデータに置き換え
             unit: "ms",
             trend: .up,
             updateInterval: 3.0
         ),
         HealthKitMetric(
             label: "安静時心拍数",
-            value: "52", // [DUMMY] 実際のHealthKitデータに置き換え
+            value: "52", // 実際のHealthKitデータに置き換え
             unit: "bpm",
             trend: .down,
             updateInterval: 3.0
         ),
         HealthKitMetric(
             label: "VO₂max",
-            value: "42.3", // [DUMMY] 実際のHealthKitデータに置き換え
+            value: "42.3", // 実際のHealthKitデータに置き換え
             unit: "",
             trend: .neutral,
             updateInterval: 30.0
         ),
         HealthKitMetric(
             label: "Burn Cal",
-            value: "1,850", // [DUMMY] 実際の消費カロリー計算値に置き換え
+            value: "1,850", // 実際の消費カロリー計算値に置き換え
             unit: "",
             trend: .neutral,
             updateInterval: 60.0
