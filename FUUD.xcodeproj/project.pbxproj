@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		607C5CE62E68287800E33ED1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC62E68287800E33ED1 /* ContentView.swift */; };
-		607C5CE92E68287800E33ED1 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC32E68287800E33ED1 /* ChatService.swift */; };
-		607C5CEC2E68287800E33ED1 /* HealthProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC82E68287800E33ED1 /* HealthProfileService.swift */; };
 		607C5CEF2E68287800E33ED1 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC42E68287800E33ED1 /* ChatView.swift */; };
 		607C5CF22E68287800E33ED1 /* AWStestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC22E68287800E33ED1 /* AWStestApp.swift */; };
 		607C5CF72E68287800E33ED1 /* HealthProfileModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */; };
@@ -50,11 +48,9 @@
 		35A15C422E31EA8200678A42 /* AWStestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AWStestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607C5CC12E68287800E33ED1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		607C5CC22E68287800E33ED1 /* AWStestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWStestApp.swift; sourceTree = "<group>"; };
-		607C5CC32E68287800E33ED1 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatService.swift; sourceTree = "<group>"; };
 		607C5CC42E68287800E33ED1 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		607C5CC62E68287800E33ED1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileModels.swift; sourceTree = "<group>"; };
-		607C5CC82E68287800E33ED1 /* HealthProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileService.swift; sourceTree = "<group>"; };
 		60F922152ECF1D5000008108 /* HealthKitBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBridge.swift; sourceTree = "<group>"; };
 		60F922162ECF1D5000008108 /* HealthScoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthScoreService.swift; sourceTree = "<group>"; };
 		60F922172ECF1D5000008108 /* MetricConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricConfig.swift; sourceTree = "<group>"; };
@@ -177,11 +173,9 @@
 				35A15C2C2E31EA8100678A42 /* Products */,
 				607C5CC12E68287800E33ED1 /* Assets.xcassets */,
 				607C5CC22E68287800E33ED1 /* AWStestApp.swift */,
-				607C5CC32E68287800E33ED1 /* ChatService.swift */,
 				607C5CC42E68287800E33ED1 /* ChatView.swift */,
 				607C5CC62E68287800E33ED1 /* ContentView.swift */,
 				607C5CC72E68287800E33ED1 /* HealthProfileModels.swift */,
-				607C5CC82E68287800E33ED1 /* HealthProfileService.swift */,
 				607C5CCA2E68287800E33ED1 /* Helpers */,
 				607C5CCE2E68287800E33ED1 /* Managers */,
 				607C5CD42E68287800E33ED1 /* Services */,
@@ -393,8 +387,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				607C5CE62E68287800E33ED1 /* ContentView.swift in Sources */,
-				607C5CE92E68287800E33ED1 /* ChatService.swift in Sources */,
-				607C5CEC2E68287800E33ED1 /* HealthProfileService.swift in Sources */,
 				60F922C92ED01A7800008108 /* BloodScoring.swift in Sources */,
 				607C5CEF2E68287800E33ED1 /* ChatView.swift in Sources */,
 				607C5CF22E68287800E33ED1 /* AWStestApp.swift in Sources */,
