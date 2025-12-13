@@ -55,7 +55,7 @@ class SimpleCognitoService: ObservableObject {
     func signUp(email: String, password: String) async {
         do {
             let cognitoUrl = "https://cognito-idp.\(config.region).amazonaws.com/"
-            
+
             let requestBody = [
                 "ClientId": config.clientId,
                 "Username": email,
@@ -67,57 +67,84 @@ class SimpleCognitoService: ObservableObject {
                     ]
                 ]
             ] as [String: Any]
-            
-            let requestConfig = NetworkManager.RequestConfig(
-                url: cognitoUrl,
-                method: .POST,
-                body: requestBody,
-                requiresAWSSignature: true,
-                customHeaders: [
-                    "X-Amz-Target": "AWSCognitoIdentityProviderService.SignUp",
-                    "Content-Type": "application/x-amz-json-1.1"
-                ]
-            )
-            
-            struct CognitoSignUpResponse: Codable {
-                let userSub: String
-                let codeDeliveryDetails: CodeDeliveryDetails?
-                
-                struct CodeDeliveryDetails: Codable {
-                    let destination: String
-                    let deliveryMedium: String
-                    let attributeName: String
-                    
-                    private enum CodingKeys: String, CodingKey {
-                        case destination = "Destination"
-                        case deliveryMedium = "DeliveryMedium"
-                        case attributeName = "AttributeName"
-                    }
+
+            // Cognitoエラーを詳細に取得するため直接リクエスト
+            guard let url = URL(string: cognitoUrl) else {
+                await MainActor.run {
+                    self.message = "URLが無効です"
                 }
-                
-                private enum CodingKeys: String, CodingKey {
-                    case userSub = "UserSub"
-                    case codeDeliveryDetails = "CodeDeliveryDetails"
+                return
+            }
+
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/x-amz-json-1.1", forHTTPHeaderField: "Content-Type")
+            request.setValue("AWSCognitoIdentityProviderService.SignUp", forHTTPHeaderField: "X-Amz-Target")
+            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
+
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                await MainActor.run {
+                    self.message = "サーバーからの応答が無効です"
+                }
+                return
+            }
+
+            if httpResponse.statusCode == 200 {
+                // 成功
+                await MainActor.run {
+                    self.message = "アカウントが作成されました。確認コードがメールに送信されました。"
+                }
+            } else {
+                // エラーレスポンスを解析
+                let errorMessage = parseCognitoError(data: data, statusCode: httpResponse.statusCode)
+                await MainActor.run {
+                    self.message = errorMessage
                 }
             }
-            
-            let response: CognitoSignUpResponse = try await NetworkManager.shared.sendRequest(
-                config: requestConfig,
-                responseType: CognitoSignUpResponse.self
-            )
-            
-            await MainActor.run {
-                self.message = "アカウントが作成されました。確認コードがメールに送信されました。"
-            }
-            
+
         } catch {
             let appError = ErrorManager.shared.convertToAppError(error)
             ErrorManager.shared.logError(appError, context: "SimpleCognitoService.signUp")
-            
+
             await MainActor.run {
                 self.message = ErrorManager.shared.userFriendlyMessage(for: appError)
             }
         }
+    }
+
+    /// Cognitoエラーレスポンスを解析してユーザーフレンドリーなメッセージを返す
+    private func parseCognitoError(data: Data, statusCode: Int) -> String {
+        // Cognitoエラーレスポンス形式: {"__type": "ErrorType", "message": "..."}
+        struct CognitoErrorResponse: Codable {
+            let type: String?
+            let message: String?
+
+            private enum CodingKeys: String, CodingKey {
+                case type = "__type"
+                case message
+            }
+        }
+
+        if let errorResponse = try? JSONDecoder().decode(CognitoErrorResponse.self, from: data) {
+            let errorType = errorResponse.type ?? ""
+
+            switch errorType {
+            case "UsernameExistsException":
+                return "このメールアドレスは既に登録されています"
+            case "InvalidPasswordException":
+                return "パスワードが要件を満たしていません。8文字以上で大文字・小文字・数字・記号を含めてください"
+            case "InvalidParameterException":
+                return "入力内容に問題があります。メールアドレスとパスワードを確認してください"
+            case "TooManyRequestsException":
+                return "リクエストが多すぎます。しばらく待ってからお試しください"
+            default:
+                return errorResponse.message ?? "アカウントの作成に失敗しました（コード: \(statusCode)）"
+            }
+        }
+
+        return "アカウントの作成に失敗しました（コード: \(statusCode)）"
     }
     
     /// ユーザーログイン（AWS Cognito InitiateAuth API）

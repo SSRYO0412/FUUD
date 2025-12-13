@@ -362,11 +362,13 @@ struct OnboardingAuthView: View {
             viewModel.userData.firstName = firstName
             await MainActor.run {
                 isLoading = false
-                if cognitoService.message.contains("error") || cognitoService.message.contains("Error") {
-                    errorMessage = cognitoService.message
-                    showError = true
-                } else {
+                // 成功時は「確認コード」を含むメッセージが返る
+                if cognitoService.message.contains("確認コード") {
                     authMode = .confirmation
+                } else {
+                    // エラーの場合（日本語エラーメッセージ対応）
+                    errorMessage = cognitoService.message.isEmpty ? "アカウントの作成に失敗しました" : cognitoService.message
+                    showError = true
                 }
             }
         }
@@ -382,11 +384,8 @@ struct OnboardingAuthView: View {
                 if cognitoService.isSignedIn {
                     viewModel.userData.email = email
                     viewModel.handleAuthSuccess()
-                } else if cognitoService.message.contains("error") || cognitoService.message.contains("Error") {
-                    errorMessage = cognitoService.message
-                    showError = true
                 } else {
-                    // Handle other cases (e.g., MFA required)
+                    // ログイン失敗（日本語エラーメッセージ対応）
                     errorMessage = cognitoService.message.isEmpty ? "ログインに失敗しました" : cognitoService.message
                     showError = true
                 }
@@ -400,11 +399,8 @@ struct OnboardingAuthView: View {
         Task {
             await cognitoService.confirmSignUp(email: email, confirmationCode: confirmationCode)
             await MainActor.run {
-                if cognitoService.message.contains("error") || cognitoService.message.contains("Error") {
-                    isLoading = false
-                    errorMessage = cognitoService.message
-                    showError = true
-                } else {
+                // 成功時は「確認完了」を含むメッセージが返る
+                if cognitoService.message.contains("確認完了") {
                     // Auto sign in after confirmation
                     Task {
                         await cognitoService.signIn(email: email, password: password)
@@ -412,9 +408,19 @@ struct OnboardingAuthView: View {
                             isLoading = false
                             if cognitoService.isSignedIn {
                                 viewModel.handleAuthSuccess()
+                            } else {
+                                // 自動ログイン失敗時はログイン画面へ
+                                errorMessage = "確認完了しました。ログインしてください。"
+                                showError = true
+                                authMode = .login
                             }
                         }
                     }
+                } else {
+                    // 確認コードエラー（日本語エラーメッセージ対応）
+                    isLoading = false
+                    errorMessage = cognitoService.message.isEmpty ? "確認コードが正しくありません" : cognitoService.message
+                    showError = true
                 }
             }
         }
