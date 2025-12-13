@@ -10,6 +10,7 @@ import SwiftUI
 struct ProfileView: View {
     @EnvironmentObject var cognitoService: SimpleCognitoService
     @ObservedObject var demoModeManager = DemoModeManager.shared
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showingLogoutAlert = false
 
     var body: some View {
@@ -45,6 +46,10 @@ struct ProfileView: View {
                 Button("ログアウト", role: .destructive) {
                     Task {
                         await cognitoService.signOut()
+                        await MainActor.run {
+                            // オンボーディングからやり直し
+                            hasCompletedOnboarding = false
+                        }
                     }
                 }
             } message: {
