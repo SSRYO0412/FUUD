@@ -175,7 +175,7 @@ struct DurationSelectionSheet: View {
         }
         .background(
             NavigationLink(
-                destination: ProgramRoadmapDetailView(
+                destination: ProgramModeSelectionView(
                     program: program,
                     selectedDuration: selectedDuration,
                     onStart: { enrollment in

@@ -4,6 +4,7 @@
 //
 //  Lifesum-style Program Roadmap Detail View
 //  コース開始前のロードマップ詳細画面
+//  通常版 / pro版（血液検査ベース）対応
 //
 
 import SwiftUI
@@ -11,6 +12,7 @@ import SwiftUI
 struct ProgramRoadmapDetailView: View {
     let program: DietProgram
     let selectedDuration: Int
+    let mode: ProgramMode
     let onStart: (ProgramEnrollment) -> Void
 
     @Environment(\.presentationMode) var presentationMode
@@ -106,6 +108,18 @@ struct ProgramRoadmapDetailView: View {
                         .foregroundColor(.white.opacity(0.8))
                 }
                 Spacer()
+
+                // Mode badge
+                Text(mode.displayName)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(mode == .pro ? .orange : .white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(
+                        Capsule()
+                            .fill(mode == .pro ? Color.orange.opacity(0.2) : Color.white.opacity(0.2))
+                    )
             }
 
             // Program name (small)
@@ -231,7 +245,7 @@ struct ProgramRoadmapDetailView: View {
     private var weeklyRoadmapSection: some View {
         VStack(spacing: VirgilSpacing.md) {
             ForEach(roadmapPhases) { phase in
-                RoadmapWeekCard(phase: phase)
+                RoadmapWeekCard(phase: phase, showProNotes: mode == .pro)
             }
         }
     }
@@ -408,6 +422,12 @@ struct PieSlice: Shape {
 
 struct RoadmapWeekCard: View {
     let phase: RoadmapPhase
+    let showProNotes: Bool
+
+    init(phase: RoadmapPhase, showProNotes: Bool = false) {
+        self.phase = phase
+        self.showProNotes = showProNotes
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: VirgilSpacing.sm) {
@@ -433,10 +453,23 @@ struct RoadmapWeekCard: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
 
-            // Subtitle
+            // Subtitle (週テーマ)
             Text(phase.subtitle)
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.7))
+
+            // User benefit (メリット)
+            HStack(alignment: .top, spacing: 6) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 10))
+                    .foregroundColor(Color(hex: "FFE66D"))
+
+                Text(phase.userBenefit)
+                    .font(.caption)
+                    .foregroundColor(Color(hex: "FFE66D"))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.top, 2)
 
             // Focus points
             VStack(alignment: .leading, spacing: 4) {
@@ -453,6 +486,38 @@ struct RoadmapWeekCard: View {
                     }
                 }
             }
+
+            // Pro Notes (血液検査ベースの微調整 - pro版のみ表示)
+            if showProNotes && !phase.proNotes.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 4) {
+                        Text("🩸")
+                            .font(.caption)
+                        Text("血液検査ベースの微調整")
+                            .font(.caption2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.orange)
+                    }
+                    .padding(.top, 4)
+
+                    ForEach(phase.proNotes, id: \.self) { note in
+                        HStack(alignment: .top, spacing: 6) {
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 8))
+                                .foregroundColor(.orange.opacity(0.8))
+                                .padding(.top, 4)
+
+                            Text(note)
+                                .font(.caption2)
+                                .foregroundColor(.orange.opacity(0.9))
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+                .padding(VirgilSpacing.sm)
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(8)
+            }
         }
         .padding(VirgilSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -467,7 +532,8 @@ struct RoadmapWeekCard: View {
     NavigationView {
         ProgramRoadmapDetailView(
             program: DietProgramCatalog.programs[0],
-            selectedDuration: 45
+            selectedDuration: 45,
+            mode: .pro
         ) { _ in }
     }
 }
