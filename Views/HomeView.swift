@@ -98,48 +98,6 @@ struct HomeView: View {
                             StepsSection()
                         }
                         .padding(.horizontal, VirgilSpacing.md)
-
-                        // ===== TUUN 旧セクション（非表示） =====
-
-                        // HealthKit LIVE Section - 画面幅いっぱい（paddingなし）
-                        // HealthKitLiveSection()
-
-                        // 以降のカード - 左右paddingあり
-                        // VStack(spacing: VirgilSpacing.lg) {
-                        //     // AI時間帯別インサイト（HealthMetricsGridSectionの上）
-                        //     AITimeBasedInsightSection()
-                        //         .padding(.bottom, VirgilSpacing.md)
-                        //
-                        //     // Health Metrics Grid (2x2) - Apple Watchスタイル
-                        //     HealthMetricsGridSection(isExpanded: $isCardExpanded, expandedCardDetail: $expandedCardDetail)
-                        //         .padding(.bottom, VirgilSpacing.md)
-                        //
-                        //     // Daily Action Plan（HealthMetricsGridSectionの下）
-                        //     DailyActionSection()
-                        //         .padding(.top, VirgilSpacing.xl)
-                        //
-                        //     // Real-Time Performance Section - 一時的に非表示
-                        //     // TodaysPerformanceSection()
-                        //
-                        //     // AI Core Section - 一時的に非表示
-                        //     // AICoreSection(currentInsight: aiInsights[aiInsightIndex])
-                        //
-                        //     // Bio Age Card - 一時的に非表示
-                        //     // BioAgeCard()
-                        //
-                        //     // Longevity Pace Card - 一時的に非表示
-                        //     // LongevityPaceCard()
-                        //
-                        //     // Metabolic Power Card - 一時的に非表示
-                        //     // MetabolicPowerCard()
-                        //
-                        //     // Recovery Sync Card - 一時的に非表示
-                        //     // RecoverySyncCard()
-                        //
-                        //     // Weekly Plan Section - 一時的に非表示
-                        //     // WeeklyPlanSection()
-                        // }
-                        // .padding(.horizontal, VirgilSpacing.md)
                     }
                     .padding(.top, VirgilSpacing.lg)
                     .padding(.bottom, 100)
